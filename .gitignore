@@ -35,6 +35,8 @@
 *.i*86
 *.x86_64
 *.hex
+*.bin
+*.uf2
 
 # Debug files
 *.dSYM/
@@ -42,11 +44,5 @@
 *.idb
 *.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+*.compiled
+*.res
