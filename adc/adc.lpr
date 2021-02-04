@@ -1,4 +1,5 @@
 program Blinky;
+{$H-}
 {$L gpio.c.obj}
 {$L adc.c.obj}
 {$L uart.c.obj}
@@ -116,10 +117,10 @@ begin
     adc_select_input(3);
     value2 := adc_read;
     uart_puts(uart0, 'Pin 26 raw value is ');
-    //uart_puts(uart0,valuetext);
+    uart_puts(uart0,valuetext);
     uart_puts(uart0, ' chip temperature raw value is ');
-    //str(value2,valuetext);
-    //uart_puts(uart0,valuetext);
+    str(value2,valuetext);
+    uart_puts(uart0,valuetext);
     uart_puts(uart0,#13#10);
     for i := 0 to 300000 do ;
   until 1=0;
