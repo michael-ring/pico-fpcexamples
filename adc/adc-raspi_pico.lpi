@@ -3,6 +3,11 @@
   <ProjectOptions>
     <Version Value="12"/>
     <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <MainUnitHasScaledStatement Value="False"/>
+      </Flags>
       <UseAppBundle Value="False"/>
     </General>
     <BuildModes>
@@ -18,36 +23,12 @@
       <Unit>
         <Filename Value="adc.lpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Blinky"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="99"/>
-        <CursorPos Y="118"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="21"/>
+        <CursorPos Y="35"/>
+        <UsageCount Value="27"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="4">
-      <Position>
-        <Filename Value="adc.lpr"/>
-        <Caret Line="115" Column="36" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="adc.lpr"/>
-        <Caret Line="13"/>
-      </Position>
-      <Position>
-        <Filename Value="adc.lpr"/>
-        <Caret Line="122" Column="7" TopLine="97"/>
-      </Position>
-      <Position>
-        <Filename Value="adc.lpr"/>
-        <Caret Line="109" Column="5" TopLine="97"/>
-      </Position>
-      <Position>
-        <Filename Value="adc.lpr"/>
-        <Caret Line="122" Column="23" TopLine="97"/>
-      </Position>
-    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -55,6 +36,8 @@
       <Filename Value="adc"/>
     </Target>
     <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../units"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
@@ -75,15 +58,4 @@
 -Xu"/>
     </Other>
   </CompilerOptions>
-  <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="adc.lpr"/>
-        <Line Value="118"/>
-      </Item>
-    </BreakPoints>
-  </Debugging>
 </CONFIG>

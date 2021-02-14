@@ -23,6 +23,7 @@
       <Filename Value="uart"/>
     </Target>
     <SearchPaths>
+      <OtherUnitFiles Value="../units"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
@@ -40,12 +41,10 @@
       </Debugging>
     </Linking>
     <Other>
-      <CustomOptions Value="
--Wpraspi_pico
+      <CustomOptions Value="-Wpraspi_pico
 -godwarfsets
 -godwarfcpp
--Xu
-      "/>
+-Xu"/>
     </Other>
   </CompilerOptions>
 </CONFIG>
