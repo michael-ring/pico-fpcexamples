@@ -1,19 +1,54 @@
 unit pico_c;
 {$mode objfpc}{$H+}
+{$IF DEFINED(DEBUG) or DEFINED(DEBUG_CORE)}
+{$L platform.c-debug.obj}
+{$L clocks.c-debug.obj}
+{$L xosc.c-debug.obj}
+{$L pll.c-debug.obj}
+{$L watchdog.c-debug.obj}
+{$L irq.c-debug.obj}
+{$ELSE}
 {$L platform.c.obj}
 {$L clocks.c.obj}
 {$L xosc.c.obj}
 {$L pll.c.obj}
 {$L watchdog.c.obj}
 {$L irq.c.obj}
-{$LinkLib gcc,static}
+{$ENDIF}
+{$LinkLib gcc-armv6m,static}
 
 interface
 uses
   heapmgr;
 
 type 
-  TByteArray = array [0..32767] of Byte;
+  TByteArray = array of Byte;
+  TColor = -$7FFFFFFF-1..$7FFFFFFF;
+
+TPoint2px = record
+  X:word;
+  Y:Word;
+end;
+
+const
+  clBlack   = TColor($000000);
+  clMaroon  = TColor($000080);
+  clGreen   = TColor($008000);
+  clOlive   = TColor($008080);
+  clNavy    = TColor($800000);
+  clPurple  = TColor($800080);
+  clTeal    = TColor($808000);
+  clGray    = TColor($808080);
+  clSilver  = TColor($C0C0C0);
+  clRed     = TColor($0000FF);
+  clLime    = TColor($00FF00);
+  clYellow  = TColor($00FFFF);
+  clBlue    = TColor($FF0000);
+  clFuchsia = TColor($FF00FF);
+  clAqua    = TColor($FFFF00);
+  clLtGray  = TColor($C0C0C0); // clSilver alias
+  clDkGray  = TColor($808080); // clGray alias
+  clWhite   = TColor($FFFFFF);
 
 (** \struct datetime_t
  *  \ingroup util_datetime
@@ -38,10 +73,11 @@ type
   end;
 
 
-procedure clocks_init; external;
+procedure clocks_init; cdecl; external;
 procedure runtime_init;
 procedure hard_assertion_failure; public name 'hard_assertion_failure';
 procedure __unhandled_user_irq; public name '__unhandled_user_irq';
+procedure __assert_func; public name '__assert_func';
 
 (*! fn to_us_since_boot
  * \brief convert an absolute_time_t into a number of microseconds since boot.
@@ -104,6 +140,10 @@ procedure __unhandled_user_irq;
 begin
 end;
 
+procedure __assert_func;
+begin
+end;
+
 function to_us_since_boot(t : Tabsolute_time):int64;
 begin
   result := t._private_us_since_boot;
@@ -131,13 +171,7 @@ begin
 end;
 
 procedure hw_set_bits(var Register : longWord; mask:longWord);
-//var
-//  ptr : pLongWord;
-//  offset : longWord;
 begin
-//  offset := $2000;
-//  ptr := pLongWord(pointer(@Register) + offset);
-//  ptr^ := mask;
   pLongWord(pointer(@Register)+$2000)^ := mask;
 end;
 
@@ -152,12 +186,9 @@ begin
 end;
 
 procedure hw_write_masked(var Register : longWord; values : longWord; write_mask:longWord);
-var
-  temp : longWord;
 begin
   Register := (Register and not write_mask) or values;
 end;
-
 
 begin
   runtime_init;

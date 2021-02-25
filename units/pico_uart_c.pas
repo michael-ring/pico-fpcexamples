@@ -10,7 +10,11 @@ interface
 uses
   pico_c;
 
+{$IF DEFINED(DEBUG) or DEFINED(DEBUG_UART)}
+{$L uart.c-debug.obj}
+{$ELSE}
 {$L uart.c.obj}
+{$ENDIF}
 
 type
   TUARTParity = (
@@ -43,7 +47,7 @@ type
  * \param baudrate Baudrate of UART in Hz
  * \return Actual set baudrate
  *)
-function uart_init(var uart:TUART_Registers; baudrate:longWord):longWord; external;
+function uart_init(var uart:TUART_Registers; baudrate:longWord):longWord; cdecl; external;
 
 (*! \brief DeInitialise a UART
  *  \ingroup hardware_uart
@@ -53,7 +57,7 @@ function uart_init(var uart:TUART_Registers; baudrate:longWord):longWord; extern
  *
  * \param uart UART instance. \ref uart0 or \ref uart1
  *)
-procedure uart_deinit(var uart : TUART_Registers); external;
+procedure uart_deinit(var uart : TUART_Registers); cdecl; external;
 
 (*! \brief Set UART baud rate
  *  \ingroup hardware_uart
@@ -63,7 +67,7 @@ procedure uart_deinit(var uart : TUART_Registers); external;
  * \param uart UART instance. \ref uart0 or \ref uart1
  * \param baudrate Baudrate in Hz
  *)
-function uart_set_baudrate(var uart : TUART_Registers; baudrate:longWord):longWord; external;
+function uart_set_baudrate(var uart : TUART_Registers; baudrate:longWord):longWord; cdecl; external;
 
 (*! \brief Set UART flow control CTS/RTS
  *  \ingroup hardware_uart
@@ -215,7 +219,7 @@ procedure uart_set_break(var uart:TUART_Registers; en : boolean);
  * \param uart UART instance. \ref uart0 or \ref uart1
  * \param translate If true, convert line feeds to carriage return on transmissions
  *)
-procedure uart_set_translate_crlf(var uart:TUART_Registers; translate:boolean); external;
+procedure uart_set_translate_crlf(var uart:TUART_Registers; translate:boolean); cdecl; external;
 
 (*! \brief Wait for the default UART'S TX fifo to be drained
  *  \ingroup hardware_uart
@@ -229,7 +233,7 @@ procedure uart_set_translate_crlf(var uart:TUART_Registers; translate:boolean); 
  * \param us the number of microseconds to wait at most (may be 0 for an instantaneous check)
  * \return true if the RX FIFO became non empty before the timeout, false otherwise
  *)
-function uart_is_readable_within_us(var uart:TUART_Registers; us:longWord):boolean; external;
+function uart_is_readable_within_us(var uart:TUART_Registers; us:longWord):boolean; cdecl; external;
 
 implementation
 

@@ -21,10 +21,12 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="blinky.lpr"/>
+        <Filename Value="i2c_scan.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos Y="12"/>
-        <UsageCount Value="22"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="50"/>
+        <CursorPos Y="75"/>
+        <UsageCount Value="39"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
@@ -32,7 +34,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="blinky"/>
+      <Filename Value="i2c_scan"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

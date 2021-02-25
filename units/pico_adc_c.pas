@@ -11,13 +11,17 @@ uses
   pico_gpio_c,
   pico_c;
 
+{$IF DEFINED(DEBUG) or DEFINED(DEBUG_ADC)}
+{$L adc.c-debug.obj}
+{$ELSE}
 {$L adc.c.obj}
+{$ENDIF}
 
 (*! \brief  Initialise the ADC HW
  *  \ingroup hardware_adc
  *
  *)
-procedure adc_init; external;
+procedure adc_init; cdecl; external;
 
 (*! \brief  Initialise the gpio for use as an ADC pin
  *  \ingroup hardware_adc

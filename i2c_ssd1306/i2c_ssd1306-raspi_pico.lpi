@@ -21,10 +21,12 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="blinky.lpr"/>
+        <Filename Value="i2c_ssd1306.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos Y="12"/>
-        <UsageCount Value="22"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="9"/>
+        <CursorPos X="63" Y="43"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
@@ -32,7 +34,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="blinky"/>
+      <Filename Value="i2c_ssd1306"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -43,6 +45,9 @@
       <TargetProcessor Value="ARMV6M"/>
       <TargetCPU Value="arm"/>
       <TargetOS Value="embedded"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>

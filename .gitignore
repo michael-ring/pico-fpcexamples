@@ -47,3 +47,4 @@
 *.compiled
 *.res
 backup/
+lib/

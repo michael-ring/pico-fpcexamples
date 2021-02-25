@@ -1,6 +1,7 @@
 program adc;
 {$MODE OBJFPC}
 {$H+}
+{$MEMORY 10000,10000}
 
 uses
   pico_gpio_c,
@@ -11,28 +12,25 @@ uses
 
 const
   BAUD_RATE=115200;
-  UART_TX_PIN=0;
-  UART_RX_PIN=1;
-  LED_PIN=25;
 var
   milliVolts,milliCelsius : longWord;
   strValue : string;
 begin
-  gpio_init(LED_PIN);
-  gpio_set_dir(LED_PIN,TGPIODirection.GPIO_OUT);
+  gpio_init(TPicoPin.LED);
+  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
 
   uart_init(uart0, BAUD_RATE);
-  gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
-  gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.GP0_UART0_TX, GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.GP1_UART0_RX, GPIO_FUNC_UART);
 
   adc_init;
   // Make sure GPIO is high-impedance, no pullups etc
-  adc_gpio_init(26);
+  adc_gpio_init(TPicoPin.ADC0);
   // Turn on the Temperature sensor
   adc_set_temp_sensor_enabled(true);
   strValue := '';
   repeat
-    gpio_put(LED_PIN,true);
+    gpio_put(TPicoPin.LED,true);
     // Select ADC input 0 (GPIO26)
     adc_select_input(0);
     // Avoiding floating point math as it currently seems to be in no good shape (on Cortex-M0, not only pico)
@@ -59,7 +57,7 @@ begin
     uart_puts(uart0,' °C'+#13#10);
 
     busy_wait_us_32(500000);
-    gpio_put(LED_PIN,false);
+    gpio_put(TPicoPin.LED,false);
     busy_wait_us_32(500000);
   until 1=0;
 end.
