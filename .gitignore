@@ -5,6 +5,7 @@
 *.o
 *.ko
 *.obj
+!units/*.obj
 *.elf
 
 # Linker output
@@ -19,6 +20,7 @@
 # Libraries
 *.lib
 *.a
+!units/*.a
 *.la
 *.lo
 
