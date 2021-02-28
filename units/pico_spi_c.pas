@@ -55,12 +55,12 @@ procedure spi_set_format(var spi : TSPI_Registers; data_bits:TSPI_DataBits; cpol
 procedure spi_set_slave(var spi : TSPI_Registers; slave:boolean);
 function spi_is_writable(var spi : TSPI_Registers):longWord;
 function spi_is_readable(var spi : TSPI_Registers):longWord;
-function spi_write_read_blocking(var spi : TSPI_Registers; var src : array of byte; var dst : array of byte;len:longWord):longInt; cdecl; external;
-function spi_write_blocking(var spi : TSPI_Registers; var src : array of byte;len:longWord):longInt; cdecl; external;
-function spi_read_blocking(var spi : TSPI_Registers; repeated_tx_data : byte; var dst : array of byte; len:longWord): longInt; cdecl; external;
-function spi_write16_read16_blocking(var spi : TSPI_Registers; var src : array of word; var dst : array of word;len : longWord): longInt; cdecl; external;
-function spi_write16_blocking(var spi : TSPI_Registers; var src : array of word; len:longWord):longInt ; cdecl; external;
-function spi_read16_blocking(var spi : TSPI_Registers; var src : array of word; var dst : array of word;len : longWord):longInt; cdecl; external;
+function spi_write_read_blocking(var spi : TSPI_Registers; const src : array of byte; out dst : array of byte;len:longWord):longInt; cdecl; external;
+function spi_write_blocking(var spi : TSPI_Registers; const src : array of byte;len:longWord):longInt; cdecl; external;
+function spi_read_blocking(var spi : TSPI_Registers; repeated_tx_data : byte; out dst : array of byte; len:longWord): longInt; cdecl; external;
+function spi_write16_read16_blocking(var spi : TSPI_Registers; const src : array of word; out dst : array of word;len : longWord): longInt; cdecl; external;
+function spi_write16_blocking(var spi : TSPI_Registers; const src : array of word; len:longWord):longInt ; cdecl; external;
+function spi_read16_blocking(var spi : TSPI_Registers; const src : array of word; out dst : array of word;len : longWord):longInt; cdecl; external;
 
 implementation
 

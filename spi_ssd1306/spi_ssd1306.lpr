@@ -1,30 +1,28 @@
-program i2c_ssd1306;
+program spi_ssd1306;
 {$MODE OBJFPC}
 {$H+}
 {$MEMORY 10000,10000}
 uses
-  ssd1306_i2c_c,
+  ssd1306_spi_c,
   pico_gpio_c,
-  pico_i2c_c,
+  pico_spi_c,
   pico_timer_c,
   pico_c,
   Fonts.BitstreamVeraSansMono13x24;
 
 var
-  ssd1306 : TSSD1306_I2C;
+  ssd1306 : TSSD1306_SPI;
 
 begin
   gpio_init(TPicoPin.LED);
   gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
 
-  i2c_init(i2c0Inst, 400000);
-  gpio_set_function(TPicoPin.GP4_I2C0_SDA, GPIO_FUNC_I2C);
-  gpio_set_function(TPicoPin.GP5_I2C0_SCL, GPIO_FUNC_I2C);
-  gpio_pull_up(TPicoPin.GP4_I2C0_SDA);
-  gpio_pull_up(TPicoPin.GP5_I2C0_SCL);
+  spi_init(spi0,5000000);
+  gpio_set_function(TPicoPin.GP5_SPI0_CS, GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.GP6_SPI0_SCK, GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.GP7_SPI0_TX, GPIO_FUNC_I2C);
 
-  ssd1306.Initialize(i2c0Inst,$3c,TPicoPin.None,ScreenSize128x64x1);
-  //ssd1306.Initialize(i2c0Inst,$3c,TPicoPin.None,ScreenSize128x32x1);
+  ssd1306.Initialize(spi0,TPicoPin.GP8,TPicoPin.GP9,ScreenSize128x64x1);
   ssd1306.InitSequence;
   ssd1306.setFont(BitstreamVeraSansMono13x24);
 

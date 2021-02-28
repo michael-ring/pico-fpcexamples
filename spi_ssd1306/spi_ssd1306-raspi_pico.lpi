@@ -21,11 +21,11 @@
     </RunParams>
     <Units>
       <Unit>
-        <Filename Value="spi-st7789.lpr"/>
+        <Filename Value="spi_ssd1306.lpr"/>
         <IsPartOfProject Value="True"/>
-        <TopLine Value="14"/>
-        <CursorPos X="33" Y="40"/>
-        <UsageCount Value="38"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="30" Y="21"/>
+        <UsageCount Value="87"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
@@ -33,7 +33,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="spi-st7789"/>
+      <Filename Value="i2c_ssd1306"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -44,6 +44,9 @@
       <TargetProcessor Value="ARMV6M"/>
       <TargetCPU Value="arm"/>
       <TargetOS Value="embedded"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
