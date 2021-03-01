@@ -1,6 +1,7 @@
 program uart;
 {$MODE OBJFPC}
 {$H+}
+{$MEMORY 10000,10000}
 
 uses
   pico_uart_c,
