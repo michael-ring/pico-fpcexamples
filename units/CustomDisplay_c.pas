@@ -19,7 +19,6 @@ unit CustomDisplay_c;
 interface
 uses
   pico_gpio_c,
-  pico_i2c_c,
   pico_c;
 type
   TDisplayBitDepth = (OneBit=1,TwoBits=2,SixteenBits=16);
@@ -45,14 +44,11 @@ type
 type TCustomDisplay = object
   protected
     FScreenInfo : TScreenInfo;
-    FPinCS : TPinIdentifier;
-    FPinDC : TPinIdentifier;
     FPinRST : TPinIdentifier;
     FForegroundColor : TColor;
     FBackgroundColor : TColor;
     FNativeForegroundColor : longWord;
     FNativeBackgroundColor : longWord;
-    procedure setPinDC(const PinIdentifier : TPinIdentifier);
     procedure setPinRST(const PinIdentifier : TPinIdentifier);
     procedure setScreenInfo(const ScreenInfo : TScreenInfo);
     procedure CalculateAntialiasColors(out AntiAliasColors : array of word);
@@ -62,7 +58,6 @@ type TCustomDisplay = object
     property ForegroundColor: TColor read FForegroundColor write setForegroundColor;
     property BackgroundColor : TColor read FBackgroundColor write setBackgroundColor;
     property PinRST : TPinIdentifier read FPinRST write setPinRST;
-    property PinDC : TPinIdentifier read FPinDC write setPinDC;
     property ScreenInfo : TScreenInfo read FScreenInfo write setScreenInfo;
 end;
 
@@ -76,11 +71,6 @@ end;
 procedure TCustomDisplay.setPinRST(const PinIdentifier : TPinIdentifier);
 begin
   FPinRST := PinIdentifier;
-end;
-
-procedure TCustomDisplay.setPinDC(const PinIdentifier : TPinIdentifier);
-begin
-  FPinDC := PinIdentifier;
 end;
 
 procedure TCustomDisplay.setScreenInfo(const ScreenInfo : TScreenInfo);

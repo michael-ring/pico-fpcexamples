@@ -75,6 +75,7 @@ procedure TSSD1306_SPI.InitSequence;
 begin
   SetLength(FrameBuffer,(ScreenInfo.Width * ScreenInfo.Height div 8)+1);
   FExternalVCC := false;
+
   //Set Display off
   WriteCommand(CMD_DISPLAY_OFF);
 
@@ -144,21 +145,19 @@ begin
   WriteCommand(CMD_DEACTIVATE_SCROLL);
   // Set display On
   WriteCommand(CMD_DISPLAY_ON);
+
 end;
 
 procedure TSSD1306_SPI.clearScreen;
 var
   i : integer;
 begin
-  setDrawArea(0,0,ScreenInfo.Width,ScreenInfo.Height);
-  //Increase Performance by writing larger chunks of data
   if BackgroundColor = clBlack then
     for i := Low(FrameBuffer) to High(FrameBuffer) do
       FrameBuffer[i] := 0
   else
     for i := Low(FrameBuffer)+1 to High(FrameBuffer) do
       FrameBuffer[i] := $ff;
-  WriteData(FrameBuffer);
 end;
 
 procedure TSSD1306_SPI.setFont(const TheFontInfo : TFontInfo);
@@ -178,7 +177,6 @@ begin
     Width := ScreenInfo.Width-X;
   if Y+Height >ScreenInfo.Height then
     Height := ScreenInfo.Height-Y;
-  WriteCommand(CMD_MEMORY_MODE,$01);
   WriteCommand(CMD_PAGE_ADDRESS,Y shr 3,(Y+Height{%H-}-1) shr 3);
   WriteCommand(CMD_COLUMN_ADDRESS,X,X+Width{%H-}-1);
   Result := Width*Height shr 3;
@@ -225,7 +223,7 @@ var
 begin
   if (x >= ScreenInfo.Width) or (y >= ScreenInfo.Height) then
     exit;
-  Offset := (y div 8)+x*(ScreenInfo.Height div 8)+1;
+  Offset := (y div 8)*ScreenInfo.Width+x;
   if ForegroundColor=clWhite then
     FrameBuffer[Offset] := FrameBuffer[Offset] or (1 shl (y mod 8))
   else
@@ -238,7 +236,7 @@ var
 begin
   if (x >= ScreenInfo.Width) or (y >= ScreenInfo.Height) then
     exit;
-  Offset := (y div 8)+x*(ScreenInfo.Height div 8)+1;
+  Offset := (y div 8)*ScreenInfo.Width+x;
   if ForegroundColor=clBlack then
     FrameBuffer[Offset] := FrameBuffer[Offset] or (1 shl (y mod 8))
   else

@@ -28,6 +28,8 @@ type
   TCustomSPIDisplay = object(TCustomDisplay)
   private
       FpSPI : ^TSPI_Registers;
+      FPinDC : TPinIdentifier;
+      FInTransaction : boolean;
   public
     procedure BeginTransaction;
     procedure EndTransaction;
@@ -58,7 +60,7 @@ begin
   begin
     gpio_init(APinDC);
     gpio_set_dir(APinDC,TGPIODirection.GPIO_OUT);
-    gpio_put(APinDC,true);
+    gpio_put(APinDC,false);
   end;
   if APinRST > -1 then
   begin
@@ -71,7 +73,7 @@ end;
 procedure TCustomSPIDisplay.Reset;
 begin
   if FPinDC > -1 then
-    gpio_put(FPinDC,true);
+    gpio_put(FPinDC,false);
   if FPinRST > -1 then
   begin
     gpio_put(FPinRST,true);
@@ -85,12 +87,10 @@ end;
 
 procedure TCustomSPIDisplay.BeginTransaction;
 begin
-  //FpSPI^.BeginTransaction;
 end;
 
 procedure TCustomSPIDisplay.EndTransaction;
 begin
-  //FpSPI^.EndTransaction;
 end;
 
 procedure TCustomSPIDisplay.WriteCommand(const command: Byte);
@@ -98,7 +98,6 @@ var
   data: array[0..0] of byte;
 begin
   data[0] := command;
-  gpio_put(FPinDC,false);
   spi_write_blocking(FpSPI^,data,1);
 end;
 
@@ -136,7 +135,9 @@ procedure TCustomSPIDisplay.WriteData(var data: array of byte;Count:longInt=-1);
 begin
   if count = -1 then
     count := High(data)+1;
+  gpio_put(FPinDC,true);
   spi_write_blocking(FpSPI^,data,count);
+  gpio_put(FPinDC,false);
 end;
 
 procedure TCustomSPIDisplay.WriteBuffer(const buffer: pointer; Count : longInt);
@@ -144,7 +145,9 @@ type
   TByteArray = array of byte;
   pByteArray = ^TByteArray;
 begin
+  gpio_put(FPinDC,true);
   spi_write_blocking(FpSPI^,pByteArray(buffer)^,Count);
+  gpio_put(FPinDC,false);
 end;
 
 end.
