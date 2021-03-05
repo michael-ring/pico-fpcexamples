@@ -40,6 +40,7 @@ procedure i2c_write_raw_blocking(var i2c : TI2C_Inst; src : array of byte; len :
 procedure i2c_read_raw_blocking(var i2c : TI2C_Inst; out dst : array of byte; len:word);
 
 var
+  I2CInst,
   I2C0Inst,
   I2C1Inst : TI2C_Inst;
 
@@ -96,4 +97,17 @@ begin
   I2C0Inst.restart_on_next := False;
   I2C1Inst.hw := @I2C1;
   I2C1Inst.restart_on_next := False;
+
+  {$IF DEFINED(FPC_MCU_TINY_2040)}
+    i2cInst.hw := @I2C0;
+  {$ELSEIF DEFINED(FPC_MCU_QTPY_RP2040)}
+    i2cInst.hw := @I2C0;
+  {$ELSEIF DEFINED(FPC_MCU_FEATHER_RP2040)}
+    i2cInst.hw := @I2C1;
+  {$ELSEIF DEFINED(FPC_MCU_ITZYBITZY_RP2040)}
+    i2cInst.hw := @I2C1;
+  {$ELSEIF DEFINED(FPC_MCU_RASPI_PICO)}
+    i2cInst.hw := @I2C0;
+  {$ENDIF}
+  i2cInst.restart_on_next := False;
 end.

@@ -10,7 +10,7 @@
     </BuildModes>
     <Units>
       <Unit>
-        <Filename Value="i2c_ssd1306.lpr"/>
+        <Filename Value="test.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <Loaded Value="True"/>
@@ -20,7 +20,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="bin/i2c_ssd1306"/>
+      <Filename Value="bin/test"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -41,7 +41,7 @@
     </Linking>
     <Other>
       <CustomOptions Value="
--Wpraspi_pico
+-Wpqtpy_rp2040
 -godwarfsets
 -godwarfcpp
 -Xu"/>

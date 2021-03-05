@@ -41,7 +41,7 @@
     </Linking>
     <Other>
       <CustomOptions Value="
--Wpraspi_pico
+-Wpqtpy_rp2040
 -godwarfsets
 -godwarfcpp
 -Xu"/>

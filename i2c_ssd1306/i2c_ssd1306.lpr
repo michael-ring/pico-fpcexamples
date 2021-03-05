@@ -17,14 +17,14 @@ begin
   gpio_init(TPicoPin.LED);
   gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
 
-  i2c_init(i2c0Inst, 400000);
-  gpio_set_function(TPicoPin.GP4_I2C0_SDA, GPIO_FUNC_I2C);
-  gpio_set_function(TPicoPin.GP5_I2C0_SCL, GPIO_FUNC_I2C);
-  gpio_pull_up(TPicoPin.GP4_I2C0_SDA);
-  gpio_pull_up(TPicoPin.GP5_I2C0_SCL);
+  i2c_init(i2cInst, 400000);
+  gpio_set_function(TPicoPin.I2C_SDA, GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SCL, GPIO_FUNC_I2C);
+  gpio_pull_up(TPicoPin.I2C_SDA);
+  gpio_pull_up(TPicoPin.I2C_SCL);
 
-  ssd1306.Initialize(i2c0Inst,$3c,TPicoPin.None,ScreenSize128x64x1);
-  //ssd1306.Initialize(i2c0Inst,$3c,TPicoPin.None,ScreenSize128x32x1);
+  ssd1306.Initialize(i2cInst,$3c,TPicoPin.None,ScreenSize128x64x1);
+  //ssd1306.Initialize(i2cInst,$3c,TPicoPin.None,ScreenSize128x32x1);
   ssd1306.InitSequence;
   ssd1306.setFont(BitstreamVeraSansMono13x24);
 

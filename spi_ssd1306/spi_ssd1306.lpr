@@ -18,12 +18,12 @@ begin
   gpio_init(TPicoPin.LED);
   gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
 
-  spi_init(spi0,1000000);
-  gpio_set_function(TPicoPin.GP5_SPI0_CS, GPIO_FUNC_SPI);
-  gpio_set_function(TPicoPin.GP6_SPI0_SCK, GPIO_FUNC_SPI);
-  gpio_set_function(TPicoPin.GP7_SPI0_TX, GPIO_FUNC_SPI);
+  spi_init(spi,1000000);
+  gpio_set_function(TPicoPin.SPI_CS, GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.SPI_SCK, GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.SPI_TX, GPIO_FUNC_SPI);
 
-  ssd1306.Initialize(spi0,TPicoPin.GP9,TPicoPin.GP8,ScreenSize128x64x1);
+  ssd1306.Initialize(spi,TPicoPin.GP9,TPicoPin.GP8,ScreenSize128x64x1);
   ssd1306.InitSequence;
   ssd1306.setFont(BitstreamVeraSansMono13x24);
 

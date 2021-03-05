@@ -10,7 +10,7 @@
     </BuildModes>
     <Units>
       <Unit>
-        <Filename Value="i2c_ssd1306.lpr"/>
+        <Filename Value="%%APPNAME%%.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <Loaded Value="True"/>
@@ -20,7 +20,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="bin/i2c_ssd1306"/>
+      <Filename Value="bin/%%APPNAME%%"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -28,8 +28,8 @@
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
-      <TargetProcessor Value="armv6m"/>
-      <TargetCPU Value="arm"/>
+      <TargetProcessor Value="%%SUBARCH%%"/>
+      <TargetCPU Value="%%ARCH%%"/>
       <TargetOS Value="embedded"/>
     </CodeGeneration>
     <Linking>
@@ -41,7 +41,7 @@
     </Linking>
     <Other>
       <CustomOptions Value="
--Wpraspi_pico
+-Wp%%BOARD_OR_CPU%%
 -godwarfsets
 -godwarfcpp
 -Xu"/>

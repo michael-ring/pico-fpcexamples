@@ -3,30 +3,16 @@
   <ProjectOptions>
     <Version Value="12"/>
     <General>
-      <Flags>
-        <MainUnitHasCreateFormStatements Value="False"/>
-        <MainUnitHasTitleStatement Value="False"/>
-        <MainUnitHasScaledStatement Value="False"/>
-      </Flags>
       <UseAppBundle Value="False"/>
     </General>
-    <BuildModes>
-      <Item Name="default" Default="True"/>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
     </BuildModes>
-    <PublishOptions>
-      <Version Value="2"/>
-    </PublishOptions>
-    <RunParams>
-      <FormatVersion Value="2"/>
-    </RunParams>
     <Units>
       <Unit>
         <Filename Value="i2c_scan.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="50"/>
-        <CursorPos Y="75"/>
-        <UsageCount Value="39"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
@@ -34,7 +20,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="i2c_scan"/>
+      <Filename Value="bin/i2c_scan"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -42,18 +28,20 @@
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
-      <TargetProcessor Value="ARMV6M"/>
+      <TargetProcessor Value="armv6m"/>
       <TargetCPU Value="arm"/>
       <TargetOS Value="embedded"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="True"/>
         <DebugInfoType Value="dsDwarf2"/>
         <UseLineInfoUnit Value="False"/>
       </Debugging>
     </Linking>
     <Other>
-      <CustomOptions Value="-Wpraspi_pico
+      <CustomOptions Value="
+-Wpraspi_pico
 -godwarfsets
 -godwarfcpp
 -Xu"/>

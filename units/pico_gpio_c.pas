@@ -25,52 +25,48 @@ type
     None=-1;
     GP0=   0;  GP0_SPI0_RX=   0;  GP0_I2C0_SDA=  0;  GP0_UART0_TX=  0; UART_TX = 0;
     GP1=   1;  GP1_SPI0_CS=   1;  GP1_I2C0_SCL=  1;  GP1_UART0_RX=  1; UART_RX = 1;
+    GP2=   2;  GP2_SPI0_SCK=  2;  GP2_I2C1_SDA=  2;                    I2C_SDA = 2;
+    GP3=   3;  GP3_SPI0_TX=   3;  GP3_I2C1_SCL=  3;                    I2C_SCL = 3;
+    GP4=   4;  GP4_SPI0_RX=   4;  GP4_I2C0_SDA=  4;  GP4_UART1_TX=  4; SPI_RX  = 4;
+    GP5=   5;  GP5_SPI0_CS=   5;  GP5_I2C0_SCL=  5;  GP5_UART1_RX=  5; SPI_CS  = 5;
+    GP6=   6;  GP6_SPI0_SCK=  6;  GP6_I2C1_SDA=  6;                    SPI_SCK = 6;
+    GP7=   7;  GP7_SPI0_TX=   7;  GP7_I2C1_SDL=  7;                    I2C_SDL = 7;
 
-    GP2=   2;  GP2_SPI0_SCK=  2;  GP2_I2C1_SDA=  2;
-    GP3=   3;  GP3_SPI0_TX=   3;  GP3_I2C1_SCL=  3;
-    GP4=   4;  GP4_SPI0_RX=   4;  GP4_I2C0_SDA=  4;  GP4_UART1_TX=  4;
-    GP5=   5;  GP5_SPI0_CS=   5;  GP5_I2C0_SCL=  5;  GP5_UART1_RX=  5;
-
-    GP6=   6;  GP6_SPI0_SCK=  6;  GP6_I2C1_SDA=  6;
-    GP7=   7;  GP7_SPI0_TX=   7;  GP7_I2C1_SDL=  7;
-
-    GP18= 18;  GP18_LED=      18; LED_R=        18;
-    GP19= 19;  GP19_LED=      19; LED_G=        19;  LED=          19;
-    GP20= 20;  GP20_LED=      20; LED_B=        20;
-    GP26= 26;  GP26_ADC0=     26; GP26_I2C1_SDA= 26; ADC0=         26;
-    GP27= 27;  GP27_ADC1=     27; GP27_I2C1_SCL= 27; ADC1=         27;
-    GP28= 28;  GP28_ADC2=     28;                    ADC2=         28;
-    GP29= 29;  GP28_ADC3=     29;                    ADC3=         29;
+    GP18= 18;  GP18_LED_R=    18; LED_R=        18;
+    GP19= 19;  GP19_LED_G=    19; LED_G=        19;                    LED=     19;
+    GP20= 20;  GP20_LED_B=    20; LED_B=        20;
+    GP23= 23;  GP23_USER_SW=  23;                                      USER_SW= 23;
+    GP26= 26;  GP26_ADC0=     26; GP26_I2C1_SDA=26;                    ADC0=    26;
+    GP27= 27;  GP27_ADC1=     27; GP27_I2C1_SCL=27;                    ADC1=    27;
+    GP28= 28;  GP28_ADC2=     28;                                      ADC2=    28;
+    GP29= 29;  GP28_ADC3=     29;                                      ADC3=    29;
   end;
   {$ELSEIF DEFINED(FPC_MCU_QTPY_RP2040)}
   TPicoPin = record
   const
     None=-1;
-    GP3=   3;  GP3_SPI0_TX=   3;  GP3_I2C1_SCL=  3;  SPI_TX =3
-    GP4=   4;  GP4_SPI0_RX=   4;  GP4_I2C0_SDA=  4;  GP4_UART1_TX=  4; SPI_RX= 4;
-    GP6=   6;  GP6_SPI0_SCK=  6;  GP6_I2C1_SDA=  6; SPI_SCK = 6;
+    GP3=   3;  GP3_SPI0_TX=   3;  GP3_I2C1_SCL=  3;                    SPI_TX=   3;
+    GP4=   4;  GP4_SPI0_RX=   4;  GP4_I2C0_SDA=  4;  GP4_UART1_TX=  4; SPI_RX=   4;
+    GP6=   6;  GP6_SPI0_SCK=  6;  GP6_I2C1_SDA=  6;                    SPI_SCK=  6;
     GP9=   9;  GP9_SPI1_CS=   9;  GP9_I2C0_SCL=  9;  GP9_UART1_RX=  9; UART_RX = 9;
-
-    GP13= 13;  GP13_LED=      13; LED=           13;
-    GP20= 20;                     GP20_I2C0_SDA= 20; UART_TX=       20;
-    GP24= 24;  GP24_I2C0_SDA= 24; I2C_SDA=       24;
-    GP25= 25;  GP25_I2C0_SCL= 25; I2C_SCL=       25;
-    GP26= 26;  GP26_ADC0=     26; GP26_I2C1_SDA= 26; ADC0=           26; 
-    GP27= 27;  GP27_ADC1=     27; GP27_I2C1_SCL= 27; ADC1=           27;
-    GP28= 28;  GP28_ADC2=     28;                    ADC2=           28;
-    GP29= 29;  GP29_ADC3=     29;                    ADC3=           29;
-
+    GP11= 11;                                                          NEOPIXEL_PWR=11;
+    GP12= 12;                                                          NEOPIXEL=12;
+    GP20= 20;                     GP20_I2C0_SDA= 20;                   UART_TX= 20;
+    GP24= 24;  GP24_I2C0_SDA= 24;                                      I2C_SDA= 24;
+    GP25= 25;  GP25_I2C0_SCL= 25;                                      I2C_SCL= 25;
+    GP26= 26;  GP26_ADC0=     26; GP26_I2C1_SDA= 26;                   ADC0=    26;
+    GP27= 27;  GP27_ADC1=     27; GP27_I2C1_SCL= 27;                   ADC1=    27;
+    GP28= 28;  GP28_ADC2=     28;                                      ADC2=    28;
+    GP29= 29;  GP29_ADC3=     29; GP29_LED=      29;                   ADC3=    29; LED=29;
+  end;
   {$ELSEIF DEFINED(FPC_MCU_FEATHER_RP2040)}
   TPicoPin = record
 const
     None=-1;
-    GP0=   0;  GP0_SPI0_RX=   0;  GP0_I2C0_SDA=  0;  GP0_UART0_TX=  0; UART_TX = 0;
-    GP1=   1;  GP1_SPI0_CS=   1;  GP1_I2C0_SCL=  1;  GP1_UART0_RX=  1; UART_RX = 1;
-
-    GP2=   2;  GP2_SPI0_SCK=  2;  GP2_I2C1_SDA=  2;  I2C_SDA = 2;
-    GP3=   3;  GP3_SPI0_TX=   3;  GP3_I2C1_SCL=  3;  I2C_SCL = 3;
-    GP4=   4;  GP4_SPI0_RX=   4;  GP4_I2C0_SDA=  4;  GP4_UART1_TX=  4; 
-    GP5=   5;  GP5_SPI0_CS=   5;  GP5_I2C0_SCL=  5;  GP5_UART1_RX=  5; 
+    GP0=   0;  GP0_SPI0_RX=   0;  GP0_I2C0_SDA=  0;  GP0_UART0_TX=  0;  UART_TX= 0;
+    GP1=   1;  GP1_SPI0_CS=   1;  GP1_I2C0_SCL=  1;  GP1_UART0_RX=  1;  UART_RX= 1;
+    GP2=   2;  GP2_SPI0_SCK=  2;  GP2_I2C1_SDA=  2;                     I2C_SDA= 2;
+    GP3=   3;  GP3_SPI0_TX=   3;  GP3_I2C1_SCL=  3;                     I2C_SCL= 3;
 
     GP6=   6;  GP6_SPI0_SCK=  6;  GP6_I2C1_SDA=  6; 
     GP7=   7;  GP7_SPI0_TX=   7;  GP7_I2C1_SDL=  7; 
@@ -80,23 +76,15 @@ const
     GP10= 10;  GP10_SPI1_SCK= 10; GP10_I2C1_SDA= 10; 
     GP11= 11;  GP11_SPI1_TX=  11; GP11_I2C1_SDL= 11; 
     GP12= 12;  GP12_SPI1_RX=  12; GP12_I2C0_SDA= 12; GP12_UART0_TX= 12;
-    GP13= 13;  GP13_LED=      13; LED          = 13;
-
-    GP14= 14;  GP14_SPI1_SCK= 14; GP14_I2C1_SDA= 14; 
-    GP15= 15;  GP15_SPI1_TX=  15; GP15_I2C1_SDL= 15; 
-    GP16= 16;  GP16_SPI1_RX=  16; GP16_I2C0_SDA= 16; GP16_UART0_TX= 16;  SPI_RX= 16;
-    GP17= 17;  GP17_SPI1_CS=  17; GP17_I2C0_SCL= 17; GP17_UART0_RX= 17;  SPI_CS= 17;
-
-    GP18= 18;  GP18_SPI0_SCK= 18; GP18_I2C1_SDA= 18; SPI_SCK=       18;
-    GP19= 19;  GP19_SPI0_TX=  19; GP19_I2C1_SCL= 19; SPI_TX=        19;
-
-    GP20= 20;                     GP20_I2C0_SDA= 20; SPI_RX=        20;
-    GP21= 21;                     GP21_I2C0_SCL= 21; 
-    GP22= 22;
-    GP25= 25;  GP25_LED=      25;                    LED=            25;
-    GP26= 26;  GP26_ADC0=     26; GP26_I2C1_SDA= 26; ADC0=           26; 
-    GP27= 27;  GP27_ADC1=     27; GP27_I2C1_SCL= 27; ADC1=           27;
-    GP28= 28;  GP28_ADC2=     28;                    ADC2=           28;
+    GP13= 13;  GP13_LED=      13;                                       LED=     13;
+    GP16= 16;  GP16_NEOPIXEL= 16;                                       NEOPIXEL=16;
+    GP18= 18;  GP18_SPI0_SCK= 18; GP18_I2C1_SDA= 18;                    SPI_SCK= 18;
+    GP19= 19;  GP19_SPI0_TX=  19; GP19_I2C1_SCL= 19;                    SPI_TX=  19;
+    GP20= 20;                     GP20_I2C0_SDA= 20;                    SPI_RX=  20;
+    GP26= 26;  GP26_ADC0=     26; GP26_I2C1_SDA= 26;                    ADC0=    26;
+    GP27= 27;  GP27_ADC1=     27; GP27_I2C1_SCL= 27;                    ADC1=    27;
+    GP28= 28;  GP28_ADC2=     28;                                       ADC2=    28;
+    GP29= 29;  GP29_ADC3=     29;                                       ADC3=    29;
   end;
   {$ELSEIF DEFINED(FPC_MCU_ITSYBITSY_RP2040)}
   TPicoPin = record
@@ -175,15 +163,28 @@ const
     GP28= 28;  GP28_ADC2=     28;                    ADC2=           28;
   end;
   {$ENDIF}
-  {$IF DEFINED(FPC_MCU_TINY_2040)}
-  var
-    uart : TUART_Registers absolute UART0_BASE;
 
-  {$ELSE}
   var
+  {$IF DEFINED(FPC_MCU_TINY_2040)}
     uart : TUART_Registers absolute UART0_BASE;
-    spi : TSPI_Registers absolute SPI0_BASE;
-    i2c : TI2C_BASE absolute I2C0_BASE;
+    spi  : TSPI_Registers absolute SPI0_BASE;
+    i2c  : TI2C_Registers absolute I2C0_BASE;
+  {$ELSEIF DEFINED(FPC_MCU_QTPY_RP2040)}
+    uart : TUART_Registers absolute UART1_BASE;
+    spi  : TSPI_Registers absolute SPI0_BASE;
+    i2c  : TI2C_Registers absolute I2C0_BASE;
+  {$ELSEIF DEFINED(FPC_MCU_FEATHER_RP2040)}
+    uart : TUART_Registers absolute UART1_BASE;
+    spi  : TSPI_Registers absolute SPI0_BASE;
+    i2c  : TI2C_Registers absolute I2C1_BASE;
+  {$ELSEIF DEFINED(FPC_MCU_ITZYBITZY_RP2040)}
+    uart : TUART_Registers absolute UART1_BASE;
+    spi  : TSPI_Registers absolute SPI0_BASE;
+    i2c  : TI2C_Registers absolute I2C1_BASE;
+  {$ELSEIF DEFINED(FPC_MCU_RASPI_PICO)}
+    uart : TUART_Registers absolute UART0_BASE;
+    spi  : TSPI_Registers absolute SPI0_BASE;
+    i2c  : TI2C_Registers absolute I2C0_BASE;
   {$ENDIF}
     
 type

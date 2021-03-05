@@ -3,29 +3,16 @@
   <ProjectOptions>
     <Version Value="12"/>
     <General>
-      <Flags>
-        <MainUnitHasCreateFormStatements Value="False"/>
-        <MainUnitHasTitleStatement Value="False"/>
-        <MainUnitHasScaledStatement Value="False"/>
-      </Flags>
       <UseAppBundle Value="False"/>
     </General>
-    <BuildModes>
-      <Item Name="default" Default="True"/>
+    <BuildModes Count="1">
+      <Item1 Name="default" Default="True"/>
     </BuildModes>
-    <PublishOptions>
-      <Version Value="2"/>
-    </PublishOptions>
-    <RunParams>
-      <FormatVersion Value="2"/>
-    </RunParams>
     <Units>
       <Unit>
         <Filename Value="spi_ssd1306.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <CursorPos X="30" Y="21"/>
-        <UsageCount Value="87"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
@@ -33,7 +20,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="i2c_ssd1306"/>
+      <Filename Value="bin/spi_ssd1306"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -41,21 +28,20 @@
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
-      <TargetProcessor Value="ARMV6M"/>
+      <TargetProcessor Value="armv6m"/>
       <TargetCPU Value="arm"/>
       <TargetOS Value="embedded"/>
-      <Optimizations>
-        <OptimizationLevel Value="0"/>
-      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="True"/>
         <DebugInfoType Value="dsDwarf2"/>
         <UseLineInfoUnit Value="False"/>
       </Debugging>
     </Linking>
     <Other>
-      <CustomOptions Value="-Wpraspi_pico
+      <CustomOptions Value="
+-Wpraspi_pico
 -godwarfsets
 -godwarfcpp
 -Xu"/>
