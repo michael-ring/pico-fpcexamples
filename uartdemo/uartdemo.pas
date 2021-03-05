@@ -1,4 +1,4 @@
-program uart;
+program uartdemo;
 {$MODE OBJFPC}
 {$H+}
 {$MEMORY 10000,10000}
@@ -12,12 +12,12 @@ const
 begin
   gpio_init(TPicoPin.LED);
   gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
-  uart_init(uart0, BAUD_RATE);
-  gpio_set_function(TPicoPin.GP0_UART0_TX, TGPIOFunction.GPIO_FUNC_UART);
-  gpio_set_function(TPicoPin.GP1_UART0_RX, TGPIOFunction.GPIO_FUNC_UART);
+  uart_init(uart, BAUD_RATE);
+  gpio_set_function(TPicoPin.UART_TX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_RX, TGPIOFunction.GPIO_FUNC_UART);
   repeat
     gpio_put(TPicoPin.LED,true);
-    uart_puts(uart0, 'Hello, UART!'+#13+#10);
+    uart_puts(uart, 'Hello, UART!'+#13+#10);
     busy_wait_us_32(500000);    
     gpio_put(TPicoPin.LED,false);
     busy_wait_us_32(500000);    

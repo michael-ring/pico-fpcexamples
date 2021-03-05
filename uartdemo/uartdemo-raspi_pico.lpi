@@ -10,7 +10,7 @@
     </BuildModes>
     <Units Count="1">
       <Unit0>
-        <Filename Value="uart.lpr"/>
+        <Filename Value="uartdemo.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <Loaded Value="True"/>
