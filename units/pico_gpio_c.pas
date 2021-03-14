@@ -194,6 +194,7 @@ type
     GPIO_IN=0,
     GPIO_OUT=1
   );
+
   TGPIOFunction = (
     GPIO_FUNC_XIP = 0,
     GPIO_FUNC_SPI = 1,
@@ -224,298 +225,300 @@ type
     GPIO_OVERRIDE_HIGH = 3
   );
 
-(*! \brief Select GPIO function
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param fn Which GPIO function select to use from list \ref gpio_function
- *)
+(*
+  Select GPIO function
+param:
+  gpio GPIO number
+  fn Which GPIO function select to use from list \ref gpio_function
+*)
 procedure gpio_set_function(gpio:TPinIdentifier; fn:TGPIOFunction); cdecl; external;
 
+(*
+  Get GPIO function
+param:
+  gpio GPIO number
+*)
 function gpio_get_function(gpio:TPinIdentifier):TGPIOFunction; cdecl; external;
 
-(*! \brief Select up and down pulls on specific GPIO
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param up If true set a pull up on the GPIO
- * \param down If true set a pull down on the GPIO
- *
- * \note On the RP2040, setting both pulls enables a "bus keep" function,
- * i.e. a weak pull to whatever is current high/low state of GPIO.
- *)
+(*
+  Select up and down pulls on specific GPIO
+param:
+  gpio GPIO number
+  up If true set a pull up on the GPIO
+  down If true set a pull down on the GPIO
+note:
+  On the RP2040, setting both pulls enables a "bus keep" function,
+  i.e. a weak pull to whatever is current high/low state of GPIO.
+*)
 procedure gpio_set_pulls(gpio:TPinIdentifier;const up,down:boolean); cdecl; external;
 
-(*! \brief Set specified GPIO to be pulled up.
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- *)
+(*
+  Set specified GPIO to be pulled up.
+param:
+  gpio GPIO number
+*)
 procedure gpio_pull_up(gpio:TPinIdentifier);
 
-(*! \brief Determine if the specified GPIO is pulled up.
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \return true if the GPIO is pulled up
- *)
+(*
+  Determine if the specified GPIO is pulled up.
+param:
+  gpio GPIO number
+return:
+  return true if the GPIO is pulled up
+*)
 function gpio_is_pulled_up(gpio:TPinIdentifier):boolean;
 
-(*! \brief Set specified GPIO to be pulled down.
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- *)
+(*
+  Set specified GPIO to be pulled down.
+param:
+  gpio GPIO number
+*)
 procedure gpio_pull_down(gpio:TPinIdentifier);
 
-(*! \brief Determine if the specified GPIO is pulled down.
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \return true if the GPIO is pulled down
- *)
+(*
+  Determine if the specified GPIO is pulled down.
+param:
+  gpio GPIO number
+return:
+  return true if the GPIO is pulled down
+*)
 function gpio_is_pulled_down(gpio:TPinIdentifier):boolean;
 
-(*! \brief Disable pulls on specified GPIO
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- *)
+(*
+  Disable pulls on specified GPIO
+param:
+  gpio GPIO number
+*)
 procedure gpio_disable_pulls(gpio:TPinIdentifier);
 
-(*! \brief Set GPIO output override
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param value See \ref gpio_override
- *)
+(*
+  Set GPIO output override
+param:
+  gpio GPIO number
+  value See gpio_override
+*)
 procedure gpio_set_outover(gpio:TPinIdentifier; value : longWord);cdecl; external;
 
-(*! \brief Select GPIO input override
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param value See \ref gpio_override
- *)
+(*
+  Select GPIO input override
+param:
+  gpio GPIO number
+  value See gpio_override
+*)
 procedure gpio_set_inover(gpio:TPinIdentifier; value : longWord);cdecl; external;
 
-(*! \brief Select GPIO output enable override
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param value See \ref gpio_override
- *)
+(*
+  Select GPIO output enable override
+param:
+  gpio GPIO number
+  value See gpio_override
+*)
 procedure gpio_set_oeover(gpio:TPinIdentifier; value : longWord);cdecl; external;
 
-(*! \brief Enable GPIO input
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param enabled true to enable input on specified GPIO
- *)
+(*
+  Enable GPIO input
+param:
+  gpio GPIO number
+  enabled true to enable input on specified GPIO
+*)
 procedure gpio_set_input_enabled(gpio:TPinIdentifier; enabled:boolean);cdecl; external;
 
-(*! \brief Enable or disable interrupts for specified GPIO
- *  \ingroup hardware_gpio
- *
- * \note The IO IRQs are independent per-processor. This configures IRQs for
- * the processor that calls the function.
- *
- * \param gpio GPIO number
- * \param events Which events will cause an interrupt
- * \param enabled Enable or disable flag
- *
- * Events is a bitmask of the following:
- *
- * bit | interrupt
- * ----|----------
- *   0 | Low level
- *   1 | High level
- *   2 | Edge low
- *   3 | Edge high
- *)
+(*
+  Enable or disable interrupts for specified GPIO
+note:
+  The IO IRQs are independent per-processor. This configures IRQs for
+  the processor that calls the function.
+param:
+  gpio GPIO number
+  events Which events will cause an interrupt
+  enabled Enable or disable flag
+
+  Events is a bitmask of the following:
+  bit | interrupt
+  ----|----------
+    0 | Low level
+    1 | High level
+    2 | Edge low
+    3 | Edge high
+*)
 procedure gpio_set_irq_enabled(gpio:TPinIdentifier; events : longWord; enabled:boolean);cdecl; external;
 
-(*! \brief Enable interrupts for specified GPIO
- *  \ingroup hardware_gpio
- *
- * \note The IO IRQs are independent per-processor. This configures IRQs for
- * the processor that calls the function.
- *
- * \param gpio GPIO number
- * \param events Which events will cause an interrupt See \ref gpio_set_irq_enabled for details.
- * \param enabled Enable or disable flag
- * \param callback user function to call on GPIO irq. Note only one of these can be set per processor.
- *
- * \note Currently the GPIO parameter is ignored, and this callback will be called for any enabled GPIO IRQ on any pin.
- *
- *)
+(*
+  Enable interrupts for specified GPIO
+note:
+  The IO IRQs are independent per-processor. This configures IRQs for
+  the processor that calls the function.
+param:
+  gpio GPIO number
+  events Which events will cause an interrupt See \ref gpio_set_irq_enabled for details.
+  enabled Enable or disable flag
+  callback user function to call on GPIO irq. Note only one of these can be set per processor.
+note:
+  Currently the GPIO parameter is ignored, and this callback will be called for any enabled GPIO IRQ on any pin.
+*)
 procedure gpio_set_irq_enabled_with_callback(gpio:TPinIdentifier; events:longWord; enabled:boolean; callback : TGPIOIrq_callback);cdecl; external;
 
-(*! \brief Enable dormant wake up interrupt for specified GPIO
- *  \ingroup hardware_gpio
- *
- * This configures IRQs to restart the XOSC or ROSC when they are
- * disabled in dormant mode
- *
- * \param gpio GPIO number
- * \param events Which events will cause an interrupt. See \ref gpio_set_irq_enabled for details.
- * \param enabled Enable/disable flag
+(*
+  Enable dormant wake up interrupt for specified GPIO
+  This configures IRQs to restart the XOSC or ROSC when they are
+  disabled in dormant mode
+param:
+  gpio GPIO number
+  events Which events will cause an interrupt. See \ref gpio_set_irq_enabled for details.
+  enabled Enable/disable flag
  *)
 procedure gpio_set_dormant_irq_enabled(gpio:TPinIdentifier; events:longWord;enabled:boolean);cdecl; external;
 
-(*! \brief Acknowledge a GPIO interrupt
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param events Bitmask of events to clear. See \ref gpio_set_irq_enabled for details.
-  *
- *)
+(*
+  Acknowledge a GPIO interrupt
+param:
+  gpio GPIO number
+  events Bitmask of events to clear. See \ref gpio_set_irq_enabled for details.
+*)
 procedure gpio_acknowledge_irq(gpio:TPinIdentifier;events:longWord);cdecl; external;
 
-(*! \brief Initialise a GPIO for (enabled I/O and set func to GPIO_FUNC_SIO)
- *  \ingroup hardware_gpio
- *
- * Clear the output enable (i.e. set to input)
- * Clear any output value.
- *
- * \param gpio GPIO number
- *)
-{Initialise a GPIO for (enabled I/O and set func to GPIO_FUNC_SIO)}
+(*
+  Initialise a GPIO for (enabled I/O and set func to GPIO_FUNC_SIO)
+  Clear the output enable (i.e. set to input)
+  Clear any output value.
+param:
+  gpio GPIO number
+*)
 procedure gpio_init(gpio:TPinIdentifier{GPIO number});cdecl; external;
 
-(*! \brief Initialise multiple GPIOs (enabled I/O and set func to GPIO_FUNC_SIO)
- *  \ingroup hardware_gpio
- *
- * Clear the output enable (i.e. set to input)
- * Clear any output value.
- *
- * \param gpio_mask Mask with 1 bit per GPIO number to initialize
- *)
+(*
+  Initialise multiple GPIOs (enabled I/O and set func to GPIO_FUNC_SIO)
+  Clear the output enable (i.e. set to input)
+  Clear any output value.
+param:
+  gpio_mask Mask with 1 bit per GPIO number to initialize
+*)
 procedure gpio_init_mask(gpio_mask : longWord);cdecl; external;
 
-(*! \brief Get state of a single specified GPIO
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \return Current state of the GPIO. 0 for low, non-zero for high
- *)
+(*
+  Get state of a single specified GPIO
+param:
+  gpio GPIO number
+return:
+  Current state of the GPIO. 0 for low, non-zero for high
+*)
 function gpio_get(gpio:TPinIdentifier):boolean;
 
-(*! \brief Get raw value of all GPIOs
- *  \ingroup hardware_gpio
- *
- * \return Bitmask of raw GPIO values, as bits 0-29
- *)
+(*
+  Get raw value of all GPIOs
+return:
+  Bitmask of raw GPIO values, as bits 0-29
+*)
 function gpio_get_all():longWord;
 
-(*! \brief Drive high every GPIO appearing in mask
- *  \ingroup hardware_gpio
- *
- * \param mask Bitmask of GPIO values to set, as bits 0-29
- *)
+(*
+  Drive high every GPIO appearing in mask
+param:
+  mask Bitmask of GPIO values to set, as bits 0-29
+*)
 procedure gpio_set_mask(mask:longWord);
 
-(*! \brief Drive low every GPIO appearing in mask
- *  \ingroup hardware_gpio
- *
- * \param mask Bitmask of GPIO values to clear, as bits 0-29
- *)
+(*
+  Drive low every GPIO appearing in mask
+param:
+  mask Bitmask of GPIO values to clear, as bits 0-29
+*)
 procedure gpio_clr_mask(mask : longWord);
 
-(*! \brief Toggle every GPIO appearing in mask
- *  \ingroup hardware_gpio
- *
- * \param mask Bitmask of GPIO values to toggle, as bits 0-29
- *)
+(*
+  Toggle every GPIO appearing in mask
+param:
+  mask Bitmask of GPIO values to toggle, as bits 0-29
+*)
 procedure gpio_xor_mask(mask:longWord);
 
-(*! \brief Drive GPIO high/low depending on parameters
- *  \ingroup hardware_gpio
- *
- * \param mask Bitmask of GPIO values to change, as bits 0-29
- * \param value Value to set
- *
- * For each 1 bit in \p mask, drive that pin to the value given by
- * corresponding bit in \p value, leaving other pins unchanged.
- * Since this uses the TOGL alias, it is concurrency-safe with e.g. an IRQ
- * bashing different pins from the same core.
- *)
+(*
+  Drive GPIO high/low depending on parameters
+param:
+  mask Bitmask of GPIO values to change, as bits 0-29
+  value Value to set
+note:
+  For each 1 bit in \p mask, drive that pin to the value given by
+  corresponding bit in \p value, leaving other pins unchanged.
+  Since this uses the TOGL alias, it is concurrency-safe with e.g. an IRQ
+  bashing different pins from the same core.
+*)
 procedure gpio_put_masked(mask:longWord; value:longWord);
 
-(*! \brief Drive all pins simultaneously
- *  \ingroup hardware_gpio
- *
- * \param value Bitmask of GPIO values to change, as bits 0-29
- *)
+(*
+  Drive all pins simultaneously
+param:
+  value Bitmask of GPIO values to change, as bits 0-29
+*)
 procedure gpio_put_all(value:longWord);
 
-(*! \brief Drive a single GPIO high/low
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param value If false clear the GPIO, otherwise set it.
- *)
+(*
+  Drive a single GPIO high/low
+param:
+  gpio GPIO number
+  value If false clear the GPIO, otherwise set it.
+*)
 procedure gpio_put(gpio:TPinIdentifier; value:boolean);
 
-(*! \brief Set a number of GPIOs to output
- *  \ingroup hardware_gpio
- *
- * Switch all GPIOs in "mask" to output
- *
- * \param mask Bitmask of GPIO to set to output, as bits 0-29
- *)
+(*
+  Set a number of GPIOs to output
+  Switch all GPIOs in "mask" to output
+param:
+  mask Bitmask of GPIO to set to output, as bits 0-29
+*)
 procedure gpio_set_dir_out_masked(mask:longWord);
 
-(*! \brief Set a number of GPIOs to input
- *  \ingroup hardware_gpio
- *
- * \param mask Bitmask of GPIO to set to input, as bits 0-29
- *)
+(*
+  Set a number of GPIOs to input
+param:
+  mask Bitmask of GPIO to set to input, as bits 0-29
+*)
 procedure gpio_set_dir_in_masked(mask:longWord);
 
-(*! \brief Set multiple GPIO directions
- *  \ingroup hardware_gpio
- *
- * \param mask Bitmask of GPIO to set to input, as bits 0-29
- * \param value Values to set
- *
- * For each 1 bit in "mask", switch that pin to the direction given by
- * corresponding bit in "value", leaving other pins unchanged.
- * E.g. gpio_set_dir_masked(0x3, 0x2); -> set pin 0 to input, pin 1 to output,
- * simultaneously.
- *)
+(*
+  Set multiple GPIO directions
+param:
+  mask Bitmask of GPIO to set to input, as bits 0-29
+  value Values to set
+note:
+  For each 1 bit in "mask", switch that pin to the direction given by
+  corresponding bit in "value", leaving other pins unchanged.
+  E.g. gpio_set_dir_masked(0x3, 0x2); -> set pin 0 to input, pin 1 to output,
+  simultaneously.
+*)
 procedure gpio_set_dir_masked(mask:longWord; value:longWord);
 
-(*! \brief Set direction of all pins simultaneously.
- *  \ingroup hardware_gpio
- *
- * \param values individual settings for each gpio; for GPIO N, bit N is 1 for out, 0 for in
- *)
+(*
+  Set direction of all pins simultaneously.
+param:
+  values individual settings for each gpio; for GPIO N, bit N is 1 for out, 0 for in
+*)
 procedure gpio_set_dir_all_bits(values:longWord);
 
-(*! \brief Set a single GPIO direction
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \param out true for out, false for in
- *)
+(*
+  Set a single GPIO direction
+param:
+  gpio GPIO number
+  out true for out, false for in
+*)
 procedure gpio_set_dir(gpio:TPinIdentifier; &out:TGPIODirection);
 
-(*! \brief Check if a specific GPIO direction is OUT
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \return true if the direction for the pin is OUT
- *)
+(*
+  Check if a specific GPIO direction is OUT
+param:
+  gpio GPIO number
+return:
+  return true if the direction for the pin is OUT
+*)
 function gpio_is_dir_out(gpio:TPinIdentifier):boolean;
 
-(*! \brief Get a specific GPIO direction
- *  \ingroup hardware_gpio
- *
- * \param gpio GPIO number
- * \return 1 for out, 0 for in
- *)
+(*
+  Get a specific GPIO direction
+param:
+gpio GPIO number
+return:
+  return 1 for out, 0 for in
+*)
 function gpio_get_dir(gpio:TPinIdentifier):TGPIODirection;
 
 procedure gpio_debug_pins_init(); cdecl; external;

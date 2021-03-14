@@ -46,25 +46,23 @@ const
   clBlue    = TColor($FF0000);
   clFuchsia = TColor($FF00FF);
   clAqua    = TColor($FFFF00);
-  clLtGray  = TColor($C0C0C0); // clSilver alias
-  clDkGray  = TColor($808080); // clGray alias
+  clLtGray  = TColor($C0C0C0);
+  clDkGray  = TColor($808080);
   clWhite   = TColor($FFFFFF);
 
-(** \struct datetime_t
- *  \ingroup util_datetime
- *  \brief Structure containing date and time information
- *
- *    When setting an RTC alarm, set a field to -1 tells
- *    the RTC to not match on this field
- *)
+(*
+  Structure containing date and time information
+  When setting an RTC alarm, set a field to -1 tells</b>
+  the RTC to not match on this field
+*)
 type Tdatetime = record
-  year:word;    ///< 0..4095
-  month: 1..12;    ///< 1..12, 1 is January
-  day: 1..31;      ///< 1..28,29,30,31 depending on month
-  dotw: 0..6;     ///< 0..6, 0 is Sunday
-  hour: 0..23;     ///< 0..23
-  min: 0..59;      ///< 0..59
-  sec: 0..59;      ///< 0..59
+  year:word;    //< 0..4095
+  month: 1..12;    //< 1..12, 1 is January
+  day: 1..31;      //< 1..28,29,30,31 depending on month
+  dotw: 0..6;     //< 0..6, 0 is Sunday
+  hour: 0..23;     //< 0..23
+  min: 0..59;      //< 0..59
+  sec: 0..59;      //< 0..59
 end;
 
 type
@@ -79,56 +77,56 @@ procedure hard_assertion_failure; public name 'hard_assertion_failure';
 procedure __unhandled_user_irq; public name '__unhandled_user_irq';
 procedure __assert_func; public name '__assert_func';
 
-(*! fn to_us_since_boot
- * \brief convert an absolute_time_t into a number of microseconds since boot.
- * \param t the number of microseconds since boot
- * \return an absolute_time_t value equivalent to t
- *)
+(*
+  convert an absolute_time_t into a number of microseconds since boot.
+param:
+  t the number of microseconds since boot
+return:
+  return an absolute_time_t value equivalent to t
+*)
 function to_us_since_boot(t :  Tabsolute_time):int64;
 
-(*! fn update_us_since_boot
- * \brief update an absolute_time_t value to represent a given number of microseconds since boot
- * \param t the absolute time value to update
- * \param us_since_boot the number of microseconds since boot to represent
- *)
+(*
+  update an absolute_time_t value to represent a given number of microseconds since boot
+param:
+  t the absolute time value to update
+  us_since_boot the number of microseconds since boot to represent
+*)
 procedure update_us_since_boot(var t : Tabsolute_time; us_since_boot:int64);
 
-(*! \brief Atomically set the specified bits to 1 in a HW register
- *  \ingroup hardware_base
- *
- * \param addr Address of writable register
- * \param mask Bit-mask specifying bits to set
- *)
+(*
+  Atomically set the specified bits to 1 in a HW register
+param:
+  addr Address of writable register
+  mask Bit-mask specifying bits to set
+*)
 procedure hw_set_bits(var register : longWord; mask : longWord);
 
-(*! \brief Atomically clear the specified bits to 0 in a HW register
- *  \ingroup hardware_base
- *
- * \param addr Address of writable register
- * \param mask Bit-mask specifying bits to clear
- *)
+(*
+  Atomically clear the specified bits to 0 in a HW register
+param:
+  addr Address of writable register
+  mask Bit-mask specifying bits to clear
+*)
 procedure hw_clear_bits(var register : longWord;mask:longWord);
 
-(*! \brief Atomically flip the specified bits in a HW register
- *  \ingroup hardware_base
- *
- * \param addr Address of writable register
- * \param mask Bit-mask specifying bits to invert
- *)
+(*
+  Atomically flip the specified bits in a HW register
+param:
+  addr Address of writable register
+  mask Bit-mask specifying bits to invert
+*)
 procedure hw_xor_bits(var register : longWord;mask:longWord);
 
-(*! \brief Set new values for a sub-set of the bits in a HW register
- *  \ingroup hardware_base
- *
- * Sets destination bits to values specified in \p values, if and only if corresponding bit in \p write_mask is set
- *
- * Note: this method allows safe concurrent modification of *different* bits of
- * a register, but multiple concurrent access to the same bits is still unsafe.
- *
- * \param addr Address of writable register
- * \param values Bits values
- * \param write_mask Mask of bits to change
- *)
+(*
+  Set new values for a sub-set of the bits in a HW register
+  Note: this method allows safe concurrent modification of *different* bits of
+  a register, but multiple concurrent access to the same bits is still unsafe.
+param:
+  addr Address of writable register
+  values Bits values
+  write_mask Mask of bits to change
+*)
 procedure hw_write_masked(var register : longWord; values : longWord; write_mask:longWord);
 
 implementation
