@@ -5,8 +5,10 @@ unit pico_gpio_c;
  * SPDX-License-Identifier: BSD-3-Clause
  *)
 
-{$mode objfpc}{$H+}
+{$mode objfpc}
+{$H+}
 {$modeswitch advancedrecords}
+{$SCOPEDENUMS ON}
 
 interface
 uses
