@@ -4,31 +4,41 @@ unit ssd1306_i2c_c;
 
 interface
 uses
-  CustomDisplay_c,
-  CustomI2CDisplay_c,
+  CustomDisplay,
+  CustomDisplayFrameBuffer1Bit,
+  pico_i2c_c,
+  pico_gpio_c,
+  pico_timer_c,
   pico_c;
 const
-  ScreenSize128x64x1: TScreenInfo =
+  ScreenSize128x64x1: TPhysicalScreenInfo =
     (Width: 128; Height: 64; Depth: TDisplayBitDepth.OneBit);
-  ScreenSize128x32x1: TScreenInfo =
+  ScreenSize128x32x1: TPhysicalScreenInfo =
     (Width: 128; Height: 32; Depth: TDisplayBitDepth.OneBit);
-  ScreenSize96x16x1: TScreenInfo =
+  ScreenSize96x16x1: TPhysicalScreenInfo =
     (Width: 96; Height: 16; Depth: TDisplayBitDepth.OneBit);
-  ScreenSize64x48x1: TScreenInfo =
+  ScreenSize64x48x1: TPhysicalScreenInfo =
     (Width: 64; Height: 48; Depth: TDisplayBitDepth.OneBit);
 
 type
-  TSSD1306_I2C = object(TCustomI2CDisplay)
-    FExternalVCC : boolean;
-    FrameBuffer : array of byte;
-    procedure InitSequence;
-    procedure ClearScreen;
-    procedure setFont(const TheFontInfo : TFontInfo);
-    function setDrawArea(X,Y,Width,Height : word):longWord;
-    procedure drawText(const TheText : String; x,y : longWord);
-    procedure setPixel(const x,y : byte);
-    procedure clearPixel(const x,y : byte);
-    procedure updateScreen;
+  TSSD1306_I2C = object(TCustomDisplayFrameBuffer1Bit)
+    private
+      FpI2C : ^TI2C_Inst;
+      FPinRST : TPinIdentifier;
+      FDisplayAddress : byte;
+      FExternalVCC : boolean;
+    protected
+      procedure WriteCommand(const command : byte); virtual;
+      procedure WriteCommand(const command,param1 : byte); virtual;
+      procedure WriteCommand(const command,param1,param2 : byte); virtual;
+      procedure WriteCommand(const command,param1,param2,param3 : byte); virtual;
+      procedure WriteData(const data : byte); virtual;
+      procedure WriteData(var data : array of byte; Count:longInt=-1); virtual;
+      procedure InitSequence;
+      function setDrawArea(const X,Y,Width,Height : word):longWord; virtual;
+  public
+    constructor Initialize(var I2C : TI2C_Inst;const aDisplayAddress : byte;const aPinRST : TPinIdentifier;aScreenInfo : TPhysicalScreenInfo);
+    procedure Reset;
   end;
 
 implementation
@@ -68,12 +78,9 @@ const
   CMD_SET_COM_PINS = $DA;
   CMD_SET_VCOM_DETECT = $DB;
   CMD_NOP = $E3;
-var
-  FontInfo : TFontInfo;
 
 procedure TSSD1306_I2C.InitSequence;
 begin
-  SetLength(FrameBuffer,(ScreenInfo.Width * ScreenInfo.Height div 8)+1);
   FExternalVCC := false;
   //Set Display off
   WriteCommand(CMD_DISPLAY_OFF);
@@ -82,7 +89,7 @@ begin
   WriteCommand(CMD_SET_DISPLAY_CLOCK_DIV,$80);
 
   // Set Multiplex Ratio
-  WriteCommand(CMD_SET_MULTIPLEX_RATIO,ScreenInfo.Height-1);
+  WriteCommand(CMD_SET_MULTIPLEX_RATIO,PhysicalScreenInfo.Height-1);
 
   // Set Display Offset
   WriteCommand(CMD_SET_DISPLAY_OFFSET,$00);
@@ -105,12 +112,12 @@ begin
   WriteCommand(CMD_COM_SCAN_DEC);
 
   // Set COM Hardware Configuration
-  if (ScreenInfo = ScreenSize128x32x1) then
+  if (PhysicalScreenInfo = ScreenSize128x32x1) then
   begin
     WriteCommand(CMD_SET_COM_PINS,$02);
     WriteCommand(CMD_SET_CONTRAST,$8F)
   end
-  else if (ScreenInfo = ScreenSize128x64x1) then
+  else if (PhysicalScreenInfo = ScreenSize128x64x1) then
   begin
     WriteCommand(CMD_SET_COM_PINS,$12);
     if FExternalVCC then
@@ -118,7 +125,7 @@ begin
     else
       WriteCommand(CMD_SET_CONTRAST,$CF);
   end
-  else if (ScreenInfo = ScreenSize96x16x1) then
+  else if (PhysicalScreenInfo = ScreenSize96x16x1) then
   begin
     WriteCommand(CMD_SET_COM_PINS,$02);
     if FExternalVCC then
@@ -144,111 +151,125 @@ begin
   WriteCommand(CMD_DEACTIVATE_SCROLL);
   // Set display On
   WriteCommand(CMD_DISPLAY_ON);
+  Rotation := TDisplayRotation.None;
 end;
 
-procedure TSSD1306_I2C.clearScreen;
-var
-  i : integer;
-begin
-  setDrawArea(0,0,ScreenInfo.Width,ScreenInfo.Height);
-  //Increase Performance by writing larger chunks of data
-  if BackgroundColor = clBlack then
-    for i := Low(FrameBuffer) to High(FrameBuffer) do
-      FrameBuffer[i] := 0
-  else
-    for i := Low(FrameBuffer)+1 to High(FrameBuffer) do
-      FrameBuffer[i] := $ff;
-  WriteData(FrameBuffer);
-end;
-
-procedure TSSD1306_I2C.setFont(const TheFontInfo : TFontInfo);
-begin
-  FontInfo := TheFontInfo;
-end;
-
-function TSSD1306_I2C.setDrawArea(X,Y,Width,Height : word):longWord;
+function TSSD1306_I2C.setDrawArea(const X,Y,Width,Height : word):longWord;
 begin
   {$PUSH}
   {$WARN 4079 OFF}
   Result := 0;
-  if (X >=ScreenInfo.Width) or (Y >=ScreenInfo.Height) then
+  if (X >=PhysicalScreenInfo.Width) or (Y >=PhysicalScreenInfo.Height) then
     exit;
 
-  if X+Width >ScreenInfo.Width then
-    Width := ScreenInfo.Width-X;
-  if Y+Height >ScreenInfo.Height then
-    Height := ScreenInfo.Height-Y;
+  //if X+Width >PhysicalScreenInfo.Width then
+  //  Width := PhysicalScreenInfo.Width-X;
+  //if Y+Height > PhysicalScreenInfo.Height then
+  //  Height := PhysicalScreenInfo.Height-Y;
+
   WriteCommand(CMD_MEMORY_MODE,$01);
-  WriteCommand(CMD_PAGE_ADDRESS,Y shr 3,(Y+Height{%H-}-1) shr 3);
-  WriteCommand(CMD_COLUMN_ADDRESS,X,X+Width{%H-}-1);
+  WriteCommand(CMD_PAGE_ADDRESS,Y shr 3,(Word(Y+Height-1) shr 3));
+  WriteCommand(CMD_COLUMN_ADDRESS,X,Word(X+Width-1));
   Result := Width*Height shr 3;
   {$POP}
 end;
 
-procedure TSSD1306_I2C.drawText(const TheText : String; x,y : longWord);
-var
-  i : longWord;
-  theChar : char;
-  charStart : word;
-  lineOffset : byte;
-  x1,y1 : byte;
-  xline : byte;
+constructor TSSD1306_I2C.Initialize(var I2C : TI2C_Inst;const aDisplayAddress : byte;const aPinRST : TPinIdentifier;aScreenInfo : TPhysicalScreenInfo);
 begin
-  lineOffset := FontInfo.BytesPerChar div FontInfo.Height;
-  for i := 0 to length(TheText)-1 do
+  inherited Initialize;
+  enableI2CHack;
+  FpI2C := @I2C;
+  FDisplayAddress := aDisplayAddress;
+  FPinRST := aPinRST;
+  PhysicalScreenInfo :=  aScreenInfo;
+  BackgroundColor := clBlack;
+  ForegroundColor := clWhite;
+
+  if aPinRST > -1 then
   begin
-    //only compute when char is completely visible
-    if (x+i*fontInfo.Width <= ScreenInfo.Width) and (y+fontInfo.Height <= ScreenInfo.Height) then
-    begin
-      theChar := TheText[i+1];
-      charstart := pos(theChar,FontInfo.Charmap)-1;
-      //The char was found in the list of a available chars
-      if charStart > 0 then
-      begin
-        for x1 := 0 to FontInfo.Width-1 do
-          for y1 := 0 to FontInfo.Height-1 do
-          begin
-            xline := FontInfo.pFontData^[charStart*FontInfo.BytesPerChar+(x1 div 8)+y1*lineOffset];
-            if xline and (%10000000 shr (x1 and %111)) <> 0 then
-              setPixel(x+i*FontInfo.Width+x1,y+y1)
-            else
-              clearPixel(x+i*FontInfo.Width+x1,y+y1);
-          end;
-      end
-    end;
+    gpio_init(aPinRST);
+    gpio_set_dir(aPinRST,TGPIODirection.GPIO_OUT);
+    gpio_put(aPinRST,true);
+  end;
+  initSequence;
+end;
+
+procedure TSSD1306_I2C.Reset;
+begin
+  if FPinRST > -1 then
+  begin
+    gpio_put(FPinRST,true);
+    busy_wait_us_32(100000);
+    gpio_put(FPinRST,false);
+    busy_wait_us_32(100000);
+    gpio_put(FPinRST,true);
+    busy_wait_us_32(200000);
   end;
 end;
 
-procedure TSSD1306_I2C.setPixel(const x,y : byte);
+procedure TSSD1306_I2C.WriteCommand(const command: Byte);
 var
-  offset : longWord;
+  data : array[0..1] of byte;
 begin
-  if (x >= ScreenInfo.Width) or (y >= ScreenInfo.Height) then
-    exit;
-  Offset := (y div 8)+x*(ScreenInfo.Height div 8)+1;
-  if ForegroundColor=clWhite then
-    FrameBuffer[Offset] := FrameBuffer[Offset] or (1 shl (y mod 8))
-  else
-    FrameBuffer[Offset] := FrameBuffer[Offset] and (not(1 shl (y mod 8)));
+  data[0]:= $80;
+  data[1]:= command;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
 end;
 
-procedure TSSD1306_I2C.clearPixel(const x,y : byte);
+procedure TSSD1306_I2C.WriteCommand(const command,param1: Byte);
 var
-  offset : longWord;
+  data : array[0..1] of byte;
 begin
-  if (x >= ScreenInfo.Width) or (y >= ScreenInfo.Height) then
-    exit;
-  Offset := (y div 8)+x*(ScreenInfo.Height div 8)+1;
-  if ForegroundColor=clBlack then
-    FrameBuffer[Offset] := FrameBuffer[Offset] or (1 shl (y mod 8))
-  else
-    FrameBuffer[Offset] := FrameBuffer[Offset] and (not(1 shl (y mod 8)));
+  data[0]:= $80;
+  data[1]:= command;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+  data[1]:= param1;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
 end;
 
-procedure TSSD1306_I2C.updateScreen;
+procedure TSSD1306_I2C.WriteCommand(const command,param1,param2: Byte);
+var
+  data : array[0..1] of byte;
 begin
-  setDrawArea(0,0,ScreenInfo.Width,ScreenInfo.Height);
-  WriteData(FrameBuffer);
+  data[0]:= $80;
+  data[1]:= command;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+  data[1]:= param1;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+  data[1]:= param2;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+end;
+
+procedure TSSD1306_I2C.WriteCommand(const command,param1,param2,param3: Byte);
+var
+  data : array[0..1] of byte;
+begin
+  data[0]:= $80;
+  data[1]:= command;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+  data[1]:= param1;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+  data[1]:= param2;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+  data[1]:= param3;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+end;
+
+procedure TSSD1306_I2C.WriteData(const data: byte);
+var
+  _data : array[0..1] of byte;
+begin
+  _data[0] := $40;
+  _data[1] := data;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
+end;
+
+procedure TSSD1306_I2C.WriteData(var data: array of byte;Count:longInt=-1);
+begin
+  if count = -1 then
+    count := High(data)+1;
+  data[0] := $40;
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,count,false);
 end;
 
 {$WARN 5028 OFF}

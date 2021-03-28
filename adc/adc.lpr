@@ -20,8 +20,8 @@ begin
   gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
 
   uart_init(uart, BAUD_RATE);
-  gpio_set_function(TPicoPin.UART_TX, GPIO_FUNC_UART);
-  gpio_set_function(TPicoPin.UART_RX, GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_TX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_RX, TGPIOFunction.GPIO_FUNC_UART);
 
   adc_init;
   // Make sure GPIO is high-impedance, no pullups etc

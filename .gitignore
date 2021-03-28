@@ -49,4 +49,6 @@
 *.compiled
 *.res
 backup/
+bin/
 lib/
+.DS_Store

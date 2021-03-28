@@ -17,128 +17,116 @@ uses
 {$L adc.c.obj}
 {$ENDIF}
 
-(*! \brief  Initialise the ADC HW
- *  \ingroup hardware_adc
- *
- *)
+(*
+  Initialise the ADC HW
+*)
 procedure adc_init; cdecl; external;
 
-(*! \brief  Initialise the gpio for use as an ADC pin
- *  \ingroup hardware_adc
- *
- * Prepare a GPIO for use with ADC, by disabling all digital functions.
- *
- * \param gpio The GPIO number to use. Allowable GPIO numbers are 26 to 29 inclusive.
- *)
+(*
+  Initialise the gpio for use as an ADC pin
+  Prepare a GPIO for use with ADC, by disabling all digital functions.
+param
+  gpio The GPIO number to use. Allowable GPIO numbers are 26 to 29 inclusive.
+*)
 procedure adc_gpio_init(gpio:longWord);
 
-(*! \brief  ADC input select
- *  \ingroup hardware_adc
- *
- * Select an ADC input. 0...3 are GPIOs 26...29 respectively.
- * Input 4 is the onboard temperature sensor.
- *
- * \param input Input to select.
- *)
+(*
+  ADC input select
+  Select an ADC input. 0...3 are GPIOs 26...29 respectively.
+  Input 4 is the onboard temperature sensor.
+param
+  input Input to select.
+*)
 procedure adc_select_input(input : longWord);
 
-(*! \brief  Round Robin sampling selector
- *  \ingroup hardware_adc
- *
- * This function sets which inputs are to be run through in round robin mode.
- * Value between 0 and 0x1f (bit 0 to bit 4 for GPIO 26 to 29 and temperature sensor input respectively)
- *
- * \param input_mask A bit pattern indicating which of the 5 inputs are to be sampled. Write a value of 0 to disable round robin sampling.
- *)
+(*
+  Round Robin sampling selector
+  This function sets which inputs are to be run through in round robin mode.
+  Value between 0 and 0x1f (bit 0 to bit 4 for GPIO 26 to 29 and temperature sensor input respectively)
+param
+  input_mask A bit pattern indicating which of the 5 inputs are to be sampled. Write a value of 0 to disable round robin sampling.
+*)
 procedure adc_set_round_robin(input_mask : longWord);
 
-(*! \brief Enable the onboard temperature sensor
- *  \ingroup hardware_adc
- *
- * \param enable Set true to power on the onboard temperature sensor, false to power off.
- *
- *)  
+(*
+  Enable the onboard temperature sensor
+param
+  enable Set true to power on the onboard temperature sensor, false to power off.
+*)
 procedure adc_set_temp_sensor_enabled(enable: boolean);
 
-(*! \brief Perform a single conversion
- *  \ingroup hardware_adc
- *
- *  Performs an ADC conversion, waits for the result, and then returns it.
- *
- * \return Result of the conversion.
- *)  
+(*
+  Perform a single conversion
+  Performs an ADC conversion, waits for the result, and then returns it.
+return
+  Result of the conversion.
+*)
 function adc_read:word;
 
-(*! \brief Enable or disable free-running sampling mode
- *  \ingroup hardware_adc
- *
- * \param run false to disable, true to enable free running conversion mode.
- *)
+(*
+  Enable or disable free-running sampling mode
+param
+  run false to disable, true to enable free running conversion mode.
+*)
 procedure adc_run(run:boolean);
 
-(*! \brief Set the ADC Clock divisor
- *  \ingroup hardware_adc
- *
- * Period of samples will be (1 + div) cycles on average. Note it takes 96 cycles to perform a conversion,
- * so any period less than that will be clamped to 96.
- *
- * \param clkdiv If non-zero, conversion will be started at intervals rather than back to back.
- *)  
+(*
+  Set the ADC Clock divisor
+ Period of samples will be (1 + div) cycles on average. Note it takes 96 cycles to perform a conversion,
+  so any period less than that will be clamped to 96.
+param
+  clkdiv If non-zero, conversion will be started at intervals rather than back to back.
+*)
 procedure adc_set_clkdiv(clkdiv : real);
 
-(*! \brief Setup the ADC FIFO
- *  \ingroup hardware_adc
- *
- * FIFO is 4 samples long, if a conversion is completed and the FIFO is full the result is dropped.
- *
- * \param en Enables write each conversion result to the FIFO
- * \param dreq_en Enable DMA requests when FIFO contains data
- * \param dreq_thresh Threshold for DMA requests/FIFO IRQ if enabled.
- * \param err_in_fifo If enabled, bit 15 of the FIFO contains error flag for each sample
- * \param byte_shift Shift FIFO contents to be one byte in size (for byte DMA) - enables DMA to byte buffers.
- *)  
+(*
+  Setup the ADC FIFO
+  FIFO is 4 samples long, if a conversion is completed and the FIFO is full the result is dropped.
+param
+  en Enables write each conversion result to the FIFO
+  dreq_en Enable DMA requests when FIFO contains data
+  dreq_thresh Threshold for DMA requests/FIFO IRQ if enabled.
+  err_in_fifo If enabled, bit 15 of the FIFO contains error flag for each sample
+  byte_shift Shift FIFO contents to be one byte in size (for byte DMA) - enables DMA to byte buffers.
+*)
 procedure adc_fifo_setup(en : boolean; dreq_en : boolean; dreq_thresh : word; err_in_fifo:boolean; byte_shift:boolean);
 
-(*! \brief Check FIFO empty state
- *  \ingroup hardware_adc
- *
- * \return Returns true if the fifo is empty
- *)
+(*
+  Check FIFO empty state
+return
+  Returns true if the fifo is empty
+*)
 function adc_fifo_is_empty: boolean;
 
-(*! \brief Get number of entries in the ADC FIFO
- *  \ingroup hardware_adc
- *
- * The ADC FIFO is 4 entries long. This function will return how many samples are currently present.
- *)
+(*
+  Get number of entries in the ADC FIFO
+  The ADC FIFO is 4 entries long. This function will return how many samples are currently present.
+*)
 function adc_fifo_get_level: byte;
 
-(*! \brief Get ADC result from FIFO
- *  \ingroup hardware_adc
- *
- * Pops the latest result from the ADC FIFO.
- *)
+(*
+  Get ADC result from FIFO
+  Pops the latest result from the ADC FIFO.
+*)
 function adc_fifo_get:word;
 
-(*! \brief Wait for the ADC FIFO to have data.
- *  \ingroup hardware_adc
- *
- * Blocks until data is present in the FIFO
- *)
+(*
+  Wait for the ADC FIFO to have data.
+  Blocks until data is present in the FIFO
+*)
 function adc_fifo_get_blocking: word;
 
-(*! \brief Drain the ADC FIFO
- *  \ingroup hardware_adc
- *
- * Will wait for any conversion to complete then drain the FIFO discarding any results.
- *)
+(*
+  Drain the ADC FIFO
+  Will wait for any conversion to complete then drain the FIFO discarding any results.
+*)
 procedure adc_fifo_drain;
 
-(*! \brief Enable/Disable ADC interrupts.
- *  \ingroup hardware_adc
- *
- * \param enabled Set to true to enable the ADC interrupts, false to disable
- *)  
+(*
+  Enable/Disable ADC interrupts.
+param
+  enabled Set to true to enable the ADC interrupts, false to disable
+*)
 procedure adc_irq_set_enabled(enabled:boolean);
 
 implementation

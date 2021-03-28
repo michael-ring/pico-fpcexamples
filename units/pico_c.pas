@@ -23,32 +23,6 @@ uses
 
 type 
   TByteArray = array of Byte;
-  TColor = -$7FFFFFFF-1..$7FFFFFFF;
-
-TPoint2px = record
-  X:word;
-  Y:Word;
-end;
-
-const
-  clBlack   = TColor($000000);
-  clMaroon  = TColor($000080);
-  clGreen   = TColor($008000);
-  clOlive   = TColor($008080);
-  clNavy    = TColor($800000);
-  clPurple  = TColor($800080);
-  clTeal    = TColor($808000);
-  clGray    = TColor($808080);
-  clSilver  = TColor($C0C0C0);
-  clRed     = TColor($0000FF);
-  clLime    = TColor($00FF00);
-  clYellow  = TColor($00FFFF);
-  clBlue    = TColor($FF0000);
-  clFuchsia = TColor($FF00FF);
-  clAqua    = TColor($FFFF00);
-  clLtGray  = TColor($C0C0C0);
-  clDkGray  = TColor($808080);
-  clWhite   = TColor($FFFFFF);
 
 (*
   Structure containing date and time information
@@ -57,12 +31,12 @@ const
 *)
 type Tdatetime = record
   year:word;    //< 0..4095
-  month: 1..12;    //< 1..12, 1 is January
-  day: 1..31;      //< 1..28,29,30,31 depending on month
-  dotw: 0..6;     //< 0..6, 0 is Sunday
-  hour: 0..23;     //< 0..23
-  min: 0..59;      //< 0..59
-  sec: 0..59;      //< 0..59
+  month: 1..12; //< 1..12, 1 is January
+  day: 1..31;   //< 1..28,29,30,31 depending on month
+  dotw: 0..6;   //< 0..6, 0 is Sunday
+  hour: 0..23;  //< 0..23
+  min: 0..59;   //< 0..59
+  sec: 0..59;   //< 0..59
 end;
 
 type
@@ -130,6 +104,7 @@ param:
 procedure hw_write_masked(var register : longWord; values : longWord; write_mask:longWord);
 
 implementation
+
 procedure hard_assertion_failure;
 begin
 end;

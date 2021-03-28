@@ -3,7 +3,7 @@ unit Fonts.BitstreamVeraSansMono8x16;
 {$WRITEABLECONST OFF}
 interface
 uses
-  CustomDisplay_c;
+  CustomDisplay;
 const
   BitstreamVeraSansMono8x16_FontData : array[0..95] of array[0..15] of byte = 
   (

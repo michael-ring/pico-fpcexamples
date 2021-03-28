@@ -40,17 +40,119 @@ type
 
 function get_absolute_time : Tabsolute_time;
 function us_to_ms(us:int64):longWord;
+
+(*
+  Convert a timestamp into a number of milliseconds since boot.
+param
+  t an absolute_time_t value to convert
+return
+  the number of microseconds since boot represented by t
+*)
 function to_ms_since_boot(t : Tabsolute_time):longWord;
+
+(*
+  Return a timestamp value obtained by adding a number of microseconds to another timestamp
+param
+  t the base timestamp
+  us the number of microseconds to add
+return
+  the timestamp representing the resulting time
+*)
 function delayed_by_us(const t :  Tabsolute_time;us:int64):Tabsolute_time;
+
+(*
+  Return a timestamp value obtained by adding a number of milliseconds to another timestamp
+param
+  t the base timestamp
+  ms the number of milliseconds to add
+return
+  the timestamp representing the resulting time
+*)
 function delayed_by_ms(const t : Tabsolute_time; ms : longWord):Tabsolute_time;
+
+(*
+  Convenience method to get the timestamp a number of microseconds from the current time
+param
+  us the number of microseconds to add to the current timestamp
+return
+  the future timestamp
+*)
 function make_timeout_time_us(us:int64):Tabsolute_time;
+
+(*
+  Convenience method to get the timestamp a number of milliseconds from the current time
+param
+  ms the number of milliseconds to add to the current timestamp
+return
+  the future timestamp
+*)
 function make_timeout_time_ms(ms : longWord):Tabsolute_time;
+
+(*
+  Return the difference in microseconds between two timestamps
+param
+  from the first timestamp
+  to the second timestamp
+return
+  the number of microseconds between the two timestamps (positive if `to` is after `from` except
+  in case of overflow)
+note
+  be careful when diffing against large timestamps (e.g. \ref at_the_end_of_time)
+  as the signed integer may overflow.
+*)
 function absolute_time_diff_us(from : Tabsolute_time; &to : Tabsolute_time):Tabsolute_time;
+
+(*
+  Determine if the given timestamp is nil
+param
+  t the timestamp
+return
+  true if the timestamp is nil
+*)
 function is_nil_time(t : Tabsolute_time):boolean;
+
+(*
+  Wait until after the given timestamp to return
+param
+  target the time after which to return
+note
+  This method attempts to perform a lower power (WFE) sleep
+*)
 procedure sleep_until(target : Tabsolute_time); cdecl; external;
+
+(*
+  Wait for the given number of microseconds before returning
+param
+  us the number of microseconds to sleep
+note
+  This method attempts to perform a lower power (WFE) sleep
+*)
 procedure sleep_us(us:int64); cdecl; external;
+
+(*
+  Wait for the given number of milliseconds before returning
+  This method attempts to perform a lower power sleep (using WFE) as much as possible.
+param
+  ms the number of milliseconds to sleep
+*)
 procedure sleep_ms(ms:longWord); cdecl; external;
+
+(*
+  Helper method for blocking on a timeout
+  This method will return in response to an event (as per __wfe) or
+  when the target time is reached, or at any point before.
+  This method can be used to implement a lower power polling loop waiting on
+  some condition signalled by an event (__sev()).
+  This is called \a best_effort because under certain circumstances (notably the default timer pool
+  being disabled or full) the best effort is simply to return immediately without a __wfe, thus turning the calling
+  code into a busy wait.
+param
+  timeout_timestamp the timeout time
+return
+  true if the target time is reached, false otherwise
+*)
 function best_effort_wfe_or_timeout(timeout_timestamp : Tabsolute_time):boolean; cdecl; external;
+
 //procedure alarm_pool_init_default; cdecl; external;
 //function alarm_pool_get_default:Talarm_pool; cdecl; external;
 //function alarm_pool_create(hardware_alarm_num : longWord; max_timers:longWord):Talarm_pool; cdecl; external;

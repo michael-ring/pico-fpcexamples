@@ -22,12 +22,12 @@ begin
   gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
 
   uart_init(uart, BAUD_RATE);
-  gpio_set_function(TPicoPin.UART_TX, GPIO_FUNC_UART);
-  gpio_set_function(TPicoPin.UART_RX, GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_TX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_RX, TGPIOFunction.GPIO_FUNC_UART);
   
   i2c_init(i2cInst, 100000);
-  gpio_set_function(TPicoPin.I2C_SDA, GPIO_FUNC_I2C);
-  gpio_set_function(TPicoPin.I2C_SCL, GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SDA, TGPIOFunction.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SCL, TGPIOFunction.GPIO_FUNC_I2C);
   gpio_pull_up(TPicoPin.I2C_SDA);
   gpio_pull_up(TPicoPin.I2C_SCL);
 
