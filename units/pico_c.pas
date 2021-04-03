@@ -17,6 +17,33 @@ unit pico_c;
 {$L watchdog.c.obj}
 {$L irq.c.obj}
 {$ENDIF}
+
+// A (usually) device specific 2nd Stage Bootloader is required to initialize the Quad-SPI Flash and Cache of RP2040 based boards
+// To build a 2nd Stage bootloader for a new board that is supported by pico-sdk do:
+// export PICO_SDK_PATH=<path of your pico-sdk>
+// cd pico-examples
+// mkdir build
+// cd build
+// PICO_BOARD=<Name of the board> cmake -DCMAKE_BUILD_TYPE=Release ..
+// make blink 
+// mkdir units
+// arm-none-eabi-as pico-sdk/src/rp2_common/boot_stage2/bs2_default_padded_checksummed.S -o units/boot2_<Name of board>.obj
+// You can find the name of a board by looking at the directory ./src/boards/include/boards/
+// Example:
+// ./src/boards/include/boards/adafruit_feather_rp2040.h --> <Name of board> is adafruit_feather_rp2040
+
+{$IF DEFINED(FPC_MCU_FEATHER_RP2040)}
+  {$L boot2_adafruit_feather_rp2040.obj}
+{$ELSEIF DEFINED(FPC_MCU_ITSYBITSY_RP2040)}
+  {$L boot2_adafruit_itsybitsy_rp2040.obj}
+{$ELSEIF DEFINED(FPC_MCU_QTPY_RP2040)}
+  {$L boot2_adafruit_qtpy_rp2040.obj}
+{$ELSEIF DEFINED(FPC_MCU_TINY_2040)}
+  {$L boot2_pimoroni_tiny2040.obj}
+{$ELSE}
+  {$L boot2_pico.obj}
+{$ENDIF}
+
 {$LinkLib gcc-armv6m,static}
 
 interface
