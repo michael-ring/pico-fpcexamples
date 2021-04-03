@@ -2,6 +2,7 @@ unit pico_c;
 {$mode objfpc}{$H+}
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_CORE)}
 {$L platform.c-debug.obj}
+{$L claim.c-debug.obj}
 {$L clocks.c-debug.obj}
 {$L xosc.c-debug.obj}
 {$L pll.c-debug.obj}
@@ -9,6 +10,7 @@ unit pico_c;
 {$L irq.c-debug.obj}
 {$ELSE}
 {$L platform.c.obj}
+{$L claim.c.obj}
 {$L clocks.c.obj}
 {$L xosc.c.obj}
 {$L pll.c.obj}
@@ -50,7 +52,7 @@ procedure runtime_init;
 procedure hard_assertion_failure; public name 'hard_assertion_failure';
 procedure __unhandled_user_irq; public name '__unhandled_user_irq';
 procedure __assert_func; public name '__assert_func';
-
+procedure panic(fmt: PAnsiChar; Args: Array of const); public name 'panic';
 (*
   convert an absolute_time_t into a number of microseconds since boot.
 param:
@@ -107,14 +109,22 @@ implementation
 
 procedure hard_assertion_failure;
 begin
+  Halt;
 end;
 
 procedure __unhandled_user_irq;
 begin
+  Halt;
 end;
 
 procedure __assert_func;
 begin
+  Halt;
+end;
+
+procedure panic(fmt: PAnsiChar; Args: Array of const);
+begin
+  Halt;
 end;
 
 function to_us_since_boot(t : Tabsolute_time):int64;
