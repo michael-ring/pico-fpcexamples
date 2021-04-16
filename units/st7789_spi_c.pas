@@ -13,14 +13,6 @@ uses
   pico_gpio_c,
   pico_spi_c,
   pico_c;
-const
-  // Physical Width is up to 240 Pixel Physical Height goes up to 320 Pixel
-  ScreenSize240x135x16: TPhysicalScreenInfo =
-    (Width: 135; Height: 240; Depth: TDisplayBitDepth.SixteenBits);
-  ScreenSize240x240x16: TPhysicalScreenInfo =
-    (Width: 240; Height: 240; Depth: TDisplayBitDepth.SixteenBits);
-  ScreenSize320x240x16: TPhysicalScreenInfo =
-    (Width: 240; Height: 320; Depth: TDisplayBitDepth.SixteenBits);
 
 type
   TST7789_SPI = object(TCustomDisplay16Bits)
@@ -31,14 +23,21 @@ type
       FInTransaction : boolean;
     protected
       procedure WriteCommand(const command : byte); virtual;
-      procedure WriteCommand(const command,param1 : byte); virtual;
-      procedure WriteCommand(const command,param1,param2 : byte); virtual;
-      procedure WriteCommand(const command,param1,param2,param3 : byte); virtual;
-      procedure WriteCommandWords(const command : Byte; const param1,param2: Word); virtual;
+      procedure WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1); virtual;
+      procedure WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1); virtual;
       procedure WriteData(const data: byte); virtual;
-      procedure WriteData(var data : array of byte; Count:longInt=-1); virtual;
+      procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual;
+      procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual;
       procedure InitSequence;
     public
+      const
+        // Physical Width is up to 240 Pixel Physical Height goes up to 320 Pixel
+        ScreenSize240x135x16: TPhysicalScreenInfo =
+          (Width: 135; Height: 240; Depth: TDisplayBitDepth.SixteenBits;ColorOrder: TDisplayColorOrder.BGR;ColStart : (40,53,40,52); RowStart : (52,40,53,40));
+        ScreenSize240x240x16: TPhysicalScreenInfo =
+          (Width: 240; Height: 240; Depth: TDisplayBitDepth.SixteenBits;ColorOrder: TDisplayColorOrder.BGR;ColStart : (0,0,80,0); RowStart : (0,0,0,80));
+        ScreenSize320x240x16: TPhysicalScreenInfo =
+          (Width: 240; Height: 320; Depth: TDisplayBitDepth.SixteenBits;ColorOrder: TDisplayColorOrder.BGR;ColStart : (0,0,0,0); RowStart : (0,0,0,0));
 
     (*
       Initializes the display
@@ -79,7 +78,7 @@ type
     note:
       Drawing single pixel creates a relatively high overhead, so do not overdo single pixel paining
     *)
-    procedure drawPixel(const x,y : word; const color:TColor); virtual;
+    procedure drawPixel(const x,y : word; const fgColor : TColor = clForeground); virtual;
   end;
 
 implementation
@@ -192,151 +191,83 @@ begin
 end;
 
 procedure TST7789_SPI.InitSequence;
+const
+  col1 : array of byte = ($d0,$00,$02,$07,$0a,$28,$32,$44,$42,$06,$0e,$12,$14,$17);
+  col2 : array of byte = ($d0,$00,$02,$07,$0a,$28,$31,$54,$47,$0e,$1c,$17,$1b,$1e);
 begin
   WriteCommand(ST7789_SWRESET);
   busy_wait_us_32(150000);
 
-  writecommand(ST7789_SLPOUT);   // Sleep out
+  writeCommand(ST7789_SLPOUT);   // Sleep out
   busy_wait_us_32(120000);
 
-  writecommand(ST7789_NORON);    // Normal display mode on
+  writeCommand(ST7789_NORON);    // Normal display mode on
+  writeCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_BGR]);
 
-  //------------------------------display and color format setting--------------------------------//
-  writecommand(ST7789_MADCTL,ST7789_MADCTL_BGR);
-
-  // JLX240 display datasheet
-  writecommand($B6,$0A,$82);
-
-  writecommand(ST7789_COLMOD,$55);
+  writeCommandBytes($B6,[$0A,$82]);
+  writeCommandBytes(ST7789_COLMOD,[$55]);
   busy_wait_us_32(10000);
 
+  writeCommandBytes(ST7789_PORCTRL,[$0c,$0c,$00,$33,$33]);
+  writeCommandBytes(ST7789_GCTRL,[$35]);
 
-  //--------------------------------ST7789V Frame rate setting----------------------------------//
-  (*
-  writecommand(ST7789_PORCTRL);
-  writedata($0c);
-  writedata($0c);
-  writedata($00);
-  writedata($33);
-  writedata($33);
-  *)
-  writecommand(ST7789_GCTRL,$35);
+  writeCommandBytes(ST7789_VCOMS,[$28]);		// JLX240 display datasheet
+  writeCommandBytes(ST7789_LCMCTRL,[$0C]);
+  writeCommandBytes(ST7789_VDVVRHEN,[$01,$FF]);
+  writeCommandBytes(ST7789_VRHS,[$10]);
+  writeCommandBytes(ST7789_VDVSET,[$20]);
+  writeCommandBytes(ST7789_FRCTR2,[$0f]);
+  writeCommandBytes(ST7789_PWCTRL1,[$a4,$a1]);
 
-  //---------------------------------ST7789V Power setting--------------------------------------//
-  writecommand(ST7789_VCOMS,$28);		// JLX240 display datasheet
+  writeCommandBytes(ST7789_PVGAMCTRL,col1);
+  writeCommandBytes(ST7789_NVGAMCTRL,col2);
+  writeCommand(ST7789_INVON);
 
-  writecommand(ST7789_LCMCTRL,$0C);
-
-  writecommand(ST7789_VDVVRHEN,$01,$FF);
-
-  writecommand(ST7789_VRHS,$10);
-
-  writecommand(ST7789_VDVSET,$20);
-
-  writecommand(ST7789_FRCTR2,$0f);
-
-  writecommand(ST7789_PWCTRL1,$a4,$a1);
-
-  //--------------------------------ST7789V gamma setting---------------------------------------//
-  (*
-  writecommand(ST7789_PVGAMCTRL);
-  writedata($d0);
-  writedata($00);
-  writedata($02);
-  writedata($07);
-  writedata($0a);
-  writedata($28);
-  writedata($32);
-  writedata($44);
-  writedata($42);
-  writedata($06);
-  writedata($0e);
-  writedata($12);
-  writedata($14);
-  writedata($17);
-
-  writecommand(ST7789_NVGAMCTRL);
-  writedata($d0);
-  writedata($00);
-  writedata($02);
-  writedata($07);
-  writedata($0a);
-  writedata($28);
-  writedata($31);
-  writedata($54);
-  writedata($47);
-  writedata($0e);
-  writedata($1c);
-  writedata($17);
-  writedata($1b);
-  writedata($1e);
-  *)
-  writecommand(ST7789_INVON);
-
-  writecommandWords(ST7789_CASET,0,239);    // Column address set
-  writecommandWords(ST7789_RASET,0,239);    // Row address set
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+  writeCommandWords(ST7789_CASET,[0,239]);    // Column address set
+  writeCommandWords(ST7789_RASET,[0,239]);    // Row address set
   busy_wait_us_32(120000);
+
   writecommand(ST7789_DISPON);    //Display on
   busy_wait_us_32(120000);
+
   setRotation(TDisplayRotation.None);
-  setForegroundColor(clBlack);
-  setBackgroundColor(clWhite)
+  foregroundColor := clBlack;
+  backgroundColor := clWhite;
 end;
 
 procedure TST7789_SPI.setRotation(const displayRotation : TDisplayRotation);
+var
+  ColMode : byte;
 begin
-  colStart := 0;
-  rowStart := 0;
+  colStart := PhysicalScreenInfo.ColStart[byte(displayRotation)];
+  rowStart := PhysicalScreenInfo.RowStart[byte(displayRotation)];
+  if PhysicalScreenInfo.ColorOrder = TDisplayColorOrder.RGB then
+    colMode := ST7789_MADCTL_RGB
+  else
+    colMode := ST7789_MADCTL_BGR;
 
   case displayRotation of
     TDisplayRotation.None:
     begin
-      if PhysicalScreenInfo = ScreenSize240x135x16 then
-      begin
-        colStart := 40;
-        rowStart := 52;
-      end;
       FScreenWidth := PhysicalScreenInfo.Width;
       FScreenHeight := PhysicalScreenInfo.Height;
-      WriteCommand(ST7789_MADCTL,ST7789_MADCTL_BGR);
+      WriteCommandBytes(ST7789_MADCTL,[colMode]);
     end;
     TDisplayRotation.Right: begin
-      if PhysicalScreenInfo = ScreenSize240x135x16 then
-      begin
-        colStart := 52;
-        rowStart := 40;
-      end;
       FScreenWidth := PhysicalScreenInfo.Height;
       FScreenHeight := PhysicalScreenInfo.Width;
-      WriteCommand(ST7789_MADCTL,ST7789_MADCTL_MX + ST7789_MADCTL_MV + ST7789_MADCTL_BGR);
+      WriteCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_MX + ST7789_MADCTL_MV + colMode]);
     end;
     TDisplayRotation.UpsideDown:
     begin
-      if PhysicalScreenInfo = ScreenSize240x135x16 then
-      begin
-        colStart := 40;
-        rowStart := 52;
-      end
-      else
-        colStart:= 80;
       FScreenWidth := PhysicalScreenInfo.Width;
       FScreenHeight := PhysicalScreenInfo.Height;
-      WriteCommand(ST7789_MADCTL,ST7789_MADCTL_MX + ST7789_MADCTL_MY + ST7789_MADCTL_BGR);
+      WriteCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_MX + ST7789_MADCTL_MY + colMode]);
     end;
     TDisplayRotation.Left: begin
-      if PhysicalScreenInfo = ScreenSize240x135x16 then
-      begin
-        colStart := 52;
-        rowStart := 40;
-      end
-      else
-        rowStart := 80;
       FScreenWidth := PhysicalScreenInfo.Height;
       FScreenHeight := PhysicalScreenInfo.Width;
-      WriteCommand(ST7789_MADCTL,ST7789_MADCTL_MV + ST7789_MADCTL_MY + ST7789_MADCTL_BGR);
+      WriteCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_MV + ST7789_MADCTL_MY + colMode]);
     end;
   end;
 end;
@@ -349,27 +280,25 @@ begin
   if (X >=ScreenWidth) or (Y >=ScreenHeight) then
     exit;
 
-  //if X+Width >ScreenWidth then
-  //  Width := ScreenWidth-X;
-  //if Y+Height >ScreenHeight then
-  //  Height := ScreenHeight-Y;
-
-  WriteCommandWords(ST7789_CASET,X+rowStart,X+rowStart+Width-1);
-  WriteCommandWords(ST7789_RASET,Y+colStart,Y+colStart+Height-1);
+  WriteCommandWords(ST7789_CASET,[X+rowStart,X+rowStart+Width-1]);
+  WriteCommandWords(ST7789_RASET,[Y+colStart,Y+colStart+Height-1]);
   WriteCommand(ST7789_RAMWR);
   Result := Width*Height;
   {$POP}
 end;
 
-procedure TST7789_SPI.drawPixel(const x,y : word; const color:TColor);
+procedure TST7789_SPI.drawPixel(const x,y : word; const fgColor : TColor = clForeground);
+var
+  _fgColor : word;
 begin
   if (x >= ScreenWidth) or (y >= ScreenHeight) then
     exit;
-  WriteCommandWords(ST7789_CASET,X+rowStart,X+rowStart);
-  WriteCommandWords(ST7789_RASET,Y+colStart,Y+colStart);
+  WriteCommandWords(ST7789_CASET,[X+rowStart,X+rowStart]);
+  WriteCommandWords(ST7789_RASET,[Y+colStart,Y+colStart]);
   WriteCommand(ST7789_RAMWR);
-  WriteData(FForegroundColor and $ff);
-  WriteData(FForegroundColor shr 8);
+  _fgColor := color24to16(fgColor);
+  WriteData(hi(_fgColor));
+  WriteData(lo(_fgColor));
 end;
 
 procedure TST7789_SPI.WriteCommand(const command: Byte);
@@ -382,58 +311,30 @@ begin
   gpio_put(FPinDC,true);
 end;
 
-procedure TST7789_SPI.WriteCommand(const command,param1: Byte);
+procedure TST7789_SPI.WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1);
 var
-  data : array[0..0] of byte;
+  _data : array[0..0] of byte;
 begin
-  data[0]:= command;
+  if count = -1 then
+    count := High(data)+1;
+  _data[0]:= command;
   gpio_put(FPinDC,false);
-  spi_write_blocking(FpSPI^,data,1);
-  data[0]:= param1;
+  spi_write_blocking(FpSPI^,_data,1);
   gpio_put(FPinDC,true);
-  spi_write_blocking(FpSPI^,data,1);
+  spi_write_blocking(FpSPI^,data,count);
 end;
 
-procedure TST7789_SPI.WriteCommand(const command,param1,param2: Byte);
+procedure TST7789_SPI.WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1);
 var
-  data : array[0..1] of byte;
+  _data : array[0..0] of byte;
 begin
-  data[0]:= command;
+  if count = -1 then
+    count := High(data)+1;
+  _data[0]:= command;
   gpio_put(FPinDC,false);
-  spi_write_blocking(FpSPI^,data,1);
-  data[0]:= param1;
-  data[1]:= param2;
+  spi_write_blocking(FpSPI^,_data,1);
   gpio_put(FPinDC,true);
-  spi_write_blocking(FpSPI^,data,2);
-end;
-
-procedure TST7789_SPI.WriteCommand(const command,param1,param2,param3: Byte);
-var
-  data : array[0..2] of byte;
-begin
-  data[0]:= command;
-  gpio_put(FPinDC,false);
-  spi_write_blocking(FpSPI^,data,1);
-  data[0]:= param1;
-  data[1]:= param2;
-  data[2]:= param3;
-  gpio_put(FPinDC,true);
-  spi_write_blocking(FpSPI^,data,2);
-end;
-
-procedure TST7789_SPI.WriteCommandWords(const command : Byte; const param1,param2: Word);
-var
-  data : array[0..3] of byte;
-begin
-  data[0]:= command;
-  gpio_put(FPinDC,false);
-  spi_write_blocking(FpSPI^,data,1);
-  data[0]:= param1 shr 8;
-  data[1]:= param1 and $ff;
-  data[2]:= param2 shr 8;
-  data[3]:= param2 and $ff;
-  gpio_put(FPinDC,true);
-  spi_write_blocking(FpSPI^,data,4);
+  spi_write_blocking_hl(FpSPI^,data,count);
 end;
 
 procedure TST7789_SPI.WriteData(const data: byte);
@@ -445,15 +346,21 @@ begin
   spi_write_blocking(FpSPI^,_data,1);
 end;
 
-procedure TST7789_SPI.WriteData(var data: array of byte;Count:longInt=-1);
+procedure TST7789_SPI.WriteDataBytes(constref data: array of byte;Count:longInt=-1);
 begin
   if count = -1 then
     count := High(data)+1;
-
   gpio_put(FPinDC,true);
   spi_write_blocking(FpSPI^,data,count);
 end;
 
+procedure TST7789_SPI.WriteDataWords(constref data: array of word;Count:longInt=-1);
+begin
+  if count = -1 then
+    count := High(data)+1;
+  gpio_put(FPinDC,true);
+  spi_write_blocking_hl(FpSPI^,data,count);
+end;
 {$WARN 5028 OFF}
 begin
 end.

@@ -18,14 +18,33 @@ type
     constructor Initialize;
     procedure clearScreen; virtual;
     procedure updateScreen;
-    procedure drawPixel(const x,y : word; const color:TColor); virtual;
-    procedure drawText(const TheText : String; const x,y : word; const Color : TColor); virtual;
-    procedure setForegroundColor(const color : TColor); virtual;
-    procedure setBackgroundColor(const color : TColor); virtual;
+    procedure drawPixel(const x,y : word; const fgColor : TColor = clForeground); virtual;
+    (*
+      Draws a Text on the display
+    param:
+      TheText The String to draw
+      x,y Top left position of string to draw
+    *)
+    procedure drawText(const TheText : String; const x,y : word; const fgColor : TColor = clForeground; const bgColor : TColor = clTransparent); virtual;
     procedure setRotation(const DisplayRotation : TDisplayRotation); virtual;
-    procedure drawFastVLine(const  x, y : word ; height : word; const color : TColor=-1); virtual;
-    procedure drawFastHLine(const  x, y : word; width : word; const color : TColor=-1); virtual;
-    procedure fillRect(const x,y,width,height : word; const color : TColor = -1); virtual;
+    (*
+      Draws a vertical line on the display
+    param:
+      x,y : Start position of the line
+      height: height of line in pixels
+      fgColor: color to use for painting the line
+    *)
+    procedure drawFastVLine(const  x, y : word ; height : word; const fgColor : TColor = clForeground); virtual;
+
+    (*
+      Draws a horizontal line on the display
+    param:
+      x,y : Start position of the line
+      width: width of line
+      fgColor: color to use for painting the line
+    *)
+    procedure drawFastHLine(const  x, y : word; width : word; const fgColor : TColor = clForeground); virtual;
+    procedure fillRect(const x,y,width,height : word; const fgColor : TColor = clForeground); virtual;
     procedure setPhysicalScreenInfo(screenInfo : TPhysicalScreenInfo); virtual;
   end;
 
@@ -47,24 +66,6 @@ begin
   setLength(FrameBuffer,screenInfo.Width*screenInfo.Height div 8+i2cHack);
 end;
 
-procedure TCustomDisplayFrameBuffer1Bit.setForegroundColor(const color : TColor);
-begin
-  FForegroundColor := color;
-  if color = clBlack then
-    FNativeForegroundColor := 0
-  else
-    FNativeForegroundColor := $ff;
-end;
-
-procedure TCustomDisplayFrameBuffer1Bit.setBackgroundColor(const color : TColor);
-begin
-  FBackgroundColor := color;
-  if color = clBlack then
-    FNativeBackgroundColor := 0
-  else
-    FNativeBackgroundColor := $ff;
-end;
-
 procedure TCustomDisplayFrameBuffer1Bit.setRotation(const DisplayRotation : TDisplayRotation);
 begin
   FRotation := DisplayRotation;
@@ -80,29 +81,29 @@ begin
   end;
 end;
 
-procedure TCustomDisplayFrameBuffer1Bit.drawFastVLine(const  x, y : word ; height : word; const color : TColor=-1);
+procedure TCustomDisplayFrameBuffer1Bit.drawFastVLine(const x,y : word; height : word; const fgColor : TColor = clForeground);
 var
   i : word;
 begin
   for i := y to y + height do
-    DrawPixel(x,i,color);
+    DrawPixel(x,i,fgColor);
 end;
 
-procedure TCustomDisplayFrameBuffer1Bit.drawFastHLine(const  x, y : word; width : word; const color : TColor=-1);
+procedure TCustomDisplayFrameBuffer1Bit.drawFastHLine(const x,y : word; width : word; const fgColor : TColor = clForeground);
 var
   i : word;
 begin
   for i := x to x + width do
-    DrawPixel(i,y,color);
+    DrawPixel(i,y,fgColor);
 end;
 
-procedure TCustomDisplayFrameBuffer1Bit.fillRect(const x,y,width,height : word; const color : TColor = -1);
+procedure TCustomDisplayFrameBuffer1Bit.fillRect(const x,y,width,height : word; const fgColor : TColor = clForeground);
 var
   i,j : word;
 begin
   for i := x to word(x + width) -1 do
     for j := y to height -1 do
-      DrawPixel(i,j,color);
+      DrawPixel(i,j,fgColor);
 end;
 
 
@@ -118,48 +119,53 @@ begin
       FrameBuffer[i] := $ff;
 end;
 
-procedure TCustomDisplayFrameBuffer1Bit.drawText(const TheText : String; const x,y : word; const Color: TColor);
+procedure TCustomDisplayFrameBuffer1Bit.drawText(const TheText : String; const x,y : word; const fgColor : TColor = clForeground; const bgColor : TColor = clTransparent);
 var
   i : longWord;
-  theChar : char;
-  charStart : word;
-  lineOffset : byte;
-  x1,y1 : byte;
-  xline : byte;
+  charstart,pixelPos : longWord;
+  fx,fy : longWord;
+  divFactor,pixel,pixels : byte;
 begin
-  lineOffset := FontInfo.BytesPerChar div FontInfo.Height;
-  for i := 0 to length(TheText)-1 do
+  divFactor := 8;
+  for i := 1 to length(TheText) do
   begin
-    //only compute when char is completely visible
-    if (x+i*fontInfo.Width <= ScreenWidth) and (y+fontInfo.Height <= ScreenHeight) then
+    if (x+(i-1)*fontInfo.Width <= ScreenWidth) and (y <= ScreenHeight) then
     begin
-      theChar := TheText[i+1];
-      charstart := pos(theChar,FontInfo.Charmap)-1;
-      //The char was found in the list of a available chars
-      if charStart > 0 then
+      charstart := pos(TheText[i],FontInfo.Charmap)-1;
+      if charstart > 0 then
       begin
-        for x1 := 0 to FontInfo.Width-1 do
-          for y1 := 0 to FontInfo.Height-1 do
+        for fy := 0 to FontInfo.Height-1 do
+        begin
+          pixelPos := charStart * fontInfo.BytesPerChar+fy*(fontInfo.BytesPerChar div fontInfo.Height);
+          for fx := 0 to FontInfo.width-1 do
           begin
-            xline := FontInfo.pFontData^[charStart*FontInfo.BytesPerChar+(x1 div 8)+y1*lineOffset];
-            if xline and (%10000000 shr (x1 and %111)) <> 0 then
-              drawPixel(x+i*FontInfo.Width+x1,y+y1,Color)
+            pixels := FontInfo.pFontData^[pixelPos + (fx div divFactor)];
+            pixel := (pixels shr ((7-(fx and %111)))) and %1;
+            if (pixel = 1) then
+              drawPixel(x+(i-1)*fontInfo.Width+fx,y+fy,fgColor)
             else
-              drawPixel(x+i*FontInfo.Width+x1,y+y1,BackgroundColor);
+              if bgColor <> clTransparent then
+                drawPixel(x+(i-1)*fontInfo.Width+fx,y+fy,bgColor);
           end;
+        end;
       end
+      else
+        if bgColor <> clTransparent then
+          fillRect(x+(i-1)*fontInfo.Width,y,fontInfo.Width,fontInfo.Height,bgColor);
     end;
   end;
 end;
 
-procedure TCustomDisplayFrameBuffer1Bit.drawPixel(const x,y : word; const Color : TColor);
+procedure TCustomDisplayFrameBuffer1Bit.drawPixel(const x,y : word; const fgColor : TColor = clForeground);
 var
   offset : longWord;
   _x,_y : word;
+  _fgColor : TColor;
 begin
   if (x >= ScreenWidth) or (y >= ScreenHeight) then
     exit;
-
+  if fgColor = clTransparent then
+    exit;
   if Rotation = TDisplayRotation.None then
   begin
     _x := x;
@@ -181,9 +187,15 @@ begin
     _y := screenHeight - y - 1;
   end;
 
+  if fgColor = clForeground then
+    _fgColor := foregroundColor
+  else
+    _fgColor := fgColor;
+
+
   Offset := (_y div 8)+_x*(ScreenHeight div 8);
   //Offset := _x + (y div 8) * ScreenWidth;
-  if Color <> clBlack then
+  if _fgColor <> clBlack then
     FrameBuffer[Offset+I2CHack] := FrameBuffer[Offset+I2CHack] or (1 shl (_y and %111))
   else
     FrameBuffer[Offset+I2CHack] := FrameBuffer[Offset+I2CHack] and (not(1 shl (_y and %111)));
@@ -192,7 +204,9 @@ end;
 procedure TCustomDisplayFrameBuffer1Bit.updateScreen;
 begin
   setDrawArea(0,0,PhysicalScreenInfo.Width,PhysicalScreenInfo.Height);
-  WriteData(FrameBuffer);
+  if I2CHack = 1 then
+    FrameBuffer[0] := $40;
+  WriteDataBytes(FrameBuffer);
 end;
 
 end.

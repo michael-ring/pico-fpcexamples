@@ -113,23 +113,23 @@ const
     $00, $00, $00, $00, $00, $00, $00, $00
   );
 
-  paw64x64x4_IndexData : array [1..4*16] of byte = (
-    $96, $63, $4c, $ff, 	//Color of index 0*/
-    $ff, $ff, $ff, $ff, 	//Color of index 1*/
-    $e5, $d2, $cd, $ff, 	//Color of index 2*/
-    $cb, $ad, $a2, $ff, 	//Color of index 3*/
-    $ae, $84, $73, $ff, 	//Color of index 4*/
-    $ba, $95, $86, $ff, 	//Color of index 5*/
-    $8a, $52, $38, $ff, 	//Color of index 6*/
-    $96, $64, $4d, $ff, 	//Color of index 7*/
-    $97, $64, $4e, $ff, 	//Color of index 8*/
-    $98, $66, $4f, $ff, 	//Color of index 9*/
-    $9d, $6c, $57, $ff, 	//Color of index 10*/
-    $a4, $76, $62, $ff, 	//Color of index 11*/
-    $7b, $3e, $21, $ff, 	//Color of index 12*/
-    $83, $49, $2d, $ff, 	//Color of index 13*/
-    $90, $5b, $42, $ff, 	//Color of index 14*/
-    $ff, $ff, $ff, $ff 	//Color of index 15*/
+  paw64x64x4_IndexData : array [1..16] of TColor = (
+    $4c6396,
+    $ffffff,
+    $cdd2e5,
+    $a2adcb,
+    $7384ae,
+    $8695ba,
+    $38528a,
+    $644d96,
+    $4e6497,
+    $4f6698,
+    $576c9d,
+    $6276a4,
+    $213e7b,
+    $2d4983,
+    $425b90,
+    longInt($ffffffff)
   );
 
   paw64x64x4_ImageData : array [1..64*32] of byte = (
@@ -206,7 +206,6 @@ const
     Height : 32;
     BitsPerPixel : 1;
     BytesPerLine : 4;
-    TransparencyIndex : -1;
     pIndexData : nil;
     pImageData : @paw32x32x1_ImageData;
   );
@@ -216,7 +215,6 @@ const
     Height : 64;
     BitsPerPixel : 1;
     BytesPerLine : 8;
-    TransparencyIndex : -1;
     pIndexData : nil;
     pImageData : @paw64x64x1_ImageData;
   );
@@ -227,7 +225,6 @@ const
     Height : 64;
     BitsPerPixel : 4;
     BytesPerLine : 32;
-    TransparencyIndex : 15;
     pIndexData : @paw64x64x4_IndexData;
     pImageData : @paw64x64x4_ImageData;
   );

@@ -1,4 +1,4 @@
-unit ST7735_spi_c;
+unit ST7735R_spi_c;
 {$mode objfpc}
 {$H+}
 {$modeswitch advancedrecords}
@@ -15,7 +15,7 @@ uses
   pico_c;
 
 type
-  TST7735_SPI = object(TCustomDisplay16Bits)
+  TST7735R_SPI = object(TCustomDisplay16Bits)
     private
       FpSPI : ^TSPI_Registers;
       FPinDC : TPinIdentifier;
@@ -136,7 +136,7 @@ const
   ST7735_GMCTRP1 =$E0;
   ST7735_GMCTRN1 =$E1;
 
-constructor TST7735_SPI.Initialize(var SPI : TSpi_Registers;const aPinDC : TPinIdentifier;const aPinRST : TPinIdentifier;aPhysicalScreenInfo : TPhysicalScreenInfo);
+constructor TST7735R_SPI.Initialize(var SPI : TSpi_Registers;const aPinDC : TPinIdentifier;const aPinRST : TPinIdentifier;aPhysicalScreenInfo : TPhysicalScreenInfo);
 begin
     FpSPI := @SPI;
     FPinDC := aPinDC;
@@ -158,51 +158,58 @@ begin
     InitSequence;
 end;
 
-procedure TST7735_SPI.InitSequence;
+procedure TST7735R_SPI.InitSequence;
 const
-  col1 : array of byte = ($09,$16,$09,$20,$21,$1B,$13,$19,$17,$15,$1E,$2B,$04,$05,$02,$0E);
-  col2 : array of byte = ($0B,$14,$08,$1E,$22,$1D,$18,$1E,$1B,$1A,$24,$2B,$06,$06,$02,$0F);
+  col1 : array of byte = ($02,$1c,$07,$12,$37,$32,$29,$2d,$29,$25,$2B,$39,$00,$01,$03,$10);
+  col2 : array of byte = ($03,$1d,$07,$06,$2E,$2C,$29,$2D,$2E,$2E,$37,$3F,$00,$00,$02,$10);
 begin
   WriteCommand(ST7735_SWRESET);
-  busy_wait_us_32(50000);
+  busy_wait_us_32(150000);
 
   writecommand(ST7735_SLPOUT);   // Sleep out
   busy_wait_us_32(500000);
 
+  writeCommandBytes(ST7735_FRMCTR1,[$01,$2C,$2D]);
+  writeCommandBytes(ST7735_FRMCTR2,[$01,$2C,$2D]);
+  writeCommandBytes(ST7735_FRMCTR3,[$01,$2C,$2D,$01,$2C,$2D]);
+  writeCommandBytes(ST7735_INVCTR,[$07]);
+  writeCommandBytes(ST7735_PWCTR1,[$A2,$02,$84]);
+  writeCommandBytes(ST7735_PWCTR2,[$C5]);
+  writeCommandBytes(ST7735_PWCTR3,[$0A,$00]);
+  writeCommandBytes(ST7735_PWCTR4,[$8A,$2A]);
+  writeCommandBytes(ST7735_PWCTR5,[$8A,$EE]);
+  writeCommandBytes(ST7735_VMCTR1,[$0E]);
+  writeCommand(ST7735_INVOFF);
+
+  writeCommandBytes(ST7735_MADCTL,[$C0 or ST7735_MADCTL_BGR]);
   writeCommandBytes(ST7735_COLMOD,[$05]);
-  busy_wait_us_32(10000);
 
-  writeCommandBytes(ST7735_FRMCTR1,[$00,$06,$03]);
-  busy_wait_us_32(10000);
+  writeCommandWords(ST7735_CASET,[0,127]);    // Column address set
+  writeCommandWords(ST7735_RASET,[0,127]);    // Row address set
 
-  writeCommandBytes(ST7735_MADCTL,[$40+ST7735_MADCTL_BGR]);
-  writeCommandBytes(ST7735_DISSET5,[$15,$02]);
-  writeCommandBytes(ST7735_INVCTR,[$00]);
-  writeCommandBytes(ST7735_PWCTR1,[$02,$70]);
-  busy_wait_us_32(10000);
-  writeCommandBytes(ST7735_PWCTR2,[$05]);
-  writeCommandBytes(ST7735_PWCTR3,[$01,$02]);
-  writeCommandBytes(ST7735_VMCTR1,[$3C,$38]);
-  busy_wait_us_32(10000);
   writeCommandBytes(ST7735_PWCTR6,[$11,$15]);
-  writeCommandBytes(ST7735_GMCTRP1,col1);
-  writeCommandBytes(ST7735_GMCTRP1,col2);
-  busy_wait_us_32(10000);
-
-  writeCommandWords(ST7735_CASET,[2,129]);    // Column address set
-  writeCommandWords(ST7735_RASET,[2,129]);    // Row address set
+  writeCommand(ST7735_GMCTRP1);
+  writeDataBytes(col1);
+  writeCommand(ST7735_GMCTRP1);
+  writeDataBytes(col2);
 
   writeCommand(ST7735_NORON);    // Normal display mode on
-  writeCommand(ST7735_INVON);
+  busy_wait_us_32(10000);
+  writeCommand(ST7735_DISPON);
+  busy_wait_us_32(100000);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   busy_wait_us_32(120000);
-  writeCommand(ST7735_DISPON);    //Display on
+  writecommand(ST7735_DISPON);    //Display on
   busy_wait_us_32(120000);
   setRotation(TDisplayRotation.None);
-  foregroundColor := clBlack;
-  backgroundColor := clWhite;
+  ForegroundColor := clBlack;
+  BackgroundColor := clWhite;
 end;
 
-procedure TST7735_SPI.setRotation(const displayRotation : TDisplayRotation);
+procedure TST7735R_SPI.setRotation(const displayRotation : TDisplayRotation);
 var
   ColMode : byte;
 begin
@@ -238,7 +245,7 @@ begin
   end;
 end;
 
-function TST7735_SPI.setDrawArea(const X,Y,Width,Height : word):longWord;
+function TST7735R_SPI.setDrawArea(const X,Y,Width,Height : word):longWord;
 begin
   {$PUSH}
   {$WARN 4079 OFF}
@@ -250,7 +257,7 @@ begin
   {$POP}
 end;
 
-procedure TST7735_SPI.drawPixel(const x,y : word; const fgColor : TColor = clForeground);
+procedure TST7735R_SPI.drawPixel(const x,y : word; const fgColor : TColor = clForeground);
 var
   _fgColor : word;
 begin
@@ -264,7 +271,7 @@ begin
   WriteData(lo(_fgColor));
 end;
 
-procedure TST7735_SPI.WriteCommand(const command: Byte);
+procedure TST7735R_SPI.WriteCommand(const command: Byte);
 var
   data: array[0..0] of byte;
 begin
@@ -274,7 +281,7 @@ begin
   gpio_put(FPinDC,true);
 end;
 
-procedure TST7735_SPI.WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1);
+procedure TST7735R_SPI.WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1);
 var
   _data : array[0..0] of byte;
 begin
@@ -287,7 +294,7 @@ begin
   spi_write_blocking(FpSPI^,data,count);
 end;
 
-procedure TST7735_SPI.WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1);
+procedure TST7735R_SPI.WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1);
 var
   _data : array[0..0] of byte;
 begin
@@ -300,7 +307,7 @@ begin
   spi_write_blocking_hl(FpSPI^,data,count);
 end;
 
-procedure TST7735_SPI.WriteData(const data: byte);
+procedure TST7735R_SPI.WriteData(const data: byte);
 var
   _data : array[0..0] of byte;
 begin
@@ -309,7 +316,7 @@ begin
   spi_write_blocking(FpSPI^,_data,1);
 end;
 
-procedure TST7735_SPI.WriteDataBytes(constref data: array of byte;Count:longInt=-1);
+procedure TST7735R_SPI.WriteDataBytes(constref data: array of byte;Count:longInt=-1);
 begin
   if count = -1 then
     count := High(data)+1;
@@ -317,7 +324,7 @@ begin
   spi_write_blocking(FpSPI^,data,count);
 end;
 
-procedure TST7735_SPI.WriteDataWords(constref data: array of word;Count:longInt=-1);
+procedure TST7735R_SPI.WriteDataWords(constref data: array of word;Count:longInt=-1);
 begin
   if count = -1 then
     count := High(data)+1;
