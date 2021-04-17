@@ -32,28 +32,25 @@ begin
 
   repeat
     gpio_put(TPicoPin.LED,true);
-    ssd1306.ForegroundColor := clBlack;
-    ssd1306.BackgroundColor := clWhite;
-    ssd1306.ClearScreen;
-    ssd1306.updateScreen;
-    if ssd1306.ScreenHeight=32 then
-      ssd1306.drawImage(ssd1306.ScreenWidth-32,0,paw32x32x1);
-    if ssd1306.ScreenHeight=64 then
-      ssd1306.drawImage(ssd1306.ScreenWidth-64,0,paw64x64x1);
-    ssd1306.drawText('Hello',0,0,clBlack);
-    ssd1306.updateScreen;
-    busy_wait_us_32(1000000);
-    gpio_put(TPicoPin.LED,false);
     ssd1306.ForegroundColor := clWhite;
     ssd1306.BackgroundColor := clBlack;
+    ssd1306.setRotation(TDisplayRotation.None);
     ssd1306.ClearScreen;
+    ssd1306.drawText('Hello',0,0);
+    ssd1306.drawText('FreePascal',0,ssd1306.ScreenHeight-ssd1306.FontInfo.Height);
+    ssd1306.drawImage(ssd1306.ScreenWidth - 33, ssd1306.ScreenHeight div 2 - 16,paw32x32x1);
     ssd1306.updateScreen;
-    if ssd1306.ScreenHeight=32 then
-      ssd1306.drawImage(ssd1306.ScreenWidth-32,0,paw32x32x1);
-    if ssd1306.ScreenHeight=64 then
-      ssd1306.drawImage(ssd1306.ScreenWidth-64,0,paw64x64x1);
-    ssd1306.drawText('FreePascal',0,ssd1306.ScreenHeight-ssd1306.FontInfo.Height,clWhite);
+    busy_wait_us_32(2000000);
+
+    gpio_put(TPicoPin.LED,false);
+    ssd1306.ForegroundColor := clBlack;
+    ssd1306.BackgroundColor := clWhite;
+    ssd1306.setRotation(TDisplayRotation.UpsideDown);
+    ssd1306.ClearScreen;
+    ssd1306.drawText('Hello',0,0);
+    ssd1306.drawText('FreePascal',0,ssd1306.ScreenHeight-ssd1306.FontInfo.Height);
+    ssd1306.drawImage(ssd1306.ScreenWidth - 33, ssd1306.ScreenHeight div 2 - 16,paw32x32x1);
     ssd1306.updateScreen;
-    busy_wait_us_32(1000000);
+    busy_wait_us_32(2000000);
   until 1=0;
 end.
