@@ -11,7 +11,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/%%APPNAME%%"/>
+            <Filename Value="bin/i2c_scan"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -19,8 +19,8 @@
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <TargetProcessor Value="%%SUBARCH%%"/>
-            <TargetCPU Value="%%ARCH%%"/>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
             <TargetOS Value="embedded"/>
           </CodeGeneration>
           <Linking>
@@ -43,7 +43,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/%%APPNAME%%"/>
+            <Filename Value="bin/i2c_scan"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -51,8 +51,8 @@
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <TargetProcessor Value="%%SUBARCH%%"/>
-            <TargetCPU Value="%%ARCH%%"/>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
             <TargetOS Value="embedded"/>
           </CodeGeneration>
           <Linking>
@@ -75,7 +75,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/%%APPNAME%%"/>
+            <Filename Value="bin/i2c_scan"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -83,8 +83,8 @@
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <TargetProcessor Value="%%SUBARCH%%"/>
-            <TargetCPU Value="%%ARCH%%"/>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
             <TargetOS Value="embedded"/>
           </CodeGeneration>
           <Linking>
@@ -107,7 +107,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/%%APPNAME%%"/>
+            <Filename Value="bin/i2c_scan"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -115,8 +115,8 @@
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <TargetProcessor Value="%%SUBARCH%%"/>
-            <TargetCPU Value="%%ARCH%%"/>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
             <TargetOS Value="embedded"/>
           </CodeGeneration>
           <Linking>
@@ -139,7 +139,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/%%APPNAME%%"/>
+            <Filename Value="bin/i2c_scan"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -147,8 +147,8 @@
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <TargetProcessor Value="%%SUBARCH%%"/>
-            <TargetCPU Value="%%ARCH%%"/>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
             <TargetOS Value="embedded"/>
           </CodeGeneration>
           <Linking>
@@ -171,7 +171,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/%%APPNAME%%"/>
+            <Filename Value="bin/i2c_scan"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -179,8 +179,8 @@
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
-            <TargetProcessor Value="%%SUBARCH%%"/>
-            <TargetCPU Value="%%ARCH%%"/>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
             <TargetOS Value="embedded"/>
           </CodeGeneration>
           <Linking>
@@ -202,7 +202,7 @@
     </BuildModes>
     <Units>
       <Unit>
-        <Filename Value="%%APPNAME%%.lpr"/>
+        <Filename Value="i2c_scan.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <Loaded Value="True"/>
@@ -212,7 +212,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="bin/%%APPNAME%%"/>
+      <Filename Value="bin/i2c_scan"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
@@ -220,8 +220,8 @@
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <CodeGeneration>
-      <TargetProcessor Value="%%SUBARCH%%"/>
-      <TargetCPU Value="%%ARCH%%"/>
+      <TargetProcessor Value="armv6m"/>
+      <TargetCPU Value="arm"/>
       <TargetOS Value="embedded"/>
     </CodeGeneration>
     <Linking>

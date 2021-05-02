@@ -16,7 +16,7 @@ program %%APPNAME%%;
 {$MEMORY 10000,10000}
 
 uses
-  pico_c
+  pico_c,
   pico_gpio_c;
 
 begin

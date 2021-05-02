@@ -46,8 +46,10 @@ cat devicelist | grep -v "^#" | while read BOARD_OR_CPU SUBARCH DEVICE DEVICESVD
     cat templates/template.lpi | sed -e "s,%%APPNAME%%,$APPNAME,g" \
                          -e "s,%%ARCH%%,$ARCH,g" \
                          -e "s,%%SUBARCH%%,$SUBARCH,g" \
-                         -e "s,%%BOARD_OR_CPU%%,$BOARD_OR_CPU,g" >$APPNAME/$APPNAME-$BOARD_OR_CPU.lpi
-    echo $APPNAME/$APPNAME-$BOARD_OR_CPU.lpi created
+                         -e "s,%%BOARD_OR_CPU%%,$BOARD_OR_CPU,g" >$APPNAME/$APPNAME.lpi
+                         #-e "s,%%BOARD_OR_CPU%%,$BOARD_OR_CPU,g" >$APPNAME/$APPNAME-$BOARD_OR_CPU.lpi
+    echo $APPNAME/$APPNAME.lpi created
+    #echo $APPNAME/$APPNAME-$BOARD_OR_CPU.lpi created
   fi
 
   if [ ! -f $APPNAME/$APPNAME.lpr ]; then

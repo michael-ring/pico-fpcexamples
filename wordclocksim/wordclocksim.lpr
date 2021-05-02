@@ -63,13 +63,15 @@ const
       (index:20;row: 2;column:1;len:6), // TWENTY
       (index:20;row: 3;column:2;len:4), // PAST
 
-      (index:25;row: 2;column:1;len:10), // TWENTYFIVE
+      (index:25;row: 2;column:1;len:6), // TWENTY
+      (index:25;row: 2;column:7;len:4), // FIVE
       (index:25;row: 3;column:2;len:4), // PAST
 
       (index:30;row: 0;column:6;len:4), // HALF
       (index:30;row: 3;column:2;len:4), // PAST
 
-      (index:35;row: 2;column:1;len:10), // TWENTYFIVE
+      (index:35;row: 2;column:1;len:6), // TWENTY
+      (index:35;row: 2;column:7;len:4), // FIVE
       (index:35;row: 3;column:0;len:2), // TO
 
       (index:40;row: 2;column:1;len:6), // TWENTY
