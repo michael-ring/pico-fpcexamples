@@ -1,10 +1,12 @@
-program wordclocksim;
+program wordclock_ds3231;
 {$MODE OBJFPC}
 {$H+}
 {$MEMORY 20000,20000}
 uses
   pico_spi_c,
   st7789_spi_c,
+  pico_i2c_c,
+  ds3231_c,
   CustomDisplay,
   pico_gpio_c,
   pico_timer_c,
@@ -91,7 +93,9 @@ const
 
 var
   tft : Tst7789_SPI;
+  ds3231 : Tds3231;
   lastHour,lastMinute : byte;
+  currentPicoDateTime : TPicoDateTime;
 
 procedure drawHour(Hour,Minute:byte);
 var
@@ -162,11 +166,8 @@ begin
   lastMinute := Minute;
 end;
 var
-  row,column,hour,minute,i : integer;
+  row,column,i : integer;
 begin
-  gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
-
   spi_init(spi,20000000);
   gpio_set_function(TPicoPin.SPI_CS,  TGPIOFunction.GPIO_FUNC_SPI);
   gpio_set_function(TPicoPin.SPI_SCK, TGPIOFunction.GPIO_FUNC_SPI);
@@ -174,6 +175,24 @@ begin
 
   tft.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,tft.ScreenSize240x240x16);
   tft.setFontInfo(BitstreamVeraSansMono13x24);
+
+  i2c_init(i2cInst, 400000);
+  gpio_set_function(TPicoPin.I2C_SDA, TGPIOFunction.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SCL, TGPIOFunction.GPIO_FUNC_I2C);
+  gpio_pull_up(TPicoPin.I2C_SDA);
+  gpio_pull_up(TPicoPin.I2C_SCL);
+
+  ds3231.initialize(i2cInst,$68);
+
+  currentPicoDateTime.year := 2021;
+  currentPicoDateTime.month := 5;
+  currentPicoDateTime.day := 13;
+  currentPicoDateTime.dotw := 4; //Pico Time starts with Sunday as 0
+  currentPicoDateTime.hour := 13;
+  currentPicoDateTime.min := 32;
+  currentPicoDateTime.sec := 00;
+  //Comment the following line if your RTC is already set
+  //ds3231.setDateTime(currentPicoDateTime);
 
   tft.ForegroundColor := $808080;
   tft.BackgroundColor := clBlack;
@@ -190,19 +209,9 @@ begin
   tft.drawText(clockface[0][4],9+4*21,0,clWhite);
 
   repeat
-    gpio_put(TPicoPin.LED,true);
-    lastHour := 23;
-    lastMinute := 55;
-    repeat
-      for hour := 0 to 23 do
-      begin
-        for minute := 0 to 59 do
-        begin
-          drawHour(hour,minute);
-          drawMinute(minute);
-          busy_wait_us(300000);
-        end;
-      end;
-    until 1=0;
+    currentPicoDateTime := ds3231.getPicoDateTime;
+    drawHour(currentPicoDateTime.hour,currentPicoDateTime.min);
+    drawMinute(currentPicoDateTime.min);
+    busy_wait_us(1000000*10);
   until 1=0;
 end.
