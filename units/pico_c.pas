@@ -1,5 +1,9 @@
 unit pico_c;
-{$mode objfpc}{$H+}
+{$mode objfpc}
+{$H+}
+{$modeswitch advancedrecords}
+{$SCOPEDENUMS ON}
+
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_CORE)}
 {$L platform.c-debug.obj}
 {$L claim.c-debug.obj}
@@ -53,12 +57,28 @@ uses
 type 
   TByteArray = array of Byte;
 
+  TPicoError = record
+  const
+    NO_DATA = -3;
+    &GENERIC = -2;
+    TIMEOUT = -1;
+    OK = 0;
+    NONE = 0;
+  end;
+
+const
+  PICO_OK = 0;
+  PICO_ERROR_NONE = 0;
+  PICO_ERROR_TIMEOUT = -1;
+  PICO_ERROR_GENERIC = -2;
+  PICO_ERROR_NO_DATA = -3;
+
 (*
   Structure containing date and time information
   When setting an RTC alarm, set a field to -1 tells</b>
   the RTC to not match on this field
 *)
-type Tdatetime = record
+type TPicoDatetime = record
   year:word;    //< 0..4095
   month: 1..12; //< 1..12, 1 is January
   day: 1..31;   //< 1..28,29,30,31 depending on month

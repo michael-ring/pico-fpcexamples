@@ -29,19 +29,29 @@ var
 begin
   gpio_init(TPicoPin.LED);
   gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+
+  // we use UART0 for debug output
   uart_init(uart0, BAUDRATE);
-  gpio_set_function(TPicoPin.UART_TX, TGPIOFunction.GPIO_FUNC_UART);
-  gpio_set_function(TPicoPin.UART_RX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.GP0_UART0_TX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.GP1_UART0_RX, TGPIOFunction.GPIO_FUNC_UART);
+
+  // the gps is connected to UART1
   uart_init(uart1, GPS_BAUDRATE);
   gpio_set_function(TPicoPin.GP4_UART1_TX, TGPIOFunction.GPIO_FUNC_UART);
   gpio_set_function(TPicoPin.GP5_UART1_RX, TGPIOFunction.GPIO_FUNC_UART);
 
-  gps.init(uart1);
+  gps.init(uart1,GPS_BAUDRATE);
 
   repeat
-    gpio_put(TPicoPin.LED,false);
-    gps.poll;
     gpio_put(TPicoPin.LED,true);
+    gps.poll;
+    // We need to make sure that we do not spend too much time in the code below the gps.poll command
+    // so that we are sure that we catch the next update of the GPS. Usually GPS data is updated once per second
+    // which gives you 300-500ms of time to do other things before the next GPS data is ready.
+    // when the LED indicator looks like it really blinks instead of going dark for only a brief moment then you know
+    // your processing after the poll is likely getting too long.
+
+    gpio_put(TPicoPin.LED,false);
     if (gps.status = TGPSStatusCode.INITIALIZING) then
       uart_puts(uart0,'Initializing connection to GPS'+#13#10);
     if (gps.status = TGPSStatusCode.SERIALDETECTED) then
