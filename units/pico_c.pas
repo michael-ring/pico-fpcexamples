@@ -52,7 +52,8 @@ unit pico_c;
 
 interface
 uses
-  heapmgr;
+  heapmgr,
+  pico_sync_c;
 
 type 
   TByteArray = array of Byte;
@@ -188,16 +189,18 @@ procedure runtime_init;
 const
   RESETS_SAFE_BITS=     %1111111111100110110111111;
   RESETS_PRECLOCK_BITS= %0001111000100110110111110;
-  RESETS_POSTCLOCK_BITS=%1110000111000000000000001;
+  //RESETS_POSTCLOCK_BITS=%1110000111000000000000001;
+  RESETS_RESET_BITS    =%1111111111111111111111111;
 begin
   hw_set_bits(resets.reset,RESETS_SAFE_BITS);
   hw_clear_bits(resets.reset,RESETS_PRECLOCK_BITS);
   repeat
   until (resets.reset_done and RESETS_PRECLOCK_BITS) = RESETS_PRECLOCK_BITS;
   clocks_init;
-  hw_clear_bits(resets.reset,RESETS_POSTCLOCK_BITS);
+  hw_clear_bits(resets.reset,RESETS_RESET_BITS);
   repeat
-  until (resets.reset_done and RESETS_POSTCLOCK_BITS) = RESETS_POSTCLOCK_BITS;
+  until (resets.reset_done and RESETS_RESET_BITS) = RESETS_RESET_BITS;
+  spin_locks_reset;
 end;
 
 procedure hw_set_bits(var Register : longWord; mask:longWord);

@@ -52,3 +52,4 @@ backup/
 bin/
 lib/
 .DS_Store
+credentials.inc

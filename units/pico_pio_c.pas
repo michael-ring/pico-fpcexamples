@@ -39,7 +39,7 @@ type
   Tpio_program = record
     instructions : pword;
     length : byte;
-    origin : byte; // required instruction memory origin or -1
+    origin : shortint; // required instruction memory origin or -1
   end;
 
 (*
@@ -860,12 +860,15 @@ end;
 
 procedure sm_config_set_sideset(var c : Tpio_sm_config; bit_count : longWord; optional : boolean; pindirs : boolean);
 begin
+  {$PUSH}
+  {$WARN 4110 off : Range check error while evaluating constants ($1 must be between $2 and $3)}
   c.pinctrl := (c.pinctrl and not longWord(PIO_SM0_PINCTRL_SIDESET_COUNT_BITS)) or
                  longword(bit_count shl PIO_SM0_PINCTRL_SIDESET_COUNT_LSB);
 
   c.execctrl := (c.execctrl  and not (PIO_SM0_EXECCTRL_SIDE_EN_BITS or PIO_SM0_EXECCTRL_SIDE_PINDIR_BITS)) or
                   (longWord(optional) shl PIO_SM0_EXECCTRL_SIDE_EN_LSB) or
                   (longWord(pindirs) shl PIO_SM0_EXECCTRL_SIDE_PINDIR_LSB);
+  {$POP}
 end;
 
 procedure sm_config_set_clkdiv_int_frac(var c : Tpio_sm_config; div_int : word; div_frac : byte);
@@ -901,8 +904,11 @@ end;
 
 procedure sm_config_set_jmp_pin(var c : Tpio_sm_config; pin : TPinIdentifier);
 begin
+  {$PUSH}
+  {$WARN 4035 off : Mixing signed expressions and longwords gives a 64bit result}
   c.execctrl := (c.execctrl and longWord(not PIO_SM0_EXECCTRL_JMP_PIN_BITS)) or
                   (pin shl PIO_SM0_EXECCTRL_JMP_PIN_LSB);
+  {$POP}
 end;
 
 procedure sm_config_set_in_shift(var c : Tpio_sm_config; shift_right : boolean; autopush : boolean; push_threshold : longWord);
@@ -929,8 +935,12 @@ end;
 
 procedure sm_config_set_fifo_join(var c : Tpio_sm_config; join : Tpio_fifo_join);
 begin
+  {$PUSH}
+  {$WARN 4110 off : Range check error while evaluating constants ($1 must be between $2 and $3)}
+
   c.shiftctrl := (c.shiftctrl and not(PIO_SM0_SHIFTCTRL_FJOIN_TX_BITS or PIO_SM0_SHIFTCTRL_FJOIN_RX_BITS)) or
                    ((longWord(join)) shl PIO_SM0_SHIFTCTRL_FJOIN_TX_LSB);
+  {$POP}
 end;
 
 procedure sm_config_set_out_special(var c : Tpio_sm_config; sticky : boolean; has_enable_pin : boolean; enable_pin_index : longWord);
