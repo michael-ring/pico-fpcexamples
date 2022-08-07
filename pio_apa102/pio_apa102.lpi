@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <General>
+      <UseAppBundle Value="False"/>
+    </General>
+    <BuildModes Active="Raspberry Pi Pico">
+      <Item Name="Raspberry Pi Pico" Default="True"/>
+      <Item Name="Adafruit Feather RP2040">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="bin/pio_apa102"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../units"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
+            <TargetOS Value="embedded"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-Wpfeather_rp2040
+-godwarfsets
+-godwarfcpp
+-Xu"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Adafruit ItsyBitzy RP2040">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="bin/pio_apa102"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../units"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
+            <TargetOS Value="embedded"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-Wpitzybitzy_rp2040
+-godwarfsets
+-godwarfcpp
+-Xu"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Adafruit QTPY RP2040">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="bin/pio_apa102"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../units"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
+            <TargetOS Value="embedded"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-Wpqtpy_rp2040
+-godwarfsets
+-godwarfcpp
+-Xu"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="Pimoroni Tiny 2040">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="bin/pio_apa102"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../units"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
+            <TargetOS Value="embedded"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-Wptiny_2040
+-godwarfsets
+-godwarfcpp
+-Xu"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="SparkFun Pro Micro RP2040">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="bin/pio_apa102"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../units"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
+            <TargetOS Value="embedded"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-Wppromicro_rp2040
+-godwarfsets
+-godwarfcpp
+-Xu"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="SparkFun Thing Plus RP2040">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="bin/pio_apa102"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="../units"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetProcessor Value="armv6m"/>
+            <TargetCPU Value="arm"/>
+            <TargetOS Value="embedded"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+          </Linking>
+          <Other>
+            <CustomOptions Value="-Wpthingplus_rp2040
+-godwarfsets
+-godwarfcpp
+-Xu"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+    </RunParams>
+    <Units>
+      <Unit>
+        <Filename Value="pio_apa102.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="42"/>
+        <CursorPos X="17" Y="25"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="apa102.inc"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="15"/>
+        <CursorPos X="60" Y="33"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit>
+    </Units>
+    <JumpHistory HistoryIndex="20">
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="25" Column="42"/>
+      </Position>
+      <Position>
+        <Filename Value="apa102.inc"/>
+        <Caret Line="37" Column="14" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="apa102.inc"/>
+        <Caret Line="51" Column="11" TopLine="33"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="33" Column="82"/>
+      </Position>
+      <Position>
+        <Filename Value="apa102.inc"/>
+        <Caret Line="40" Column="46" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="apa102.inc"/>
+        <Caret Line="39" Column="50" TopLine="21"/>
+      </Position>
+      <Position>
+        <Filename Value="apa102.inc"/>
+        <Caret Line="40" Column="53" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="33" Column="67"/>
+      </Position>
+      <Position>
+        <Filename Value="apa102.inc"/>
+        <Caret Line="65" Column="7" TopLine="63"/>
+      </Position>
+      <Position>
+        <Filename Value="apa102.inc"/>
+        <Caret Line="103" Column="6" TopLine="67"/>
+      </Position>
+      <Position>
+        <Filename Value="apa102.inc"/>
+        <Caret Line="69" Column="7"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="80" TopLine="46"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="31" Column="17" TopLine="13"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="48" Column="40" TopLine="30"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="76" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="66" Column="25" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="57" Column="16" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="69" Column="42" TopLine="37"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="70" Column="23" TopLine="37"/>
+      </Position>
+      <Position>
+        <Filename Value="pio_apa102.lpr"/>
+        <Caret Line="72" Column="28" TopLine="38"/>
+      </Position>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="bin/pio_apa102"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../units"/>
+      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <TargetProcessor Value="armv6m"/>
+      <TargetCPU Value="arm"/>
+      <TargetOS Value="embedded"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf2"/>
+        <UseLineInfoUnit Value="False"/>
+      </Debugging>
+    </Linking>
+    <Other>
+      <CustomOptions Value="-Wpraspi_pico
+-godwarfsets
+-godwarfcpp
+-Xu"/>
+    </Other>
+  </CompilerOptions>
+</CONFIG>
