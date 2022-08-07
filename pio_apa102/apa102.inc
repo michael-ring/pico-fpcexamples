@@ -9,7 +9,7 @@
 const apa102_mini_wrap_target=0;
 const apa102_mini_wrap=1;
 
-const apa102_mini_program_instructions : array of word = (
+const apa102_mini_program_instructions : array [0..1] of word = (
            //     .wrap_target
     $6001, //  0: out    pins, 1         side 0     
     $b042  //  1: nop                    side 1     
@@ -17,7 +17,7 @@ const apa102_mini_program_instructions : array of word = (
 );
 
 const apa102_mini_program : Tpio_program = (
-    instructions : @apa102_mini_program_instructions;
+    instructions : @apa102_mini_program_instructions[0];
     length : 2;
     origin : -1;
 );
@@ -65,7 +65,7 @@ const apa102_rgb555_wrap=14;
 const apa102_rgb555_offset_pixel_out=0;
 const apa102_rgb555_offset_bit_run=9;
 
-const apa102_rgb555_program_instructions : array of word = (
+const apa102_rgb555_program_instructions : array [0..14] of word = (
            //     .wrap_target
     $80e0, //  0: pull   ifempty block              
     $e022, //  1: set    x, 2                       
@@ -86,7 +86,7 @@ const apa102_rgb555_program_instructions : array of word = (
 );
 
 const apa102_rgb555_program : Tpio_program = (
-    instructions : @apa102_rgb555_program_instructions;
+    instructions : @apa102_rgb555_program_instructions[0];
     length : 15;
     origin : -1;
 );

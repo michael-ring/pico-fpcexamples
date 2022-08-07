@@ -23,7 +23,7 @@ const ws2812_program_instructions : array[0..3] of word = (
 );
 
 const ws2812_program : Tpio_program = (
-    instructions : addr(ws2812_program_instructions[0]);
+    instructions : @ws2812_program_instructions[0];
     length : 4;
     origin : -1;
 );
@@ -70,7 +70,7 @@ const ws2812_parallel_T1=2;
 const ws2812_parallel_T2=5;
 const ws2812_parallel_T3=3;
 
-const ws2812_parallel_program_instructions : array of word = (
+const ws2812_parallel_program_instructions : array [0..3] of word = (
            //     .wrap_target
     $6020, //  0: out    x, 32                      
     $a10b, //  1: mov    pins, !null            [1] 
@@ -80,7 +80,7 @@ const ws2812_parallel_program_instructions : array of word = (
 );
 
 const ws2812_parallel_program : Tpio_program = (
-    instructions : @ws2812_parallel_program_instructions;
+    instructions : @ws2812_parallel_program_instructions[0];
     length : 4;
     origin : -1;
 );
