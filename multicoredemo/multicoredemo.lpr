@@ -1,4 +1,4 @@
-program demo_multicore;
+program multicoredemo;
 
 {
   This file is part of pico-fpcsamples

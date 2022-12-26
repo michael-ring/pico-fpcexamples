@@ -11,7 +11,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/pio_ws2812"/>
+            <Filename Value="bin/uart_irq_demo"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -43,7 +43,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/pio_ws2812"/>
+            <Filename Value="bin/uart_irq_demo"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -75,7 +75,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/pio_ws2812"/>
+            <Filename Value="bin/uart_irq_demo"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -107,7 +107,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/pio_ws2812"/>
+            <Filename Value="bin/uart_irq_demo"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -139,7 +139,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/pio_ws2812"/>
+            <Filename Value="bin/uart_irq_demo"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -171,7 +171,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="bin/pio_ws2812"/>
+            <Filename Value="bin/uart_irq_demo"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -202,7 +202,7 @@
     </BuildModes>
     <Units>
       <Unit>
-        <Filename Value="pio_ws2812.lpr"/>
+        <Filename Value="uart_irq_demo.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <Loaded Value="True"/>
@@ -212,7 +212,7 @@
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="bin/pio_ws2812"/>
+      <Filename Value="bin/uart_irq_demo"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
