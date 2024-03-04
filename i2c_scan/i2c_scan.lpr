@@ -19,15 +19,15 @@ var
   tmpStr : String;
 begin
   gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
 
   uart_init(uart, BAUD_RATE);
-  gpio_set_function(TPicoPin.UART_TX, TGPIOFunction.GPIO_FUNC_UART);
-  gpio_set_function(TPicoPin.UART_RX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_TX, TGPIO_Function.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_RX, TGPIO_Function.GPIO_FUNC_UART);
   
   i2c_init(i2cInst, 100000);
-  gpio_set_function(TPicoPin.I2C_SDA, TGPIOFunction.GPIO_FUNC_I2C);
-  gpio_set_function(TPicoPin.I2C_SCL, TGPIOFunction.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SDA, TGPIO_Function.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SCL, TGPIO_Function.GPIO_FUNC_I2C);
   gpio_pull_up(TPicoPin.I2C_SDA);
   gpio_pull_up(TPicoPin.I2C_SCL);
 

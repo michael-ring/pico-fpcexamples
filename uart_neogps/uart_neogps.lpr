@@ -28,17 +28,17 @@ var
 
 begin
   gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
 
   // we use UART0 for debug output
   uart_init(uart0, BAUDRATE);
-  gpio_set_function(TPicoPin.GP0_UART0_TX, TGPIOFunction.GPIO_FUNC_UART);
-  gpio_set_function(TPicoPin.GP1_UART0_RX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.GP0_UART0_TX, TGPIO_Function.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.GP1_UART0_RX, TGPIO_Function.GPIO_FUNC_UART);
 
   // the gps is connected to UART1
   uart_init(uart1, GPS_BAUDRATE);
-  gpio_set_function(TPicoPin.GP4_UART1_TX, TGPIOFunction.GPIO_FUNC_UART);
-  gpio_set_function(TPicoPin.GP5_UART1_RX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.GP4_UART1_TX, TGPIO_Function.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.GP5_UART1_RX, TGPIO_Function.GPIO_FUNC_UART);
 
   gps.init(uart1,GPS_BAUDRATE);
 

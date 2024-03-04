@@ -17,11 +17,11 @@ var
 
 begin
   gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
 
   i2c_init(i2cInst, 400000);
-  gpio_set_function(TPicoPin.I2C_SDA, TGPIOFunction.GPIO_FUNC_I2C);
-  gpio_set_function(TPicoPin.I2C_SCL, TGPIOFunction.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SDA, TGPIO_Function.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SCL, TGPIO_Function.GPIO_FUNC_I2C);
   gpio_pull_up(TPicoPin.I2C_SDA);
   gpio_pull_up(TPicoPin.I2C_SCL);
 

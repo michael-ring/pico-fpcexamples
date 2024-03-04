@@ -188,7 +188,7 @@ begin
   if aPinRST > -1 then
   begin
     gpio_init(aPinRST);
-    gpio_set_dir(aPinRST,TGPIODirection.GPIO_OUT);
+    gpio_set_dir(aPinRST,TGPIO_Direction.GPIO_OUT);
     gpio_put(aPinRST,true);
   end;
   initSequence;

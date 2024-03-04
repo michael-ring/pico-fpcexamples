@@ -9,7 +9,7 @@ uses
 
 begin
   gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
   repeat
     gpio_put(TPicoPin.LED,true);
     busy_wait_us_32(500000);

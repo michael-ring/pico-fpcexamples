@@ -11,10 +11,10 @@ const
   BAUD_RATE=115200;
 begin
   gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
   uart_init(uart, BAUD_RATE);
-  gpio_set_function(TPicoPin.UART_TX, TGPIOFunction.GPIO_FUNC_UART);
-  gpio_set_function(TPicoPin.UART_RX, TGPIOFunction.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_TX, TGPIO_Function.GPIO_FUNC_UART);
+  gpio_set_function(TPicoPin.UART_RX, TGPIO_Function.GPIO_FUNC_UART);
   repeat
     gpio_put(TPicoPin.LED,true);
     uart_puts(uart, 'Hello, UART!'+#13+#10);

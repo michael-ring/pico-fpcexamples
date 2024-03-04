@@ -40,7 +40,7 @@ var
   offset : longWord;
 begin
   gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
   sm := 0;
   offset := pio_add_program(pio0, ws2812_program);
   ws2812_program_init(pio0, sm, offset, TPicoPin.GP2, 800000, false);

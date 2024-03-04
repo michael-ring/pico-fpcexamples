@@ -996,9 +996,9 @@ return
 procedure pio_gpio_init(var pio : TPIO_Registers; pin : TPinIdentifier);
 begin
   if @pio = @pio0 then
-    gpio_set_function(pin,TGPIOFunction.GPIO_FUNC_PIO0)
+    gpio_set_function(pin,TGPIO_Function.GPIO_FUNC_PIO0)
   else
-    gpio_set_function(pin,TGPIOFunction.GPIO_FUNC_PIO1);
+    gpio_set_function(pin,TGPIO_Function.GPIO_FUNC_PIO1);
 end;
 
 function pio_get_dreq(var pio : TPIO_Registers; sm : longWord; is_tx : boolean):longWord;

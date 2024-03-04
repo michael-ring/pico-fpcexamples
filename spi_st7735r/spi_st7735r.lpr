@@ -16,12 +16,12 @@ var
   st7735 : Tst7735r_SPI;
 begin
   gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
 
   spi_init(spi,20000000);
-  gpio_set_function(TPicoPin.SPI_CS,  TGPIOFunction.GPIO_FUNC_SPI);
-  gpio_set_function(TPicoPin.SPI_SCK, TGPIOFunction.GPIO_FUNC_SPI);
-  gpio_set_function(TPicoPin.SPI_TX,  TGPIOFunction.GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.SPI_CS,  TGPIO_Function.GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.SPI_SCK, TGPIO_Function.GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.SPI_TX,  TGPIO_Function.GPIO_FUNC_SPI);
 
   //st7735.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7735.ScreenSize128x160x16RGB);
   st7735.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7735.ScreenSize128x128x16);

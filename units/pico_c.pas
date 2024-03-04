@@ -7,7 +7,6 @@ unit pico_c;
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_CORE)}
 {$L platform.c-debug.obj}
 {$L claim.c-debug.obj}
-{$L clocks.c-debug.obj}
 {$L xosc.c-debug.obj}
 {$L pll.c-debug.obj}
 {$L watchdog.c-debug.obj}
@@ -15,7 +14,6 @@ unit pico_c;
 {$ELSE}
 {$L platform.c.obj}
 {$L claim.c.obj}
-{$L clocks.c.obj}
 {$L xosc.c.obj}
 {$L pll.c.obj}
 {$L watchdog.c.obj}
@@ -49,7 +47,6 @@ unit pico_c;
 {$ENDIF}
 
 {$LinkLib gcc-armv6m,static}
-
 interface
 uses
   heapmgr,
@@ -57,6 +54,7 @@ uses
 
 type 
   TByteArray = array of Byte;
+  TIrq_Handler = procedure;
 
   TPicoError = record
   const
@@ -94,12 +92,12 @@ type
     _private_us_since_boot : int64;
   end;
 
-
-procedure clocks_init; cdecl; external;
 procedure runtime_init;
 procedure hard_assertion_failure; public name 'hard_assertion_failure';
 procedure __unhandled_user_irq; public name '__unhandled_user_irq';
 procedure __assert_func; public name '__assert_func';
+
+{$WARN 5024 off : Parameter "$1" not used}
 procedure panic(fmt: PAnsiChar; Args: Array of const); public name 'panic';
 (*
   convert an absolute_time_t into a number of microseconds since boot.
@@ -154,6 +152,8 @@ param:
 procedure hw_write_masked(var register : longWord; values : longWord; write_mask:longWord);
 
 implementation
+uses
+  pico_clocks_c;
 
 procedure hard_assertion_failure;
 begin
