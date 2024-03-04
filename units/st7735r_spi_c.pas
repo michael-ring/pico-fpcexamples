@@ -304,7 +304,7 @@ begin
   gpio_put(FPinDC,false);
   spi_write_blocking(FpSPI^,_data,1);
   gpio_put(FPinDC,true);
-  spi_write16_blocking(FpSPI^,data,count);
+  spi_write_blocking_hl(FpSPI^,data,count);
 end;
 
 procedure TST7735R_SPI.WriteData(const data: byte);
@@ -329,7 +329,7 @@ begin
   if count = -1 then
     count := High(data)+1;
   gpio_put(FPinDC,true);
-  spi_write16_blocking(FpSPI^,data,count);
+  spi_write_blocking_hl(FpSPI^,data,count);
 end;
 
 {$WARN 5028 OFF}

@@ -259,7 +259,99 @@ function spi_read16_blocking(var spi : TSPI_Registers; const src : array of word
 
 function spi_get_dreq(spi : TSPI_Registers; is_tx : boolean): longWord; cdecl; external name '__noinline__spi_get_dreq';
 
+(*
+  Write to an SPI device, blocking
+  Write len words from src to SPI starting with hi(word), and discard any data received back
+  Blocks until all data is transferred. No timeout, as SPI hardware always transfers at a known data rate.
+param
+  spi SPI instance specifier, either \ref spi0 or \ref spi1
+  src Buffer of data to write
+  len Length of src
+return
+  Number of bytes written/read
+*)
+function spi_write_blocking_hl(var spi : TSPI_Registers; constref src : array of word; len : longWord):longInt;
+
+(*
+  Write to an SPI device, blocking
+  Write len words from src to SPI starting with lo(word), and discard any data received back
+  Blocks until all data is transferred. No timeout, as SPI hardware always transfers at a known data rate.
+param
+  spi SPI instance specifier, either \ref spi0 or \ref spi1
+  src Buffer of data to write
+  len Length of src
+return
+  Number of bytes written/read
+*)
+function spi_write_blocking_lh(var spi : TSPI_Registers; constref src : array of word; len : longWord):longInt;
+
 implementation
+
+  // Write len bytes directly from src to the SPI, and discard any data received back
+  function spi_write_blocking_hl(var spi : TSPI_Registers; constref src : array of word; len : longWord):longInt;
+  var
+    i : longWord;
+  begin
+    // Write to TX FIFO whilst ignoring RX, then clean up afterward. When RX
+    // is full, PL022 inhibits RX pushes, and sets a sticky flag on
+    // push-on-full, but continues shifting. Safe if SSPIMSC_RORIM is not set.
+    for i := 0 to len - 1 do
+    begin
+      repeat
+      until (spi.sr and (1 shl 1)) <> 0;
+      spi.dr :=longWord(hi(src[i]));
+      repeat
+      until (spi.sr and (1 shl 1)) <> 0;
+      spi.dr :=longWord(lo(src[i]));
+    end;
+    // Drain RX FIFO, then wait for shifting to finish (which may be *after*
+    // TX FIFO drains), then drain RX FIFO again
+    while (spi.sr and (1 shl 2))  <> 0 do
+      result := spi.dr;
+    repeat
+    until (spi.sr and ( 1 shl 4)) = 0;
+
+    while (spi.sr and (1 shl 2))  <> 0 do
+      result := spi.dr;
+
+    // Don't leave overrun flag set
+    spi.icr := 1 shl 0;
+
+    result := len;
+  end;
+
+// Write len bytes directly from src to the SPI, and discard any data received back
+function spi_write_blocking_lh(var spi : TSPI_Registers; constref src : array of word; len : longWord):longInt;
+var
+  i : longWord;
+begin
+  // Write to TX FIFO whilst ignoring RX, then clean up afterward. When RX
+  // is full, PL022 inhibits RX pushes, and sets a sticky flag on
+  // push-on-full, but continues shifting. Safe if SSPIMSC_RORIM is not set.
+  for i := 0 to len - 1 do
+  begin
+    repeat
+    until (spi.sr and (1 shl 1)) <> 0;
+    spi.dr :=longWord(lo(src[i]));
+    repeat
+    until (spi.sr and (1 shl 1)) <> 0;
+    spi.dr :=longWord(hi(src[i]));
+  end;
+  // Drain RX FIFO, then wait for shifting to finish (which may be *after*
+  // TX FIFO drains), then drain RX FIFO again
+  while (spi.sr and (1 shl 2))  <> 0 do
+    result := spi.dr;
+  repeat
+  until (spi.sr and ( 1 shl 4)) = 0;
+
+  while (spi.sr and (1 shl 2))  <> 0 do
+    result := spi.dr;
+
+  // Don't leave overrun flag set
+  spi.icr := 1 shl 0;
+
+  result := len;
+end;
 
 begin
 end.
