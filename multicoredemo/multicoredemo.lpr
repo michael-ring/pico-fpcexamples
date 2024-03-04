@@ -51,9 +51,9 @@ end;
 begin
   multicore_reset_core1;                                // first stop core 1
   gpio_init(TPicoPin.LED);                              // LED is updated by core 1
-  gpio_set_dir(TPicoPin.LED,TGPIODirection.GPIO_OUT);
+  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
   gpio_init(15);
-  gpio_set_dir(15,TGPIODirection.GPIO_OUT);             // LED on GPIO15 is updated by core 0
+  gpio_set_dir(15,TGPIO_Direction.GPIO_OUT);             // LED on GPIO15 is updated by core 0
   gpio_put(TPicoPin.LED,false);
   gpio_put(15,false);
 

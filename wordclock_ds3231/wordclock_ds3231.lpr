@@ -169,16 +169,16 @@ var
   row,column,i : integer;
 begin
   spi_init(spi,20000000);
-  gpio_set_function(TPicoPin.SPI_CS,  TGPIOFunction.GPIO_FUNC_SPI);
-  gpio_set_function(TPicoPin.SPI_SCK, TGPIOFunction.GPIO_FUNC_SPI);
-  gpio_set_function(TPicoPin.SPI_TX,  TGPIOFunction.GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.SPI_CS,  TGPIO_Function.GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.SPI_SCK, TGPIO_Function.GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.SPI_TX,  TGPIO_Function.GPIO_FUNC_SPI);
 
   tft.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,tft.ScreenSize240x240x16);
   tft.setFontInfo(BitstreamVeraSansMono13x24);
 
   i2c_init(i2cInst, 400000);
-  gpio_set_function(TPicoPin.I2C_SDA, TGPIOFunction.GPIO_FUNC_I2C);
-  gpio_set_function(TPicoPin.I2C_SCL, TGPIOFunction.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SDA, TGPIO_Function.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.I2C_SCL, TGPIO_Function.GPIO_FUNC_I2C);
   gpio_pull_up(TPicoPin.I2C_SDA);
   gpio_pull_up(TPicoPin.I2C_SCL);
 
