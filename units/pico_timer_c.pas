@@ -12,23 +12,24 @@ uses
 
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_TIMER)}
 {$L timer.c-debug.obj}
+{$L __noinline__timer.c-debug.obj}
 {$ELSE}
 {$L timer.c.obj}
+{$L __noinline__timer.c.obj}
 {$ENDIF}
 
 type
   Thardware_alarm_callback = procedure(alarm_num:longWord);
 
-//procedure check_hardware_alarm_num_param(alarm_num:longWord);
-(*
-  Return a 32 bit timestamp value in microseconds
-  Returns the low 32 bits of the hardware timer.
-return
-  the 32 bit timestamp
-note
-  This value wraps roughly every 1 hour 11 minutes and 35 seconds.
-*)
-function time_us_32:longWord;
+  (*! \brief Return a 32 bit timestamp value in microseconds
+  *  \ingroup hardware_timer
+  *
+  * Returns the low 32 bits of the hardware timer.
+  * \note This value wraps roughly every 1 hour 11 minutes and 35 seconds.
+  *
+  * \return the 32 bit timestamp
+  *)
+  function time_us_32: longWord; cdecl; external name '__noinline__time_us_32';
 
 (*
   Return the current 64 bit timestamp value in microseconds
@@ -54,6 +55,13 @@ param
 *)
 procedure busy_wait_us(delay_us:int64);cdecl; external;
 
+(*! \brief Busy wait wasting cycles for the given number of milliseconds
+ *  \ingroup hardware_timer
+ *
+ * \param delay_ms delay amount in milliseconds
+ *)
+procedure busy_wait_ms(delay_ms : longWord); cdecl; external;
+
 (*
   Busy wait wasting cycles until after the specified timestamp
 param
@@ -68,7 +76,7 @@ param
 return
   true if it is now after the specified timestamp
 *)
-function time_reached(t : Tabsolute_time):boolean;
+function time_reached(t : Tabsolute_time):boolean; cdecl; external name '__noinline__time_reached';
 
 (*
   cooperatively claim the use of this hardware alarm_num
@@ -78,12 +86,32 @@ param
 *)
 procedure hardware_alarm_claim(alarm_num:longWord); cdecl; external;
 
+(*! \brief cooperatively claim the use of this hardware alarm_num
+ *  \ingroup hardware_timer
+ *
+ * This method attempts to claim an unused hardware alarm
+ *
+ * \return alarm_num the hardware alarm claimed or -1 if requires was false, and none are available
+ * \sa hardware_claiming
+ *)
+function hardware_alarm_claim_unused(required: boolean): integer; cdecl; external;
+
 (*
   cooperatively release the claim on use of this hardware alarm_num
 param
   alarm_num the hardware alarm to unclaim
 *)
 procedure hardware_alarm_unclaim(alarm_num:longWord); cdecl; external;
+
+(*! \brief Determine if a hardware alarm has been claimed
+ *  \ingroup hardware_timer
+ *
+ * \param alarm_num the hardware alarm number
+ * \return true if claimed, false otherwise
+ * \see hardware_alarm_claim
+ *)
+function hardware_alarm_is_claimed(alarm_num:longWord):boolean; cdecl; external;
+
 
 (*
   Enable/Disable a callback for a hardware timer on this core
@@ -117,28 +145,19 @@ param
 *)
 procedure hardware_alarm_cancel(alarm_num:longWord); cdecl; external;
 
+(**
+ * \brief Force and IRQ for a specific hardware alarm
+ * \ingroup hardware_timer
+ *
+ * This method will forcibly make sure the current alarm callback (if present) for the hardware
+ * alarm is called from an IRQ context after this call. If an actual callback is due at the same
+ * time then the callback may only be called once.
+ *
+ * Calling this method does not otherwise interfere with regular callback operations.
+ *
+ * @param alarm_num the hardware alarm number
+ *)
+procedure hardware_alarm_force_irq(alarm_num:longWord); cdecl; external;
+
 implementation
-
-//procedure check_hardware_alarm_num_param(alarm_num:longWord);
-//begin
-  //invalid_params_if(TIMER, alarm_num >= 4);
-//end;
-
-function time_us_32:longWord;
-begin
-  result := timer.timerawl;
-end;
-
-function time_reached(t : Tabsolute_time):boolean;
-var
-  target : int64;
-  hi_target : longWord;
-  hi : longWord;
-begin
-  target := to_us_since_boot(t);
-  hi_target := target shr 32;
-  hi := timer.timerawh;
-  result := (hi >= hi_target) and ((timer.timerawl >= target) or (hi <> hi_target));
-end;
-
 end.

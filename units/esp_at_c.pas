@@ -3,7 +3,8 @@ unit esp_at_c;
 {$mode ObjFPC}{$H+}
 {$SCOPEDENUMS ON}
 interface
-
+uses
+  pico_gpio_c;
 type
   TESP_at_StatusCode=(OK,ERROR,INITIALIZING,ATCMDDETECTED,ATFIRMWAREWRONGVERSION,BROWNOUT,TIMEOUT,CONNECTED);
 
@@ -32,7 +33,7 @@ type
     fNTPServer : String;
   public
   const
-    ESP_AT_VERSION='2.1.0';
+    ESP_AT_SUPPORTED_VERSIONS: array of string = ('2.1.0','v3.2.0.0(MINI-1)');
     (*
   Initialise the connection to the GPS
   Must be called before other functions.
@@ -40,12 +41,12 @@ param
   uart UART instance. uart0 or uart1
   baudrate Baudrate of UART in Hz
     *)
-    constructor init(var uart : TUART_Registers;const ssid,password : string; const BaudRate:longWord=115200);
+    constructor init(var uart : TUART_Registers;const pinReset : TPinIdentifier;const ssid,password : string; const BaudRate:longWord=115200);
     function sendSimpleCommand(const atCommand : string;const TimeOut : longWord = 1000000) : boolean;
     function sendCommand(const atCommand : string;const TimeOut : longWord = 1000000) : TSerialResponse;
     function waitForLine(const aLine : string;const TimeOut : longWord = 1000000) : TSerialResponse;
 
-    function get(const url : string;const TimeOut : longWord = 10000000):TResponse;
+    function get(const url : string;const headers : array of string; const TimeOut : longWord = 10000000):TResponse;
     (*
   Property that refects the current status of the connection to the GPS
   The property is only updated after a successful poll for data.
@@ -186,10 +187,11 @@ begin
   until TicksInBetween(startTime,time_us_32) > timeOut;
 end;
 
-constructor TESP_at.init(var uart : TUART_Registers;const ssid,password : string; const Baudrate : longWord=115200);
+constructor TESP_at.init(var uart : TUART_Registers;const pinReset : TPinIdentifier;const ssid,password : string; const Baudrate : longWord=115200);
 var
   count : byte;
   serialResponse : TSerialResponse;
+  supportedVersion,currentVersion : string;
 begin
   fpUart := @uart;
   uart_set_baudrate(fpUart^,Baudrate);
@@ -197,7 +199,6 @@ begin
   fssid := ssid;
   fpassword := password;
   fAccept := '*/*';
-  fUserAgent := 'ESP_AT/'+ESP_AT_VERSION;
   fNTPServer:= 'us.pool.ntp.org';
   count := 0;
   repeat
@@ -219,11 +220,18 @@ begin
     if length(serialResponse.content) <> 5 then
       exit;
     fVersion := copy(serialResponse.content[3],pos(':',serialResponse.content[3])+1,999);
-    if pos(ESP_AT_VERSION,fVersion) = 0 then
+    supportedVersion := '';
+    for currentVersion in ESP_AT_SUPPORTED_VERSIONS do
+    begin
+      if pos(currentVersion,fVersion) = 1 then
+        supportedVersion := version;
+    end;
+    if supportedVersion = '' then
     begin
       fESPStatus := TESP_at_StatusCode.ATFIRMWAREWRONGVERSION;
       exit;
     end;
+    fUserAgent := 'ESP_AT/'+supportedVersion;
     //Operate in Station Mode
     if not sendSimpleCommand('AT+CWMODE=1,0') then
       exit;
@@ -241,7 +249,7 @@ begin
   fESPStatus := TESP_at_StatusCode.ATCMDDETECTED;
 end;
 
-function TESP_at.get(const url : string;const TimeOut : longWord = 10000000):TResponse;
+function TESP_at.get(const url : string;const headers : array of string; const TimeOut : longWord = 10000000):TResponse;
 var
   serialResponse : TSerialResponse;
   protocol,host,port,params : string;
@@ -292,7 +300,7 @@ begin
     end;
     if port = '' then
       exit;
-    serialResponse :=  sendCommand('AT+HTTPCLIENT=2,1,"'+url+'","'+host+'","'+params+'",'+protocol);
+    serialResponse :=  sendCommand('AT+HTTPCLIENT=2,1,"'+url+'","'+host+'","'+params+'",'+protocol,Timeout);
     result.Content := '';
     for line in serialResponse.Content do
       if pos('+HTTPCLIENT:',line)=1 then
