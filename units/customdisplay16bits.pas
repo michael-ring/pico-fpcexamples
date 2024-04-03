@@ -146,7 +146,7 @@ end;
 
 procedure TCustomDisplay16Bits.drawText(const TheText : String; const x,y : word; const fgColor : TColor = clForeground; const bgColor : TColor = clTransparent);
 var
-  i,j : longWord;
+  i : longWord;
   charstart,pixelPos : longWord;
   fx,fy : longWord;
   divFactor,pixel,pixels : byte;
