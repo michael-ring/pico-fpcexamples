@@ -1,5 +1,5 @@
 #!/bin/sh
-IGNOREDEVICES="templates "
+IGNOREDEVICES="templates esp_images"
 FILTER=$1
 curdir=$(pwd)
 ls -1 */*${FILTER}*lpi | while read lpi ; do
