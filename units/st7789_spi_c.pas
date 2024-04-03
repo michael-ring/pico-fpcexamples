@@ -50,7 +50,7 @@ type
       The SPI interface needs to be pre-initialized to required Parameters
       The extra Pins do not need to be initialized
     *)
-    constructor Initialize(var SPI : TSpi_Registers;const aPinDC : TPinIdentifier;const aPinRST : TPinIdentifier;aPhysicalScreenInfo : TPhysicalScreenInfo);
+    constructor Initialize(var SPI : TSpi_Registers;const aPinDC : TPinIdentifier;const aPinRST : TPinIdentifier;aPhysicalScreenInfo : TPhysicalScreenInfo;RunInitSequence : boolean = True);
 
     (*
       Sets the rotation of a display in steps of 90 Degrees.
@@ -168,7 +168,7 @@ const
   ST7789_COLOR_MODE_16bit =$55;
   ST7789_COLOR_MODE_18bit =$66;
 
-constructor TST7789_SPI.Initialize(var SPI : TSpi_Registers;const aPinDC : TPinIdentifier;const aPinRST : TPinIdentifier;aPhysicalScreenInfo : TPhysicalScreenInfo);
+constructor TST7789_SPI.Initialize(var SPI : TSpi_Registers;const aPinDC : TPinIdentifier;const aPinRST : TPinIdentifier;aPhysicalScreenInfo : TPhysicalScreenInfo;RunInitSequence : boolean = True);
 begin
     FpSPI := @SPI;
     FPinDC := aPinDC;
@@ -187,7 +187,8 @@ begin
       gpio_set_dir(APinRST,TGPIO_Direction.GPIO_OUT);
       gpio_put(APinRST,true);
     end;
-    InitSequence;
+    if RunInitSequence = true then
+      InitSequence;
 end;
 
 procedure TST7789_SPI.InitSequence;
