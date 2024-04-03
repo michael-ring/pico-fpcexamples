@@ -187,7 +187,7 @@ const
     uart : TUART_Registers absolute UART1_BASE;
     spi  : TSPI_Registers absolute SPI0_BASE;
     i2c  : TI2C_Registers absolute I2C1_BASE;
-  {$ELSEIF DEFINED(FPC_MCU_RASPI_PICO)}
+  {$ELSE}
     uart : TUART_Registers absolute UART0_BASE;
     spi  : TSPI_Registers absolute SPI0_BASE;
     i2c  : TI2C_Registers absolute I2C0_BASE;
