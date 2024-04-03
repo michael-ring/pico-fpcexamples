@@ -1,4 +1,4 @@
-unit ST7735R_spi_c;
+unit st7735r_spi_c;
 {$mode objfpc}
 {$H+}
 {$modeswitch advancedrecords}
@@ -28,7 +28,7 @@ type
       procedure WriteData(const data: byte); virtual;
       procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual;
       procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual;
-      procedure InitSequence;
+      procedure InitSequence; virtual;
     public
       const
         // Physical Width is up to 128 Pixel Physical Height goes up to 160 Pixel
@@ -46,6 +46,7 @@ type
       aPinDC  Pin used for switching between Communication between Data and Command Mode
       aPinRST Pin used to reset the display, not needed by all displays, pass TNativePin.None when not needed
       aPhysicalScreenInfo Information about Width/Height and Bitdepth of the connected screen
+      RunInitSequence Allows the automatic run of Init to be ommited, this allows for custom init sequences
     note
       The SPI interface needs to be pre-initialized to required Parameters
       The extra Pins do not need to be initialized

@@ -34,7 +34,7 @@ type
     procedure WriteData(const data: byte); virtual;
     procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual;
     procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual;
-    procedure InitSequence;
+    procedure InitSequence; virtual;
     function setDrawArea(const X,Y,Width,Height : word):longWord; virtual;
   public
     (*
