@@ -36,12 +36,6 @@ unit pico_c;
 
 {$IF DEFINED(FPC_MCU_FEATHER_RP2040)}
   {$L boot2_adafruit_feather_rp2040.obj}
-{$ELSEIF DEFINED(FPC_MCU_ITSYBITSY_RP2040)}
-  {$L boot2_adafruit_itsybitsy_rp2040.obj}
-{$ELSEIF DEFINED(FPC_MCU_QTPY_RP2040)}
-  {$L boot2_adafruit_qtpy_rp2040.obj}
-{$ELSEIF DEFINED(FPC_MCU_TINY_2040)}
-  {$L boot2_pimoroni_tiny2040.obj}
 {$ELSE}
   {$L boot2_pico.obj}
 {$ENDIF}
