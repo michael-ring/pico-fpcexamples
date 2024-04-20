@@ -18,14 +18,30 @@ begin
   gpio_init(TPicoPin.LED);
   gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
 
-  spi_init(spi,20000000);
-  gpio_set_function(TPicoPin.SPI_CS,  TGPIO_Function.GPIO_FUNC_SPI);
+  spi_init(spi,12000000);
   gpio_set_function(TPicoPin.SPI_SCK, TGPIO_Function.GPIO_FUNC_SPI);
   gpio_set_function(TPicoPin.SPI_TX,  TGPIO_Function.GPIO_FUNC_SPI);
+  //To use Hardware CS uncomment next line and uncomment Initialize code with TPicoPin.None for CS
+  //gpio_set_function(TPicoPin.SPI_CS,  TGPIO_Function.GPIO_FUNC_SPI);
 
-  st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7789.ScreenSize240x135x16);
-  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7789.ScreenSize240x240x16);
-  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7789.ScreenSize320x240x16);
+  //NoName Aliexpress 1.14" LCD with CS Pin
+  st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize240x135x16,true);
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize240x135x16,true);
+
+  //Pimoroni 1.3" LCD
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize240x240x16);
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize240x240x16);
+
+  //Waveshare 1.69" LCD
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize280x240x16);
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize280x240x16);
+
+  //Waveshare 1.47" LCD
+  st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize320x172x16);
+  // does not seem to work: st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize320x172x16);
+
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize320x240x16);
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize320x240x16);
   st7789.setFontInfo(BitstreamVeraSansMono13x24);
 
   repeat
