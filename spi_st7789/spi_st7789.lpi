@@ -5,9 +5,9 @@
     <General>
       <UseAppBundle Value="False"/>
     </General>
-    <BuildModes Active="Raspberry Pi Pico">
-      <Item Name="Raspberry Pi Pico" Default="True"/>
-      <Item Name="Adafruit Feather RP2040">
+    <BuildModes Count="7">
+      <Item1 Name="Raspberry Pi Pico" Default="True"/>
+      <Item2 Name="Adafruit Feather RP2040">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -25,19 +25,21 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="True"/>
               <DebugInfoType Value="dsDwarf2"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
           </Linking>
           <Other>
-            <CustomOptions Value="-Wpfeather_rp2040
+            <CustomOptions Value="
+-Wpfeather_rp2040
 -godwarfsets
 -godwarfcpp
 -Xu"/>
           </Other>
         </CompilerOptions>
-      </Item>
-      <Item Name="Adafruit ItsyBitzy RP2040">
+      </Item2>
+      <Item3 Name="Adafruit ItsyBitzy RP2040">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -55,19 +57,21 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="True"/>
               <DebugInfoType Value="dsDwarf2"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
           </Linking>
           <Other>
-            <CustomOptions Value="-Wpitzybitzy_rp2040
+            <CustomOptions Value="
+-Wpitzybitzy_rp2040
 -godwarfsets
 -godwarfcpp
 -Xu"/>
           </Other>
         </CompilerOptions>
-      </Item>
-      <Item Name="Adafruit QTPY RP2040">
+      </Item3>
+      <Item4 Name="Adafruit QTPY RP2040">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -85,19 +89,21 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="True"/>
               <DebugInfoType Value="dsDwarf2"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
           </Linking>
           <Other>
-            <CustomOptions Value="-Wpqtpy_rp2040
+            <CustomOptions Value="
+-Wpqtpy_rp2040
 -godwarfsets
 -godwarfcpp
 -Xu"/>
           </Other>
         </CompilerOptions>
-      </Item>
-      <Item Name="Pimoroni Tiny 2040">
+      </Item4>
+      <Item5 Name="Pimoroni Tiny 2040">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -115,19 +121,21 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="True"/>
               <DebugInfoType Value="dsDwarf2"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
           </Linking>
           <Other>
-            <CustomOptions Value="-Wptiny_2040
+            <CustomOptions Value="
+-Wptiny_2040
 -godwarfsets
 -godwarfcpp
 -Xu"/>
           </Other>
         </CompilerOptions>
-      </Item>
-      <Item Name="SparkFun Pro Micro RP2040">
+      </Item5>
+      <Item6 Name="SparkFun Pro Micro RP2040">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -145,19 +153,21 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="True"/>
               <DebugInfoType Value="dsDwarf2"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
           </Linking>
           <Other>
-            <CustomOptions Value="-Wppromicro_rp2040
+            <CustomOptions Value="
+-Wppromicro_rp2040
 -godwarfsets
 -godwarfcpp
 -Xu"/>
           </Other>
         </CompilerOptions>
-      </Item>
-      <Item Name="SparkFun Thing Plus RP2040">
+      </Item6>
+      <Item7 Name="SparkFun Thing Plus RP2040">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -175,213 +185,29 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="True"/>
               <DebugInfoType Value="dsDwarf2"/>
               <UseLineInfoUnit Value="False"/>
             </Debugging>
           </Linking>
           <Other>
-            <CustomOptions Value="-Wpthingplus_rp2040
+            <CustomOptions Value="
+-Wpthingplus_rp2040
 -godwarfsets
 -godwarfcpp
 -Xu"/>
           </Other>
         </CompilerOptions>
-      </Item>
+      </Item7>
     </BuildModes>
-    <PublishOptions>
-      <Version Value="2"/>
-    </PublishOptions>
-    <RunParams>
-      <FormatVersion Value="2"/>
-    </RunParams>
     <Units>
       <Unit>
         <Filename Value="spi_st7789.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="47"/>
-        <CursorPos X="54" Y="86"/>
-        <UsageCount Value="38"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="16"/>
-        <CursorPos Y="41"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="../../freepascal-sources/rtl/embedded/arm/cortexm0p_start.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="44"/>
-        <CursorPos Y="63"/>
-        <UsageCount Value="18"/>
-      </Unit>
-      <Unit>
-        <Filename Value="../units/customdisplay16bits.pas"/>
-        <UnitName Value="CustomDisplay16bits"/>
-        <EditorIndex Value="5"/>
-        <CursorPos X="43" Y="141"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="../units/pico_spi_c.pas"/>
-        <EditorIndex Value="4"/>
-        <TopLine Value="282"/>
-        <CursorPos X="24" Y="41"/>
-        <UsageCount Value="20"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="../../fpc/rtl/embedded/arm/cortexm0p_start.inc"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="46"/>
-        <CursorPos Y="63"/>
-        <UsageCount Value="16"/>
-        <Loaded Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="../../../fpcupdeluxe/fpcsrc/rtl/embedded/arm/cortexm0p_start.inc"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="43"/>
-        <CursorPos Y="63"/>
-        <UsageCount Value="12"/>
-      </Unit>
-      <Unit>
-        <Filename Value="../units/customdisplay.pas"/>
-        <UnitName Value="CustomDisplay"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="41"/>
-        <CursorPos X="36" Y="84"/>
-        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="../units/customdisplay16bits.pas"/>
-        <Caret Line="141" Column="43" TopLine="121"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="21" Column="17"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="243" Column="61" TopLine="241"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="38" Column="39"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/customdisplay.pas"/>
-        <Caret Line="84" Column="23" TopLine="64"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="43" Column="136" TopLine="20"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="243" Column="61" TopLine="223"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="242" Column="38" TopLine="19"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="243" Column="45" TopLine="223"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="242" Column="123" TopLine="222"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="243" Column="124" TopLine="228"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="21" Column="17"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="255" Column="5" TopLine="230"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="43" Column="121" TopLine="23"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="41" TopLine="15"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="43" Column="152" TopLine="23"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="28" Column="97"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="27" Column="3"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="77" Column="5" TopLine="38"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="29" Column="3" TopLine="5"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="179" TopLine="171"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="29" Column="102" TopLine="11"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="34"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="28" Column="46" TopLine="14"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="24" Column="3" TopLine="14"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="28" Column="5" TopLine="9"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="42" Column="91" TopLine="19"/>
-      </Position>
-      <Position>
-        <Filename Value="../units/st7789_spi_c.pas"/>
-        <Caret Line="52" Column="144" TopLine="17"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="24" Column="3" TopLine="3"/>
-      </Position>
-      <Position>
-        <Filename Value="spi_st7789.lpr"/>
-        <Caret Line="43" Column="28" TopLine="20"/>
-      </Position>
-    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
@@ -400,12 +226,14 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
+        <GenerateDebugInfo Value="True"/>
         <DebugInfoType Value="dsDwarf2"/>
         <UseLineInfoUnit Value="False"/>
       </Debugging>
     </Linking>
     <Other>
-      <CustomOptions Value="-Wpraspi_pico
+      <CustomOptions Value="
+-Wpraspi_pico
 -godwarfsets
 -godwarfcpp
 -Xu"/>
