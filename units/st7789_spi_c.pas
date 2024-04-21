@@ -210,38 +210,17 @@ begin
 end;
 
 procedure TST7789_SPI.InitSequence;
-const
-  col1 : array of byte = ($d0,$00,$02,$07,$0a,$28,$32,$44,$42,$06,$0e,$12,$14,$17);
-  col2 : array of byte = ($d0,$00,$02,$07,$0a,$28,$31,$54,$47,$0e,$1c,$17,$1b,$1e);
 begin
   WriteCommand(ST7789_SWRESET);
   busy_wait_us_32(150000);
 
   writeCommand(ST7789_SLPOUT);   // Sleep out
-  //busy_wait_us_32(120000);
   busy_wait_us_32(500000);
 
-  //writeCommand(ST7789_NORON);    // Normal display mode on
-  //writeCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_BGR]);
-
-  //writeCommandBytes($B6,[$0A,$82]);
   writeCommandBytes(ST7789_COLMOD,[$55]);
   busy_wait_us_32(10000);
 
   writeCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_BGR]);
-  //writeCommandBytes(ST7789_PORCTRL,[$0c,$0c,$00,$33,$33]);
-  //writeCommandBytes(ST7789_GCTRL,[$35]);
-
-  //writeCommandBytes(ST7789_VCOMS,[$28]);		// JLX240 display datasheet
-  //writeCommandBytes(ST7789_LCMCTRL,[$0C]);
-  //writeCommandBytes(ST7789_VDVVRHEN,[$01,$FF]);
-  //writeCommandBytes(ST7789_VRHS,[$10]);
-  //writeCommandBytes(ST7789_VDVSET,[$20]);
-  //writeCommandBytes(ST7789_FRCTR2,[$0f]);
-  //writeCommandBytes(ST7789_PWCTRL1,[$a4,$a1]);
-
-  //writeCommandBytes(ST7789_PVGAMCTRL,col1);
-  //writeCommandBytes(ST7789_NVGAMCTRL,col2);
   writeCommand(ST7789_INVON);
   busy_wait_us_32(10000);
 
@@ -249,10 +228,6 @@ begin
   busy_wait_us_32(10000);
 
   writeCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_MY+ST7789_MADCTL_MX]);
-
-  //writeCommandWords(ST7789_CASET,[PhysicalScreenInfo.ColStart[0],PhysicalScreenInfo.ColStart[0]+PhysicalScreenInfo.Width-1]);    // Column address set
-  //writeCommandWords(ST7789_RASET,[PhysicalScreenInfo.RowStart[0],PhysicalScreenInfo.RowStart[0]+PhysicalScreenInfo.Height-1]);    // Row address set
-  //busy_wait_us_32(120000);
 
   writecommand(ST7789_DISPON);    //Display on
   busy_wait_us_32(500000);
@@ -362,7 +337,6 @@ end;
 procedure TST7789_SPI.WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1);
 var
   _data : array[0..0] of byte;
-  i : integer;
 begin
   if count = -1 then
     count := High(data)+1;
