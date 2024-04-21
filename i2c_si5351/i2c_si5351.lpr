@@ -38,8 +38,8 @@ const
 begin
   // configure I2C
   i2c_init(i2c0inst, 100000);
-  gpio_set_function(TPicoPin.GP21_I2C0_SCL, TGPIOFunction.GPIO_FUNC_I2C);
-  gpio_set_function(TPicoPin.GP20_I2C0_SDA, TGPIOFunction.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.GP21_I2C0_SCL, TGPIO_Function.GPIO_FUNC_I2C);
+  gpio_set_function(TPicoPin.GP20_I2C0_SDA, TGPIO_Function.GPIO_FUNC_I2C);
   gpio_pull_up(TPicoPin.GP20_I2C0_SDA);
   gpio_pull_up(TPicoPin.GP21_I2C0_SCL);
   // init SI5351
