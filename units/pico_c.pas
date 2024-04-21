@@ -47,7 +47,14 @@ uses
   pico_sync_c;
 
 type 
-  TByteArray = array of Byte;
+  TByteArray = array[0..$7ffffffe] of Byte;
+  pByteArray = ^TByteArray;
+  TOpenByteArray = array of Byte;
+  pOpenByteArray = ^TOpenByteArray;
+  TWordArray = array[0..$3ffffffe] of Word;
+  pWordArray = ^TWordArray;
+  TOpenWordArray = array of Word;
+  pOpenWordArray = ^TOpenByteArray;
   TIrq_Handler = procedure;
 
   TPicoError = record

@@ -7,6 +7,7 @@ unit pico_i2c_c;
 
 {$mode objfpc}{$H+}
 {$WARN 3187 off : C arrays are passed by reference}
+{$WARN 5023 off : Unit "$1" not used in $2}
 interface
 uses
   pico_time_c,

@@ -87,12 +87,14 @@ end;
 
 function TESP_at.sendCommand(const atCommand : string;const TimeOut : longWord = 1000000) : TSerialResponse;
 var
-  loopCount : integer;
   line : String;
   c : char;
   startTime : longWord;
 begin
+  {$PUSH}
+  {$WARN 5093 off : Function result variable of a managed type does not seem to be initialized}
   setlength(result.Content,0);
+  {$POP}
   result.ESPStatus := TESP_at_StatusCode.TIMEOUT;
   //Make sure rx fifos are empty
   while uart_is_readable_within_us(fpUart^,10000) do
@@ -142,13 +144,15 @@ end;
 
 function TESP_at.waitForLine(const aLine : string;const TimeOut : longWord = 1000000) : TSerialResponse;
 var
-  loopCount : integer;
   line : String;
   c : char;
   startTime : longWord;
   brownout : byte;
 begin
+  {$PUSH}
+  {$WARN 5093 off : Function result variable of a managed type does not seem to be initialized}
   setLength(result.content,0);
+  {$POP}
   result.ESPStatus := TESP_at_StatusCode.TIMEOUT;
   brownout := 0;
   startTime := time_us_32;
@@ -253,10 +257,8 @@ function TESP_at.get(const url : string;const headers : array of string; const T
 var
   serialResponse : TSerialResponse;
   protocol,host,port,params : string;
-  startTime : longWord;
   line : string;
 begin
-  startTime := time_us_32;
   serialResponse := sendCommand('AT+CIPSTATUS');
   result.Status := 500;
   if (length(serialResponse.content)=2) and (serialResponse.content[1] = 'OK') and ((serialResponse.content[0] = 'STATUS:0') or (serialResponse.content[0] = 'STATUS:1')) then

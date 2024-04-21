@@ -159,9 +159,6 @@ begin
 end;
 
 procedure TST7735S_SPI.InitSequence;
-type
-  TByteArray = array [0..32767] of Byte;
-  pByteArray = ^TByteArray;
 const
   DELAY=$80;
   display_init_sequence : array of byte = (
@@ -309,7 +306,6 @@ end;
 procedure TST7735S_SPI.WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1);
 var
   _data : array[0..0] of byte;
-  dummy : byte;
 begin
   if count = -1 then
     count := High(data)+1;

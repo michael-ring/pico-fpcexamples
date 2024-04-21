@@ -7,7 +7,9 @@ unit pico_uart_c;
 
 {$mode objfpc}{$H+}
 interface
+{$WARN 5023 off : Unit "$1" not used in $2}
 uses
+  pico_timer_c,
   pico_c;
 
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_UART)}

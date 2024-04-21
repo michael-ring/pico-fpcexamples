@@ -8,7 +8,6 @@ unit pico_adc_c;
 {$mode objfpc}{$H+}
 interface
 uses
-  pico_gpio_c,
   pico_c;
 
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_ADC)}

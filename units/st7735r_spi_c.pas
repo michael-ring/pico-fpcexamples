@@ -20,7 +20,6 @@ type
       FpSPI : ^TSPI_Registers;
       FPinDC : TPinIdentifier;
       FPinRST : TPinIdentifier;
-      FInTransaction : boolean;
     protected
       procedure WriteCommand(const command : byte); virtual;
       procedure WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1); virtual;

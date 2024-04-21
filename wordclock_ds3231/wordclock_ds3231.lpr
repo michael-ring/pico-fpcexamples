@@ -106,11 +106,14 @@ begin
   Hour := Hour mod 12;
   if lastHour = Hour then
     exit;
+  {$PUSH}
+  {$WARN 4079 off : Converting the operands to "$1" before doing the add could prevent overflow errors.}
   for column := hours[hour].column to hours[hour].column + hours[hour].len-1 do
     tft.drawText(clockface[hours[hour].row][column],9+column*21,hours[hour].row*24,clWhite);
   for column := hours[lastHour].column to hours[lastHour].column + hours[lastHour].len-1 do
     tft.drawText(clockface[hours[lastHour].row][column],9+column*21,hours[lastHour].row*24,$202020);
   lastHour := hour;
+  {$POP}
 end;
 
 procedure drawMinute(Minute:byte);
@@ -128,6 +131,8 @@ begin
   drawed[1] := $ffff;
   drawed[2] := $ffff;
   for i := low(minutes) to high(minutes) do
+  {$PUSH}
+  {$WARN 4079 off : Converting the operands to "$1" before doing the add could prevent overflow errors.}
   begin
     if minutes[i].index = Minute then
     begin
@@ -163,10 +168,11 @@ begin
           tft.drawText(clockface[minutes[i].row][column],9+column*21,minutes[i].row*24,$202020);
     end;
   end;
+  {$POP}
   lastMinute := Minute;
 end;
 var
-  row,column,i : integer;
+  row,column : integer;
 begin
   spi_init(spi,20000000);
   gpio_set_function(TPicoPin.SPI_CS,  TGPIO_Function.GPIO_FUNC_SPI);
