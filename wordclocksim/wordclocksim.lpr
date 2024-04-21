@@ -172,7 +172,7 @@ begin
   gpio_set_function(TPicoPin.SPI_SCK, TGPIO_Function.GPIO_FUNC_SPI);
   gpio_set_function(TPicoPin.SPI_TX,  TGPIO_Function.GPIO_FUNC_SPI);
 
-  tft.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,tft.ScreenSize240x240x16);
+  tft.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,tft.ScreenSize240x240x16);
   tft.setFontInfo(BitstreamVeraSansMono13x24);
 
   tft.ForegroundColor := $808080;
