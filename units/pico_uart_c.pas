@@ -102,7 +102,7 @@ param
   stop_bits Number of stop bits 1..2
   parity Parity option.
 *)
-procedure uart_set_format(var uart:TUART_Registers; data_bits:TUARTDataBits; stop_bits:TUARTStopBits; parity:TUARTParity); cdecl; external name '__noinline__uart_set_format';
+procedure uart_set_format(var uart:TUART_Registers; data_bits:TUARTDataBits; stop_bits:TUARTStopBits; parity:TUARTParity); cdecl; external;
 
 (*
   Setup UART interrupts
