@@ -470,6 +470,10 @@ begin
 			reg_addr := SI5351_CLK4_PARAMETERS + 2;
 		SI5351_CLK5:
 			reg_addr := SI5351_CLK5_PARAMETERS + 2;
+		SI5351_CLK6:
+			reg_addr := SI5351_CLK6_PARAMETERS + 2;
+		SI5351_CLK7:
+			reg_addr := SI5351_CLK7_PARAMETERS + 2;
 	end;
 
 
@@ -568,29 +572,14 @@ var
         mask    : uint8 = $03;
 begin
         si5351_read(SI5351_CLK0_CTRL + uint8(clk), reg_val);
+        reg_val := reg_val and not(mask);
 
 	case (drive) of
 
-	SI5351_DRIVE_2MA:
-                begin
-		reg_val := reg_val and not(mask);
-		reg_val := reg_val or $00;
-                end;
-        SI5351_DRIVE_4MA:
-                begin
-		reg_val := reg_val and not(mask);
-		reg_val := reg_val or $01;
-                end;
-        SI5351_DRIVE_6MA:
-                begin
-		reg_val := reg_val and not(mask);
-		reg_val := reg_val or $02;
-                end;
-        SI5351_DRIVE_8MA:
-                begin
-		reg_val := reg_val and not(mask);
-		reg_val := reg_val or $03;
-                end;
+	SI5351_DRIVE_2MA: reg_val := reg_val or $00;
+        SI5351_DRIVE_4MA: reg_val := reg_val or $01;
+        SI5351_DRIVE_6MA: reg_val := reg_val or $02;
+        SI5351_DRIVE_8MA: reg_val := reg_val or $03;
 	end;
 
 	si5351_write(SI5351_CLK0_CTRL + uint8(clk), reg_val);
