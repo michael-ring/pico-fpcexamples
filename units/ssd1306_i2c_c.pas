@@ -168,8 +168,8 @@ begin
   //  Height := PhysicalScreenInfo.Height-Y;
 
   WriteCommandBytes(CMD_MEMORY_MODE,[$01]);
-  WriteCommandBytes(CMD_PAGE_ADDRESS,[Y shr 3,(Word(Y+Height-1) shr 3)]);
-  WriteCommandBytes(CMD_COLUMN_ADDRESS,[X,Word(X+Width-1)]);
+  WriteCommandBytes(CMD_PAGE_ADDRESS,[Y shr 3,(Word(Y+Height-1) shr 3)],2);
+  WriteCommandBytes(CMD_COLUMN_ADDRESS,[X,Word(X+Width-1)],2);
   Result := Width*Height shr 3;
   {$POP}
 end;
@@ -218,17 +218,17 @@ end;
 
 procedure TSSD1306_I2C.WriteCommandBytes(const command:byte; constref param : array of byte; Count:longInt=-1);
 var
-  data : array[0..8] of byte;
+  data : array of byte;
   i : integer;
 begin
   if count = -1 then
-    count := High(data)+1;
-  data[0]:= $80;
+    count := High(param)+1;
+  setlength(data,2+count);
+  data[0]:= $00;
   data[1]:= command;
-  i2c_write_blocking(FpI2C^,FDisplayAddress,data,2,false);
-  for i := 1 to count do
-    data[i]:= param[i-1];
-  i2c_write_blocking(FpI2C^,FDisplayAddress,data,count,false);
+  for i:=0 to count-1 do
+    data[i+2]:=param[i];
+  i2c_write_blocking(FpI2C^,FDisplayAddress,data,count+2,false);
 end;
 
 procedure TSSD1306_I2C.WriteCommandWords(const command:byte; constref param : array of word; Count:longInt=-1);
