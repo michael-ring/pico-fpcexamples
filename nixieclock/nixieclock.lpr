@@ -7,132 +7,98 @@ uses
   st7789_spi_c,
   CustomDisplay,
   pico_gpio_c,
+  pico_clocks_c,
   pico_timer_c,
+  pico_pio_c,
   pico_c,
-  Images.Paw,
-  Fonts.BitstreamVeraSansMono13x24;
+  Images.NixieNice;
 
-type
-  TST7789_SOFTSPI = object(TST7789_SPI)
-  private
-    SoftCS : TPinIdentifier;
-  protected
-    procedure WriteCommand(const command : byte); virtual;
-    procedure WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1); virtual;
-    procedure WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1); virtual;
-    procedure WriteData(const data: byte); virtual;
-    procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual;
-    procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual;
-    procedure SetSoftCS(pin : TPinIdentifier);
-  end;
+// This include file is generated with pioasm out of the ws2812.pio file
+// pioasm -o freepascal ws2812.pio >ws2812.inc
+{$I ws2812.inc}
 
-procedure TST7789_SOFTSPI.WriteCommand(const command : byte);
+procedure put_pixel(r,g,b : byte);
 begin
-  gpio_put(SoftCS,false);
-  inherited;
-  gpio_put(SoftCS,true);
-end;
-
-procedure TST7789_SOFTSPI.WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1);
-begin
-  gpio_put(SoftCS,false);
-  inherited;
-  gpio_put(SoftCS,true);
-end;
-
-procedure TST7789_SOFTSPI.WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1);
-begin
-  gpio_put(SoftCS,false);
-  inherited;
-  gpio_put(SoftCS,true);
-end;
-
-procedure TST7789_SOFTSPI.WriteData(const data: byte);
-begin
-  gpio_put(SoftCS,false);
-  inherited;
-  gpio_put(SoftCS,true);
-end;
-
-procedure TST7789_SOFTSPI.WriteDataBytes(constref data: array of byte;Count:longInt=-1);
-begin
-  gpio_put(SoftCS,false);
-  inherited;
-  gpio_put(SoftCS,true);
-end;
-
-procedure TST7789_SOFTSPI.WriteDataWords(constref data: array of word;Count:longInt=-1);
-begin
-  gpio_put(SoftCS,false);
-  inherited;
-  gpio_put(SoftCS,true);
-end;
-
-procedure TST7789_SOFTSPI.SetSoftCS(pin : TPinIdentifier);
-begin
-  SoftCS := pin;
+  pio_sm_put_blocking(pio0, 0, (g shl 24) or (r shl 16) or (b shl 8) );
 end;
 
 var
-  st7789 : Tst7789_SOFTSPI;
+  digits : array[1..6] of Tst7789_SPI;
+  numbers : array[0..9] of TImageInfo;
+  i,offset,sm : longWord;
+
 begin
-  gpio_init(TPicoPin.LED);
-  gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
-  gpio_init(TPicoPin.SPI_CS);
-  gpio_set_dir(TPicoPin.SPI_CS,TGPIO_Direction.GPIO_OUT);
+  //LCD Backlight
+  gpio_init(TPicoPin.GP12);
+  gpio_set_dir(TPicoPin.GP12,TGPIO_Direction.GPIO_OUT);
+  gpio_put(TPicoPin.GP12,false);
 
-  spi_init(spi,20000000);
-  //gpio_set_function(TPicoPin.SPI_CS,  TGPIO_Function.GPIO_FUNC_SPI);
-  gpio_set_function(TPicoPin.SPI_SCK, TGPIO_Function.GPIO_FUNC_SPI);
-  gpio_set_function(TPicoPin.SPI_TX,  TGPIO_Function.GPIO_FUNC_SPI);
+  sm := 0;
+  offset := pio_add_program(pio0, ws2812_program);
+  ws2812_program_init(pio0, sm, offset, TPicoPin.GP22, 800000, false);
 
-  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7789.ScreenSize240x135x16);
-  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7789.ScreenSize240x240x16);
-  st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7789.ScreenSize320x240x16,false);
-  st7789.SetSoftCS(TPicoPin.SPI_CS);
-  st7789.InitSequence;
-  st7789.setFontInfo(BitstreamVeraSansMono13x24);
+  gpio_init(TPicoPin.GP5);
+  gpio_set_dir(TPicoPin.GP5,TGPIO_Direction.GPIO_OUT);
+  gpio_put(TPicoPin.GP5,true);
 
+  gpio_init(TPicoPin.GP1);
+  gpio_set_dir(TPicoPin.GP1,TGPIO_Direction.GPIO_OUT);
+  gpio_put(TPicoPin.GP1,true);
+
+  gpio_init(TPicoPin.GP0);
+  gpio_set_dir(TPicoPin.GP0,TGPIO_Direction.GPIO_OUT);
+  gpio_put(TPicoPin.GP0,true);
+
+  gpio_init(TPicoPin.GP4);
+  gpio_set_dir(TPicoPin.GP4,TGPIO_Direction.GPIO_OUT);
+  gpio_put(TPicoPin.GP4,true);
+
+  gpio_init(TPicoPin.GP3);
+  gpio_set_dir(TPicoPin.GP3,TGPIO_Direction.GPIO_OUT);
+  gpio_put(TPicoPin.GP3,true);
+
+  gpio_init(TPicoPin.GP2);
+  gpio_set_dir(TPicoPin.GP2,TGPIO_Direction.GPIO_OUT);
+  gpio_put(TPicoPin.GP2,true);
+
+  for i := 1 to 6 do
+    put_pixel(30,0,0);
+
+  spi_init(spi1,30000000);
+  gpio_set_function(TPicoPin.GP10, TGPIO_Function.GPIO_FUNC_SPI);
+  gpio_set_function(TPicoPin.GP11, TGPIO_Function.GPIO_FUNC_SPI);
+  {$PUSH}
+  {$WARN 5090 off : Variable "$1" of a managed type does not seem to be initialized}
+  digits[1].Initialize(spi1,TPicoPin.GP8,TPicoPin.GP5,TPicoPin.GP12,TST7789_SPI.ScreenSize240x135x16);
+  digits[2].Initialize(spi1,TPicoPin.GP8,TPicoPin.GP1,TPicoPin.GP12,TST7789_SPI.ScreenSize240x135x16);
+  digits[3].Initialize(spi1,TPicoPin.GP8,TPicoPin.GP0,TPicoPin.GP12,TST7789_SPI.ScreenSize240x135x16);
+  digits[4].Initialize(spi1,TPicoPin.GP8,TPicoPin.GP4,TPicoPin.GP12,TST7789_SPI.ScreenSize240x135x16);
+  digits[5].Initialize(spi1,TPicoPin.GP8,TPicoPin.GP3,TPicoPin.GP12,TST7789_SPI.ScreenSize240x135x16);
+  digits[6].Initialize(spi1,TPicoPin.GP8,TPicoPin.GP2,TPicoPin.GP12,TST7789_SPI.ScreenSize240x135x16);
+  {$POP}
+  numbers[0] := zero135x240x16;
+  numbers[1] := one135x240x16;
+  numbers[2] := two135x240x16;
+  numbers[3] := three135x240x16;
+  numbers[4] := four135x240x16;
+  numbers[5] := five135x240x16;
+  numbers[6] := six135x240x16;
+  numbers[7] := seven135x240x16;
+  numbers[8] := eight135x240x16;
+  numbers[9] := nine135x240x16;
+  digits[3].drawImage(0,0,dp135x240x16);
   repeat
-    gpio_put(TPicoPin.LED,true);
-    st7789.ForegroundColor := clWhite;
-    st7789.BackgroundColor := clRed;
-    st7789.SetRotation(TDisplayRotation.None);
-    st7789.ClearScreen;
-    st7789.drawText('Red',2,2);
-    st7789.drawRect(0,0,st7789.ScreenWidth,st7789.ScreenHeight);
-    st7789.drawCircle(st7789.ScreenWidth div 2,st7789.ScreenHeight div 2,25);
+    digits[1].drawImage(0,0,numbers[0]);
+    digits[2].drawImage(0,0,numbers[1]);
+    digits[4].drawImage(0,0,numbers[2]);
+    digits[5].drawImage(0,0,numbers[3]);
+    digits[6].drawImage(0,0,numbers[4]);
     busy_wait_us_32(1500000);
-
-    gpio_put(TPicoPin.LED,false);
-    st7789.ForegroundColor := clWhite;
-    st7789.BackgroundColor := clLime;
-    st7789.SetRotation(TDisplayRotation.Right);
-    st7789.ClearScreen;
-    st7789.drawText('Lime',2,2);
-    st7789.drawRect(0,0,st7789.ScreenWidth,st7789.ScreenHeight);
-    st7789.FillCircle(st7789.ScreenWidth div 2,st7789.ScreenHeight div 2,25);
-    busy_wait_us_32(1500000);
-
-    gpio_put(TPicoPin.LED,true);
-    st7789.ForegroundColor := clWhite;
-    st7789.BackgroundColor := clBlue;
-    st7789.SetRotation(TDisplayRotation.UpsideDown);
-    st7789.ClearScreen;
-    st7789.drawText('Blue',5,5);
-    st7789.drawRoundRect(0,0,st7789.ScreenWidth,st7789.ScreenHeight,15);
-    st7789.drawLine(25,25,st7789.ScreenWidth-25,st7789.ScreenHeight-25);
-    st7789.drawLine(25,st7789.ScreenHeight-25,st7789.ScreenWidth-25,25);
-    busy_wait_us_32(1500000);
-
-    gpio_put(TPicoPin.LED,false);
-    st7789.ForegroundColor := clBlack;
-    st7789.BackgroundColor := clWhite;
-    st7789.SetRotation(TDisplayRotation.Left);
-    st7789.ClearScreen;
-    st7789.drawText('Hello',2,2,clBlack);
-    st7789.drawText('FreePascal',2,st7789.ScreenHeight-2-st7789.FontInfo.Height,clBlack);
-    st7789.drawImage(st7789.ScreenWidth div 2 - 32, st7789.ScreenHeight div 2 - 32,paw64x64x4);
+    digits[1].drawImage(0,0,numbers[5]);
+    digits[2].drawImage(0,0,numbers[6]);
+    digits[4].drawImage(0,0,numbers[7]);
+    digits[5].drawImage(0,0,numbers[8]);
+    digits[6].drawImage(0,0,numbers[9]);
     busy_wait_us_32(1500000);
   until 1=0;
 end.
