@@ -5,7 +5,7 @@ program spi_st7735s;
 {$DEFINE DEBUG_SPI}
 uses
   pico_spi_c,
-  st7735s_spi_c,
+  st7735_spi_c,
   CustomDisplay,
   pico_gpio_c,
   pico_timer_c,
@@ -14,17 +14,19 @@ uses
   Fonts.BitstreamVeraSansMono8x16;
 
 var
-  st7735 : Tst7735s_SPI;
+  st7735 : Tst7735S_SPI;
 begin
   gpio_init(TPicoPin.LED);
   gpio_set_dir(TPicoPin.LED,TGPIO_Direction.GPIO_OUT);
 
+  // This example uses Waveshare RP2040-LCD-0.96 board with integrated LCD
   spi_init(spi1,20000000);
   gpio_set_function(TPicoPin.GP9_SPI1_CS,  TGPIO_Function.GPIO_FUNC_SPI);
   gpio_set_function(TPicoPin.GP10_SPI1_SCK, TGPIO_Function.GPIO_FUNC_SPI);
   gpio_set_function(TPicoPin.GP11_SPI1_TX,  TGPIO_Function.GPIO_FUNC_SPI);
 
-  st7735.Initialize(spi,TPicoPin.GP8,TPicoPin.GP12,st7735.ScreenSize80x160x16);
+  //st7735.Initialize(spi1,TPicoPin.GP8,TPicoPin.GP9,TPicoPin.GP12,st7735.ScreenSize80x160x16);
+  st7735.Initialize(spi1,TPicoPin.GP8,TPicoPin.None,TPicoPin.GP12,st7735.ScreenSize80x160x16);
   st7735.setFontInfo(BitstreamVeraSansMono8x16);
 
   repeat

@@ -4,7 +4,7 @@ program spi_st7735r;
 {$MEMORY 20000,20000}
 uses
   pico_spi_c,
-  st7735r_spi_c,
+  st7735_spi_c,
   CustomDisplay,
   pico_gpio_c,
   pico_timer_c,
@@ -24,7 +24,7 @@ begin
   gpio_set_function(TPicoPin.SPI_TX,  TGPIO_Function.GPIO_FUNC_SPI);
 
   //st7735.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7735.ScreenSize128x160x16RGB);
-  st7735.Initialize(spi,TPicoPin.GP16,TPicoPin.GP14,st7735.ScreenSize128x128x16);
+  st7735.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7735.ScreenSize128x128x16);
   st7735.setFontInfo(BitstreamVeraSansMono8x16);
 
   repeat

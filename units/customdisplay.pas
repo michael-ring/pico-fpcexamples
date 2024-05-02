@@ -72,7 +72,7 @@ type
   TImageInfo = record
     Width,Height : word;
     BitsPerPixel : byte;
-    BytesPerLine : byte;
+    BytesPerLine : word;
     pIndexData : ^TIndexData;
     pImageData : ^TImageData;
   end;
@@ -155,7 +155,8 @@ type TCustomDisplay = object
 end;
 
 implementation
-
+uses
+  pico_c;
 constructor TCustomDisplay.Initialize;
 begin
   colStart := 0;
@@ -647,6 +648,26 @@ begin
   end
   else if ImageInfo.BitsPerPixel = 8 then
   begin
+    //TODO
+  end
+  else if ImageInfo.BitsPerPixel = 16 then
+  begin
+    if FPhysicalScreenInfo.Depth = TDisplayBitDepth.SixteenBits then
+    begin
+      if (x+ImageInfo.Width <= FPhysicalScreenInfo.Width) and (y+ImageInfo.Height <= FPhysicalScreenInfo.Height) then
+      begin
+        SetDrawArea(x,y,ImageInfo.Width,ImageInfo.Height);
+        WriteDataWords(pWordArray(ImageInfo.pImageData)^,ImageInfo.Width*ImageInfo.Height);
+      end
+      else
+      begin
+        //TODO
+      end;
+    end
+    else
+    begin
+      //TODO
+    end;
   end;
 end;
 

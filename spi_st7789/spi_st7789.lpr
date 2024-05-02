@@ -25,11 +25,12 @@ begin
   //gpio_set_function(TPicoPin.SPI_CS,  TGPIO_Function.GPIO_FUNC_SPI);
 
   //NoName Aliexpress 1.14" LCD with CS Pin
-  st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize240x135x16,true);
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize240x135x16,true);
   //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize240x135x16,true);
 
   //Pimoroni 1.3" LCD
-  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize240x240x16);
+  //Pimoroni Explorer Base
+  st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize240x240x16);
   //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize240x240x16);
 
   //Waveshare 1.69" LCD
@@ -37,7 +38,7 @@ begin
   //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize280x240x16);
 
   //Waveshare 1.47" LCD
-  st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize320x172x16);
+  //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize320x172x16);
   // does not seem to work: st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.None,TPicoPin.GP14,st7789.ScreenSize320x172x16);
 
   //st7789.Initialize(spi,TPicoPin.GP16,TPicoPin.GP17,TPicoPin.GP14,st7789.ScreenSize320x240x16);

@@ -9,27 +9,12 @@ interface
 uses
   CustomDisplay,
   CustomDisplay16Bits,
-  pico_timer_c,
-  pico_gpio_c,
-  pico_spi_c,
   pico_c;
 
 type
-  TST7789_SPI = object(TCustomDisplay16Bits)
-    private
-      FpSPI : ^TSPI_Registers;
-      FPinDC : TPinIdentifier;
-      FPinRST : TPinIdentifier;
-      FPinSoftCS : TPinIdentifier;
+  TST7789_SPI = object(TCustomDisplay16BitsSPI)
       FMotorolaMode : boolean;
-      //FInTransaction : boolean;
     protected
-      procedure WriteCommand(const command : byte); virtual;
-      procedure WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1); virtual;
-      procedure WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1); virtual;
-      procedure WriteData(const data: byte); virtual;
-      procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual;
-      procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual;
       procedure InitSequence; virtual;
     public
       const
@@ -44,19 +29,6 @@ type
           (Width: 172; Height: 320; Depth: TDisplayBitDepth.SixteenBits;ColorOrder: TDisplayColorOrder.RGB;ColStart : (0,34,0,34); RowStart : (34,0,34 ,0));
         ScreenSize320x240x16: TPhysicalScreenInfo =
           (Width: 240; Height: 320; Depth: TDisplayBitDepth.SixteenBits;ColorOrder: TDisplayColorOrder.RGB;ColStart : (0,0,0,0); RowStart : (0,0,0,0));
-
-    (*
-      Initializes the display
-    param
-      SPI     The SPI Interface to use
-      aPinDC  Pin used for switching between Communication between Data and Command Mode
-      aPinRST Pin used to reset the display, not needed by all displays, pass TNativePin.None when not needed
-      aPhysicalScreenInfo Information about Width/Height and Bitdepth of the connected screen
-    note
-      The SPI interface needs to be pre-initialized to required Parameters
-      The extra Pins do not need to be initialized
-    *)
-    constructor Initialize(var SPI : TSpi_Registers;const aPinDC : TPinIdentifier;const aPinSoftCS : TPinIdentifier;const aPinRST : TPinIdentifier;aPhysicalScreenInfo : TPhysicalScreenInfo;aMotorolaMode : boolean = False);
 
     (*
       Sets the rotation of a display in steps of 90 Degrees.
@@ -174,67 +146,39 @@ const
   ST7789_COLOR_MODE_16bit =$55;
   ST7789_COLOR_MODE_18bit =$66;
 
-constructor TST7789_SPI.Initialize(var SPI : TSpi_Registers;const aPinDC : TPinIdentifier;const aPinSoftCS : TPinIdentifier;const aPinRST : TPinIdentifier;aPhysicalScreenInfo : TPhysicalScreenInfo;aMotorolaMode : boolean = False);
-begin
-    FpSPI := @SPI;
-    FPinDC := aPinDC;
-    FPinRST := aPinRST;
-    FPinSoftCS := aPinSoftCS;
-    FMotorolaMode := aMotorolaMode;
-    PhysicalScreenInfo :=  aPhysicalScreenInfo;
-
-    if APinDC > -1 then
-    begin
-      gpio_init(APinDC);
-      gpio_set_dir(APinDC,TGPIO_Direction.GPIO_OUT);
-      gpio_put(APinDC,false);
-    end;
-    if APinRST > -1 then
-    begin
-      gpio_init(APinRST);
-      gpio_set_dir(APinRST,TGPIO_Direction.GPIO_OUT);
-      gpio_put(APinRST,true);
-    end;
-    if APinSoftCS > -1 then
-    begin
-      gpio_init(APinSoftCS);
-      gpio_set_dir(APinSoftCS,TGPIO_Direction.GPIO_OUT);
-      gpio_put(APinSoftCS,true);
-    end;
-
-    if FMotorolaMode = true then
-      spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_EIGHT,Tspi_cpol.SPI_CPOL_1,Tspi_cpha.SPI_CPHA_1,Tspi_order.SPI_MSB_FIRST)
-    else
-      spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_EIGHT,Tspi_cpol.SPI_CPOL_0,Tspi_cpha.SPI_CPHA_0,Tspi_order.SPI_MSB_FIRST);
-    InitSequence;
-end;
+const
+  DELAY=$80;
+  ST7789_Init_Sequence : array of byte = (
+    // sw reset
+    $01, 0 or DELAY, $96, //150ms
+    // SLPOUT and Delay
+    $11, 0 or DELAY, $FF, //255ms
+    $B1, $03, $01, $2C, $2D,      // _FRMCTR1
+    $B3, $06, $01, $2C, $2D, $01, $2C, $2D,     // _FRMCTR3
+    $B4, $01, $07, // _INVCTR line inversion
+    $C0, $03, $A2, $02, $84, // _PWCTR1 GVDD = 4.7V, 1.0uA
+    $C1, $01, $C5, // _PWCTR2 VGH=14.7V, VGL=-7.35V
+    $C2, $02, $0A, $00, // _PWCTR3 Opamp current small, Boost frequency
+    $C3, $02, $8A, $2A,
+    $C4, $02, $8A, $EE,
+    $C5, $01, $0E, // _VMCTR1 VCOMH = 4V, VOML = -1.1V
+    $20, $00, // _INVOFF
+    $36, $01, $18, // _MADCTL bottom to top refresh
+    // 1 clk cycle nonoverlap, 2 cycle gate rise, 3 cycle osc equalie,
+    // fix on VTL
+    $3A, $01, $05, // COLMOD - 16bit color
+    $E0, $10, $02, $1C, $07, $12, $37, $32, $29, $2D, $29, $25, $2B, $39, $00, $01, $03, $10, // _GMCTRP1 Gamma
+    $E1, $10, $03, $1D, $07, $06, $2E, $2C, $29, $2D, $2E, $2E, $37, $3F, $00, $00, $02, $10, // _GMCTRN1
+    $13, 0 or DELAY, $0A, // _NORON
+    $29, 0 or DELAY, $64, // _DISPON
+    // $36, $01, $C0,  // _MADCTL Default rotation plus BGR encoding
+    $36, $01, $C8,      // _MADCTL Default rotation plus RGB encoding
+    $21, $00      // _INVON
+    );
 
 procedure TST7789_SPI.InitSequence;
 begin
-  WriteCommand(ST7789_SWRESET);
-  busy_wait_us_32(150000);
-
-  writeCommand(ST7789_SLPOUT);   // Sleep out
-  busy_wait_us_32(500000);
-
-  writeCommandBytes(ST7789_COLMOD,[$55]);
-  busy_wait_us_32(10000);
-
-  writeCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_BGR]);
-  writeCommand(ST7789_INVON);
-  busy_wait_us_32(10000);
-
-  writeCommand(ST7789_NORON);    // Normal display mode on
-  busy_wait_us_32(10000);
-
-  writeCommandBytes(ST7789_MADCTL,[ST7789_MADCTL_MY+ST7789_MADCTL_MX]);
-
-  writecommand(ST7789_DISPON);    //Display on
-  busy_wait_us_32(500000);
-
-  setRotation(TDisplayRotation.None);
-  foregroundColor := clBlack;
-  backgroundColor := clWhite;
+  InitSequenceEx(ST7789_Init_Sequence);
 end;
 
 procedure TST7789_SPI.setRotation(const displayRotation : TDisplayRotation);
@@ -303,116 +247,6 @@ begin
   WriteData(lo(_fgColor));
 end;
 
-procedure TST7789_SPI.WriteCommand(const command: Byte);
-var
-  data: array[0..0] of byte;
-begin
-  data[0] := command;
-  gpio_put(FPinDC,false);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,false);
-  spi_write_blocking(FpSPI^,data,1);
-  gpio_put(FPinDC,true);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,true);
-end;
-
-procedure TST7789_SPI.WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1);
-var
-  _data : array[0..0] of byte;
-begin
-  if count = -1 then
-    count := High(data)+1;
-  _data[0]:= command;
-  gpio_put(FPinDC,false);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,false);
-  spi_write_blocking(FpSPI^,_data,1);
-  gpio_put(FPinDC,true);
-  spi_write_blocking(FpSPI^,data,count);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,true);
-end;
-
-procedure TST7789_SPI.WriteCommandWords(const command : byte; constref data : array of word; Count:longInt=-1);
-var
-  _data : array[0..0] of byte;
-begin
-  if count = -1 then
-    count := High(data)+1;
-  _data[0]:= command;
-  gpio_put(FPinDC,false);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,false);
-  spi_write_blocking(FpSPI^,_data,1);
-  gpio_put(FPinDC,true);
-  //if FMotorolaMode = true then
-  //  spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_SIXTEEN,TSPI_cpol.SPI_CPOL_1,TSPI_cpha.SPI_CPHA_1,TSPI_order.SPI_MSB_FIRST)
-  //else
-  //  spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_SIXTEEN,TSPI_cpol.SPI_CPOL_0,TSPI_cpha.SPI_CPHA_0,TSPI_order.SPI_MSB_FIRST);
-  //spi_write16_blocking(FpSPI^,data,count);
-  //for i := 0 to count-1 do
-  //begin
-    //_data[0] := data[i] shr 8;
-    //spi_write_blocking(FpSPI^,_data,1);
-    //_data[0] := data[i] and $ff;
-    //spi_write_blocking(FpSPI^,_data,1);
-  //end;
-  spi_write_blocking_HL(FpSPI^,data,count);
-
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,true);
-  //if FMotorolaMode = true then
-  //  spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_EIGHT,TSPI_cpol.SPI_CPOL_1,TSPI_cpha.SPI_CPHA_1,TSPI_order.SPI_MSB_FIRST)
-  //else
-  //  spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_EIGHT,TSPI_cpol.SPI_CPOL_0,TSPI_cpha.SPI_CPHA_0,TSPI_order.SPI_MSB_FIRST);
-end;
-
-procedure TST7789_SPI.WriteData(const data: byte);
-var
-  _data : array[0..0] of byte;
-begin
-  _data[0] := data;
-  gpio_put(FPinDC,true);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,false);
-  spi_write_blocking(FpSPI^,_data,1);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,true);
-end;
-
-procedure TST7789_SPI.WriteDataBytes(constref data: array of byte;Count:longInt=-1);
-begin
-  if count = -1 then
-    count := High(data)+1;
-  gpio_put(FPinDC,true);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,false);
-  spi_write_blocking(FpSPI^,data,count);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,true);
-end;
-
-procedure TST7789_SPI.WriteDataWords(constref data: array of word;Count:longInt=-1);
-begin
-  if count = -1 then
-    count := High(data)+1;
-  gpio_put(FPinDC,true);
-  //if FMotorolaMode = true then
-  //  spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_SIXTEEN,TSPI_cpol.SPI_CPOL_1,TSPI_cpha.SPI_CPHA_1,TSPI_order.SPI_MSB_FIRST)
-  //else
-  //  spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_SIXTEEN,TSPI_cpol.SPI_CPOL_0,TSPI_cpha.SPI_CPHA_0,TSPI_order.SPI_MSB_FIRST);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,false);
-  //spi_write16_blocking(FpSPI^,data,count);
-  spi_write_blocking_HL(FpSPI^,data,count);
-  if FPinSoftCS > -1 then
-    gpio_put(FPinSoftCS,true);
-  //if FMotorolaMode = true then
-  //  spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_EIGHT,TSPI_cpol.SPI_CPOL_1,TSPI_cpha.SPI_CPHA_1,TSPI_order.SPI_MSB_FIRST)
-  //else
-  //  spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_EIGHT,TSPI_cpol.SPI_CPOL_0,TSPI_cpha.SPI_CPHA_0,TSPI_order.SPI_MSB_FIRST);
-end;
 {$WARN 5028 OFF}
 begin
 end.
