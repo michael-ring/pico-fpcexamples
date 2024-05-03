@@ -22,141 +22,171 @@ unit CustomDisplay;
 }
 {$WARN 6058 off : Call to subroutine "$1" marked as inline is not inlined}
 interface
+
 type
-  TColor = -$7FFFFFFF-1..$7FFFFFFF;
+  TColor = -$7FFFFFFF - 1..$7FFFFFFF;
 
 const
-  clBlack   = TColor($000000);
-  clMaroon  = TColor($800000);
-  clGreen   = TColor($008000);
-  clOlive   = TColor($808000);
-  clNavy    = TColor($000080);
-  clPurple  = TColor($800080);
-  clTeal    = TColor($008080);
-  clGray    = TColor($808080);
-  clSilver  = TColor($C0C0C0);
-  clRed     = TColor($FF0000);
-  clLime    = TColor($00FF00);
-  clYellow  = TColor($00FFFF);
-  clBlue    = TColor($0000FF);
+  clBlack = TColor($000000);
+  clMaroon = TColor($800000);
+  clGreen = TColor($008000);
+  clOlive = TColor($808000);
+  clNavy = TColor($000080);
+  clPurple = TColor($800080);
+  clTeal = TColor($008080);
+  clGray = TColor($808080);
+  clSilver = TColor($C0C0C0);
+  clRed = TColor($FF0000);
+  clLime = TColor($00FF00);
+  clYellow = TColor($00FFFF);
+  clBlue = TColor($0000FF);
   clFuchsia = TColor($FF00FF);
-  clAqua    = TColor($00FFFF);
-  clLtGray  = TColor($C0C0C0);
-  clDkGray  = TColor($808080);
-  clWhite   = TColor($FFFFFF);
+  clAqua = TColor($00FFFF);
+  clLtGray = TColor($C0C0C0);
+  clDkGray = TColor($808080);
+  clWhite = TColor($FFFFFF);
   clForeground = -3;
   clBackground = -2;
   clTransparent = -1;
 
 type
-  TDisplayBitDepth = (OneBit=1,TwoBits=2,SixteenBits=16);
-  TDisplayRotation = (None=0,Right=1,UpsideDown=2,Left=3);
-  TDisplayColorOrder = (RGB=0,BGR,BW);
-  TCorner = (TopLeft,TopRight,BottomLeft,BottomRight);
+  TDisplayBitDepth = (OneBit = 1, TwoBits = 2, SixteenBits = 16);
+  TDisplayRotation = (None = 0, Right = 1, UpsideDown = 2, Left = 3);
+  TDisplayColorOrder = (RGB = 0, BGR, BW);
+  TCorner = (TopLeft, TopRight, BottomLeft, BottomRight);
 
-  TFontData = array [0..MaxInt-1] of byte;
-  TImageData = array [0..MaxInt-1] of byte;
+  TFontData = array [0..MaxInt - 1] of byte;
+  TImageData = array [0..MaxInt - 1] of byte;
   TIndexData = array [0..255] of TColor;
 
-  TRowBuffer = array [0..MaxInt-1] of byte;
+  TRowBuffer = array [0..MaxInt - 1] of byte;
 
   TFontInfo = record
-    Width,Height : Word;
-    BitsPerPixel : byte;
-    BytesPerChar : Word;
-    Charmap : String;
-    pFontData : ^TFontData;
-    pRowBuffer : ^TRowBuffer;
+    Width, Height: word;
+    BitsPerPixel: byte;
+    BytesPerChar: word;
+    Charmap: string;
+    pFontData: ^TFontData;
+    pRowBuffer: ^TRowBuffer;
   end;
 
   TImageInfo = record
-    Width,Height : word;
-    BitsPerPixel : byte;
-    BytesPerLine : word;
-    pIndexData : ^TIndexData;
-    pImageData : ^TImageData;
+    Width, Height: word;
+    BitsPerPixel: byte;
+    BytesPerLine: word;
+    pIndexData: ^TIndexData;
+    pImageData: ^TImageData;
   end;
 
   TPhysicalScreenInfo = record
     Width, Height: word;
-    Depth : TDisplayBitDepth;
-    ColorOrder : TDisplayColorOrder;
-    ColStart, RowStart : array[0..3] of word;
-    class operator =(a,b : TPhysicalScreenInfo) : boolean;
+    Depth: TDisplayBitDepth;
+    ColorOrder: TDisplayColorOrder;
+    ColStart, RowStart: array[0..3] of word;
+    class operator =(a, b: TPhysicalScreenInfo): boolean;
   end;
 
-type TCustomDisplay = object
+type
+  TCustomDisplay = object
   private
-    FPhysicalScreenInfo : TPhysicalScreenInfo;
-    FFontInfo : TFontInfo;
-    procedure drawCircleHelper(const x,y : word; radius : word; const corner : TCorner;const fgColor:TColor=clForeground);
-    procedure fillCircleHelper(const x,y : word; radius : word; const corner : TCorner; delta : word; const fgColor:TColor=clForeground);
+    FPhysicalScreenInfo: TPhysicalScreenInfo;
+    FFontInfo: TFontInfo;
+    procedure drawCircleHelper(const x, y: word; radius: word; const corner: TCorner;
+      const fgColor: TColor = clForeground);
+    procedure fillCircleHelper(const x, y: word; radius: word;
+      const corner: TCorner; delta: word; const fgColor: TColor = clForeground);
   protected
-    colStart : word;
-    rowStart : word;
-    FScreenWidth : word;
-    FScreenHeight : word;
-    FForegroundColor : TColor;
-    FBackgroundColor : TColor;
-    FRotation : TDisplayRotation;
-    procedure CalculateAntialiasColors(const fgColor,bgColor : TColor; out AntiAliasColors : array of TColor); virtual;
-    procedure swapValues(var a,b : word); inline;
-    procedure swapValues(var a,b : longInt); inline;
-    procedure setPhysicalScreenInfo(screenInfo : TPhysicalScreenInfo); virtual;
-    procedure WriteCommand(const command : byte); virtual; abstract;
-    procedure WriteCommandBytes(const command:byte; constref param : array of byte; Count:longInt=-1); virtual; abstract;
-    procedure WriteCommandWords(const command:byte; constref param : array of word; Count:longInt=-1); virtual; abstract;
-    procedure WriteData(const data: byte); virtual; abstract;
-    procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual; abstract;
-    procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual; abstract;
-    property PhysicalScreenInfo : TPhysicalScreenInfo read FPhysicalScreenInfo write setPhysicalScreenInfo;
-    procedure setRotation(const DisplayRotation : TDisplayRotation); virtual; abstract;
-    function  setDrawArea(const X,Y,Width,Height : word) : longWord; virtual ; abstract;
-    function clipToScreen(const x,y,width,height : word; out newWidth,newHeight : word) : boolean;
+    colStart: word;
+    rowStart: word;
+    FScreenWidth: word;
+    FScreenHeight: word;
+    FForegroundColor: TColor;
+    FBackgroundColor: TColor;
+    FRotation: TDisplayRotation;
+    procedure CalculateAntialiasColors(const fgColor, bgColor: TColor;
+      out AntiAliasColors: array of TColor); virtual;
+    procedure swapValues(var a, b: word); inline;
+    procedure swapValues(var a, b: longint); inline;
+    procedure setPhysicalScreenInfo(screenInfo: TPhysicalScreenInfo); virtual;
+    procedure WriteCommand(const command: byte); virtual; abstract;
+    procedure WriteCommandBytes(const command: byte; constref param: array of byte;
+      Count: longint = -1); virtual; abstract;
+    procedure WriteCommandWords(const command: byte; constref param: array of word;
+      Count: longint = -1); virtual; abstract;
+    procedure WriteData(const Data: byte); virtual; abstract;
+    procedure WriteDataBytes(constref Data: array of byte; Count: longint = -1);
+      virtual; abstract;
+    procedure WriteDataWords(constref Data: array of word; Count: longint = -1);
+      virtual; abstract;
+    property PhysicalScreenInfo: TPhysicalScreenInfo
+      read FPhysicalScreenInfo write setPhysicalScreenInfo;
+    procedure setRotation(const DisplayRotation: TDisplayRotation); virtual; abstract;
+    function setDrawArea(const X, Y, Width, Height: word): longword; virtual; abstract;
+    function clipToScreen(const x, y, Width, Height: word;
+      out newWidth, newHeight: word): boolean;
   public
     constructor Initialize;
-    procedure drawPixel(const x,y : word; const fgColor : TColor = clForeground); virtual; abstract;
+    procedure drawPixel(const x, y: word; const fgColor: TColor = clForeground);
+      virtual; abstract;
     //procedure drawChar(const x,y : word; const c : char; const size : byte; const color : TColor=-1; const bg : TColor = -1); virtual; abstract;
-    procedure drawText(const TheText : String; const x,y : word; const fgColor : TColor = clForeground; const bgColor : TColor = clTransparent); virtual; abstract;
-    procedure drawLine(x0,y0,x1,y1 : word; const fgColor : TColor = clForeground); virtual;
-    procedure drawFastVLine(const  x, y : word ; height : word; const fgColor : TColor = clForeground); virtual; abstract;
-    procedure drawFastHLine(const  x, y : word; width : word; const fgColor : TColor = clForeground); virtual; abstract;
+    procedure drawText(const TheText: string; const x, y: word;
+      const fgColor: TColor = clForeground; const bgColor: TColor = clTransparent);
+      virtual; abstract;
+    procedure drawLine(x0, y0, x1, y1: word; const fgColor: TColor = clForeground);
+      virtual;
+    procedure drawFastVLine(const x, y: word; Height: word;
+      const fgColor: TColor = clForeground); virtual; abstract;
+    procedure drawFastHLine(const x, y: word; Width: word;
+      const fgColor: TColor = clForeground); virtual; abstract;
 
-    procedure drawRect(const x,y,width,height : word; const fgColor : TColor = clForeground);
-    procedure fillRect(const x,y,width,height : word; const fgColor : TColor = clForeground); virtual; abstract;
+    procedure drawRect(const x, y, Width, Height: word;
+      const fgColor: TColor = clForeground);
+    procedure fillRect(const x, y, Width, Height: word;
+      const fgColor: TColor = clForeground); virtual; abstract;
 
-    procedure drawRoundRect(const x,y,width,height : word; const radius : word; const fgColor : TColor = clForeground);
-    procedure fillRoundRect(const x,y,width,height : word; const radius : word; const fgColor : TColor = clForeground);
+    procedure drawRoundRect(const x, y, Width, Height: word; const radius: word;
+      const fgColor: TColor = clForeground);
+    procedure fillRoundRect(const x, y, Width, Height: word; const radius: word;
+      const fgColor: TColor = clForeground);
 
-    procedure drawCircle(const x,y : word; radius : word; const fgColor : TColor = clForeground);
-    procedure fillCircle(const x,y : word; radius : word; const fgColor : TColor = clForeground);
+    procedure drawCircle(const x, y: word; radius: word;
+      const fgColor: TColor = clForeground);
+    procedure fillCircle(const x, y: word; radius: word;
+      const fgColor: TColor = clForeground);
 
-    procedure drawEllipse(const x,y : word; const radiusx,radiusy : word; const fgColor : TColor = clForeground);
-    procedure fillEllipse(const x,y : word; const radiusx,radiusy : word; const fgColor : TColor = clForeground);
+    procedure drawEllipse(const x, y: word; const radiusx, radiusy: word;
+      const fgColor: TColor = clForeground);
+    procedure fillEllipse(const x, y: word; const radiusx, radiusy: word;
+      const fgColor: TColor = clForeground);
 
-    procedure drawTriangle(const x0,y0,x1,y1,x2,y2 : word; const fgColor : TColor = clForeground);
-    procedure fillTriangle(x0,y0,x1,y1,x2,y2 : word; const fgColor : TColor = clForeground);
+    procedure drawTriangle(const x0, y0, x1, y1, x2, y2: word;
+      const fgColor: TColor = clForeground);
+    procedure fillTriangle(x0, y0, x1, y1, x2, y2: word;
+      const fgColor: TColor = clForeground);
 
-    procedure drawImage(const x,y : word; constref ImageInfo: TImageInfo;const fgColor : TColor = clForeground; const bgColor : TColor = clTransparent);
+    procedure drawImage(const x, y: word; constref ImageInfo: TImageInfo;
+      const fgColor: TColor = clForeground; const bgColor: TColor = clTransparent);
 
     (*
       Activates a font for text output
     param:
       TheFontInfo
     *)
-    procedure setFontInfo(const FontInfo : TFontInfo);
+    procedure setFontInfo(const FontInfo: TFontInfo);
 
-    property ForegroundColor : TColor read FForegroundColor write FForegroundColor;
-    property BackgroundColor : TColor read FBackgroundColor write FBackgroundColor;
-    property ScreenWidth : word read FScreenWidth;
-    property ScreenHeight : word read FScreenHeight;
-    property Rotation : TDisplayRotation read FRotation write setRotation;
-    property FontInfo : TFontInfo read FFontInfo write setFontInfo;
-end;
+    property ForegroundColor: TColor read FForegroundColor write FForegroundColor;
+    property BackgroundColor: TColor read FBackgroundColor write FBackgroundColor;
+    property ScreenWidth: word read FScreenWidth;
+    property ScreenHeight: word read FScreenHeight;
+    property Rotation: TDisplayRotation read FRotation write setRotation;
+    property FontInfo: TFontInfo read FFontInfo write setFontInfo;
+  end;
 
 implementation
+
 uses
   pico_c;
+
 constructor TCustomDisplay.Initialize;
 begin
   colStart := 0;
@@ -167,57 +197,60 @@ begin
   FScreenHeight := 0;
 end;
 
-procedure TCustomDisplay.setPhysicalScreenInfo(screenInfo : TPhysicalScreenInfo);
+procedure TCustomDisplay.setPhysicalScreenInfo(screenInfo: TPhysicalScreenInfo);
 begin
   FPhysicalScreenInfo := screenInfo;
-  FScreenWidth :=  FPhysicalScreenInfo.Width;
-  FScreenHeight :=  FPhysicalScreenInfo.Height;
+  FScreenWidth := FPhysicalScreenInfo.Width;
+  FScreenHeight := FPhysicalScreenInfo.Height;
   FRotation := TDisplayRotation.None;
 end;
 
-function TCustomDisplay.clipToScreen(const x,y,width,height : word; out newWidth,newHeight : word) : boolean;
+function TCustomDisplay.clipToScreen(const x, y, Width, Height: word;
+  out newWidth, newHeight: word): boolean;
 begin
-  result := false;
+  Result := False;
   if (x >= ScreenWidth) or (y >= ScreenHeight) then
     exit;
-  if x + width > ScreenWidth then
+  if x + Width > ScreenWidth then
     newwidth := ScreenWidth - x
   else
-    newWidth := width;
-  if y + height > ScreenHeight then
+    newWidth := Width;
+  if y + Height > ScreenHeight then
     newheight := ScreenHeight - y
   else
-    newHeight := height;
-  if (newWidth = 0) or (newHeight = 0) or (newWidth > ScreenWidth) or (newHeight > ScreenHeight) then
+    newHeight := Height;
+  if (newWidth = 0) or (newHeight = 0) or (newWidth > ScreenWidth) or
+    (newHeight > ScreenHeight) then
     exit;
-  result := true;
+  Result := True;
 end;
 
-procedure TCustomDisplay.swapValues(var a,b : word); inline;
+procedure TCustomDisplay.swapValues(var a, b: word); inline;
 begin
   a := a xor b;
   b := b xor a;
   a := a xor b;
 end;
 
-procedure TCustomDisplay.swapValues(var a,b : longInt); inline;
+procedure TCustomDisplay.swapValues(var a, b: longint); inline;
 begin
   a := a xor b;
   b := b xor a;
   a := a xor b;
 end;
 
-class operator TPhysicalScreenInfo.= (a,b : TPhysicalScreenInfo) : boolean;
+class operator TPhysicalScreenInfo.=(a, b: TPhysicalScreenInfo): boolean;
 begin
   Result := (a.Width = b.Width) and (a.Height = b.Height) and (a.Depth = b.Depth);
 end;
 
-procedure TCustomDisplay.setFontInfo(const FontInfo : TFontInfo);
+procedure TCustomDisplay.setFontInfo(const FontInfo: TFontInfo);
 begin
   FFontInfo := FontInfo;
 end;
 
-procedure TCustomDisplay.CalculateAntialiasColors(const fgColor,bgColor : TColor; out AntiAliasColors : array of TColor);
+procedure TCustomDisplay.CalculateAntialiasColors(const fgColor, bgColor: TColor;
+  out AntiAliasColors: array of TColor);
 begin
   AntiAliasColors[%00] := bgColor;
   AntiAliasColors[%11] := fgColor;
@@ -227,11 +260,12 @@ begin
   AntiAliasColors[%10] := AntiAliasColors[%11];
 end;
 
-procedure TCustomDisplay.drawCircleHelper(const x,y : word; radius : word; const corner : TCorner;const fgColor:TColor=clForeground);
+procedure TCustomDisplay.drawCircleHelper(const x, y: word; radius: word;
+  const corner: TCorner; const fgColor: TColor = clForeground);
 var
-  f : longInt;
-  ddF_x,ddF_y : longInt;
-  _x : longInt;
+  f: longint;
+  ddF_x, ddF_y: longint;
+  _x: longint;
 begin
   f := 1 - radius;
   ddF_x := 1;
@@ -250,19 +284,19 @@ begin
     ddF_x := ddF_X + 2;
     f := f + ddF_x;
     case corner of
-      TCorner.BottomLeft : begin
+      TCorner.BottomLeft: begin
         drawPixel(x + _x, y + radius, fgColor);
         drawPixel(x + radius, y + _x, fgColor);
       end;
-      TCorner.TopRight : begin
+      TCorner.TopRight: begin
         drawPixel(x + _x, y - radius, fgColor);
         drawPixel(x + radius, y - _x, fgColor);
       end;
-      TCorner.Bottomright : begin
+      TCorner.Bottomright: begin
         drawPixel(x - radius, y + _x, fgColor);
         drawPixel(x - _x, y + radius, fgColor);
       end;
-      TCorner.TopLeft : begin
+      TCorner.TopLeft: begin
         drawPixel(x - radius, y - _x, fgColor);
         drawPixel(x - _x, y - radius, fgColor);
       end;
@@ -270,13 +304,14 @@ begin
   end;
 end;
 
-procedure TCustomDisplay.fillCircleHelper(const x,y : word; radius : word; const corner : TCorner; delta : word; const fgColor:TColor=clForeground);
+procedure TCustomDisplay.fillCircleHelper(const x, y: word; radius: word;
+  const corner: TCorner; delta: word; const fgColor: TColor = clForeground);
 var
-  f,ddF_x,ddF_y,_y : longInt;
+  f, ddF_x, ddF_y, _y: longint;
 begin
   f := 1 - radius;
   ddF_x := 1;
-  ddF_y := -2*radius;
+  ddF_y := -2 * radius;
   _y := 0;
 
   delta := delta + 1;
@@ -291,7 +326,7 @@ begin
         drawFastHLine(x - _y, y - radius, _y + _y + delta, fgColor);
       radius := radius - 1;
       ddF_y := ddF_y + 2;
-      f := f +ddF_y;
+      f := f + ddF_y;
     end;
 
     _y := _y + 1;
@@ -305,44 +340,58 @@ begin
   end;
 end;
 
-procedure TCustomDisplay.drawRect(const x,y,width,height : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.drawRect(const x, y, Width, Height: word;
+  const fgColor: TColor = clForeground);
 begin
-  drawFastHLine(x, y, width, fgColor);
-  drawFastHLine(x, word(y + height) - 1, width, fgColor);
+  drawFastHLine(x, y, Width, fgColor);
+  drawFastHLine(x, word(y + Height) - 1, Width, fgColor);
   // Avoid drawing corner pixels twice
-  drawFastVLine(x, y+1, height-2, fgColor);
-  drawFastVLine(word(x + width) - 1, y+1, height-2, fgColor);
+  drawFastVLine(x, y + 1, Height - 2, fgColor);
+  drawFastVLine(word(x + Width) - 1, y + 1, Height - 2, fgColor);
 end;
 
-procedure TCustomDisplay.drawRoundRect(const x,y,width,height : word; const radius : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.drawRoundRect(const x, y, Width, Height: word;
+  const radius: word; const fgColor: TColor = clForeground);
 begin
-   drawFastHLine(x + radius,    y,              width  - radius - radius, fgColor); // Top
-   drawFastHLine(x + radius,    word(y + height) - 1, width  - radius - radius, fgColor); // Bottom
-   drawFastVLine(x,             y + radius,     height - radius - radius, fgColor); // Left
-   drawFastVLine(word(x + width) - 1, word(y + radius),     height - radius - radius, fgColor); // Right
-   // draw four corners
-   drawCircleHelper(x + radius,             y + radius,              radius, TCorner.TopLeft, fgColor);
-   drawCircleHelper(word(x + width) - radius - 1, y + radius,              radius, TCorner.TopRight, fgColor);
-   drawCircleHelper(word(x + width) - radius - 1, word(y + height) - radius - 1, radius, TCorner.BottomLeft, fgColor);
-   drawCircleHelper(x + radius,             word(y + height) - radius - 1, radius, TCorner.BottomRight, fgColor);
-end;
-
-procedure TCustomDisplay.fillRoundRect(const x,y,width,height : word; const radius : word; const fgColor : TColor = clForeground);
-begin
-  fillRect(x, y + radius, width, height - radius - radius, fgColor);
+  drawFastHLine(x + radius, y, Width - radius - radius, fgColor);
+  // Top
+  drawFastHLine(x + radius, word(y + Height) - 1, Width - radius - radius, fgColor);
+  // Bottom
+  drawFastVLine(x, y + radius, Height - radius - radius, fgColor);
+  // Left
+  drawFastVLine(word(x + Width) - 1, word(y + radius), Height -
+    radius - radius, fgColor); // Right
   // draw four corners
-  fillCircleHelper(x + radius, word(y + height) - radius - 1, radius, TCorner.TopLeft,    width - radius - radius - 1, fgColor);
-  fillCircleHelper(x + radius, y + radius,              radius, TCorner.BottomLeft, width - radius - radius - 1, fgColor);
+  drawCircleHelper(x + radius, y + radius, radius,
+    TCorner.TopLeft, fgColor);
+  drawCircleHelper(word(x + Width) - radius - 1, y + radius,
+    radius, TCorner.TopRight, fgColor);
+  drawCircleHelper(word(x + Width) - radius - 1, word(y + Height) -
+    radius - 1, radius, TCorner.BottomLeft, fgColor);
+  drawCircleHelper(x + radius, word(y + Height) - radius -
+    1, radius, TCorner.BottomRight, fgColor);
 end;
 
-procedure TCustomDisplay.drawCircle(const x,y : word; radius : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.fillRoundRect(const x, y, Width, Height: word;
+  const radius: word; const fgColor: TColor = clForeground);
+begin
+  fillRect(x, y + radius, Width, Height - radius - radius, fgColor);
+  // draw four corners
+  fillCircleHelper(x + radius, word(y + Height) - radius - 1, radius,
+    TCorner.TopLeft, Width - radius - radius - 1, fgColor);
+  fillCircleHelper(x + radius, y + radius, radius,
+    TCorner.BottomLeft, Width - radius - radius - 1, fgColor);
+end;
+
+procedure TCustomDisplay.drawCircle(const x, y: word; radius: word;
+  const fgColor: TColor = clForeground);
 var
-  _x,dx,dy,p : longint;
+  _x, dx, dy, p: longint;
 begin
   _x := 1;
   dx := 1;
-  dy := radius+radius;
-  p  := -(radius shr 1);
+  dy := radius + radius;
+  p := -(radius shr 1);
 
   // These are ordered to minimise coordinate changes in x or y
   // drawPixel can then send fewer bounding box commands
@@ -353,14 +402,14 @@ begin
 
   while _x < radius do
   begin
-    if (p>=0) then
+    if (p >= 0) then
     begin
-      dy:= dy -2;
+      dy := dy - 2;
       p := p - dy;
-      radius := radius -1;
+      radius := radius - 1;
     end;
 
-    dx := dx +2;
+    dx := dx + 2;
     p := p + dx;
 
     // These are ordered to minimise coordinate changes in x or y
@@ -369,28 +418,28 @@ begin
     drawPixel(x - _x, y + radius, fgColor);
     drawPixel(x - _x, y - radius, fgColor);
     drawPixel(x + _x, y - radius, fgColor);
-    if (radius <> _x ) then
+    if (radius <> _x) then
     begin
       drawPixel(x + radius, y + _x, fgColor);
       drawPixel(x - radius, y + _x, fgColor);
       drawPixel(x - radius, y - _x, fgColor);
       drawPixel(x + radius, y - _x, fgColor);
     end;
-    _x := _x+1;
+    _x := _x + 1;
   end;
 end;
 
-procedure TCustomDisplay.fillCircle(const x,y : word; radius : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.fillCircle(const x, y: word; radius: word;
+  const fgColor: TColor = clForeground);
 var
-  _x,dx,dy,p : longInt;
-
+  _x, dx, dy, p: longint;
 begin
   _x := 0;
   dx := 1;
-  dy := radius+radius;
+  dy := radius + radius;
   p := -(radius shr 1);
 
-  drawFastHLine(x - radius, y, dy+1, fgColor);
+  drawFastHLine(x - radius, y, dy + 1, fgColor);
 
   while _x < radius do
   begin
@@ -398,7 +447,7 @@ begin
     begin
       drawFastHLine(x - _x, y + radius, dx, fgColor);
       drawFastHLine(x - _x, y - radius, dx, fgColor);
-      dy := dy -2;
+      dy := dy - 2;
       p := p - dy;
       radius := radius - 1;
     end;
@@ -407,16 +456,17 @@ begin
     p := p + dx;
     _x := _x + 1;
 
-    drawFastHLine(x - radius, y + _x, dy+1, fgColor);
-    drawFastHLine(x - radius, y - _x, dy+1, fgColor);
+    drawFastHLine(x - radius, y + _x, dy + 1, fgColor);
+    drawFastHLine(x - radius, y - _x, dy + 1, fgColor);
   end;
 end;
 
-procedure TCustomDisplay.drawEllipse(const x,y : word; const radiusx,radiusy : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.drawEllipse(const x, y: word; const radiusx, radiusy: word;
+  const fgColor: TColor = clForeground);
 var
-  _x,_y,rx2,ry2,fx2,fy2,s : longInt;
+  _x, _y, rx2, ry2, fx2, fy2, s: longint;
 begin
-  if (radiusx<2) or (radiusy<2) then
+  if (radiusx < 2) or (radiusy < 2) then
     exit;
 
   rx2 := radiusx * radiusx;
@@ -457,11 +507,12 @@ begin
   end;
 end;
 
-procedure TCustomDisplay.fillEllipse(const x,y : word; const radiusx,radiusy : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.fillEllipse(const x, y: word; const radiusx, radiusy: word;
+  const fgColor: TColor = clForeground);
 var
-  _x,_y,rx2,ry2,fx2,fy2,s : longInt;
+  _x, _y, rx2, ry2, fx2, fy2, s: longint;
 begin
-  if (radiusx<2) or (radiusy<2) then
+  if (radiusx < 2) or (radiusy < 2) then
     exit;
   rx2 := radiusx * radiusx;
   ry2 := radiusy * radiusy;
@@ -495,17 +546,19 @@ begin
   end;
 end;
 
-procedure TCustomDisplay.drawTriangle(const x0,y0,x1,y1,x2,y2 : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.drawTriangle(const x0, y0, x1, y1, x2, y2: word;
+  const fgColor: TColor = clForeground);
 begin
   drawLine(x0, y0, x1, y1, fgColor);
   drawLine(x1, y1, x2, y2, fgColor);
   drawLine(x2, y2, x0, y0, fgColor);
 end;
 
-procedure TCustomDisplay.fillTriangle(x0,y0,x1,y1,x2,y2 : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.fillTriangle(x0, y0, x1, y1, x2, y2: word;
+  const fgColor: TColor = clForeground);
 var
-  a, b, y, last : longInt;
-  dx01,dy01,dx02,dy02,dx12,dy12,sa,sb : longInt;
+  a, b, y, last: longint;
+  dx01, dy01, dx02, dy02, dx12, dy12, sa, sb: longint;
 begin
   // Sort coordinates by Y order (y2 >= y1 >= y0)
   if (y0 > y1) then
@@ -590,27 +643,28 @@ begin
   end;
 end;
 
-procedure TCustomDisplay.drawImage(const x,y : word; constref ImageInfo: TImageInfo;const fgColor : TColor = clForeground; const bgColor : TColor = clTransparent);
+procedure TCustomDisplay.drawImage(const x, y: word; constref ImageInfo: TImageInfo;
+  const fgColor: TColor = clForeground; const bgColor: TColor = clTransparent);
 var
-  bit : byte;
-  _x,_y : word;
-  _fgColor : TColor;
-  xline : byte;
+  bit: byte;
+  _x, _y: word;
+  _fgColor: TColor;
+  xline: byte;
 begin
   if ImageInfo.BitsPerPixel = 1 then
   begin
-    for _y := 0 to ImageInfo.Height-1 do
+    for _y := 0 to ImageInfo.Height - 1 do
     begin
-      for _x := 0 to ((ImageInfo.Width-1) div 8) do
+      for _x := 0 to ((ImageInfo.Width - 1) div 8) do
       begin
-        xline := ImageInfo.pImageData^[_y*ImageInfo.BytesPerLine + _x];
+        xline := ImageInfo.pImageData^[_y * ImageInfo.BytesPerLine + _x];
         for bit := 7 downto 0 do
           if (_x shl 3) + bit < ImageInfo.Width then
-            if  (xline and (%1 shl bit)) <> 0 then
-              drawPixel(word(x + (_x shl 3)) + 7 - bit,y + _y,fgColor)
+            if (xline and (%1 shl bit)) <> 0 then
+              drawPixel(word(x + (_x shl 3)) + 7 - bit, y + _y, fgColor)
             else
-              if bgColor <> clTransparent then
-                drawPixel(word(x + (_x shl 3)) + 7 - bit,word(y + _y),bgColor)
+            if bgColor <> clTransparent then
+              drawPixel(word(x + (_x shl 3)) + 7 - bit, word(y + _y), bgColor);
       end;
     end;
   end
@@ -619,30 +673,30 @@ begin
   end
   else if ImageInfo.BitsPerPixel = 4 then
   begin
-    for _y := 0 to ImageInfo.Height-1 do
+    for _y := 0 to ImageInfo.Height - 1 do
     begin
-      for _x := 0 to ((ImageInfo.Width-1) div 2) do
+      for _x := 0 to ((ImageInfo.Width - 1) div 2) do
       begin
-        xline := ImageInfo.pImageData^[_y*ImageInfo.BytesPerLine + _x];
+        xline := ImageInfo.pImageData^[_y * ImageInfo.BytesPerLine + _x];
         _fgColor := ImageInfo.pIndexData^[xline shr 4];
         if _fgColor <> clTransparent then
-          drawPixel(word(x + (_x shl 1)),word(y + _y),_fgColor)
+          drawPixel(word(x + (_x shl 1)), word(y + _y), _fgColor)
         else
-          if bgColor <> clTransparent then
-            if bgColor = clBackground then
-              drawPixel(word(x + (_x shl 1)+1),word(y + _y),backgroundColor)
-            else
-              drawPixel(word(x + (_x shl 1)+1),word(y + _y),bgColor);
+        if bgColor <> clTransparent then
+          if bgColor = clBackground then
+            drawPixel(word(x + (_x shl 1) + 1), word(y + _y), backgroundColor)
+          else
+            drawPixel(word(x + (_x shl 1) + 1), word(y + _y), bgColor);
 
         _fgColor := ImageInfo.pIndexData^[xline and $0f];
         if _fgColor <> clTransparent then
-          drawPixel(word(x + (_x shl 1)+1),word(y + _y),_fgColor)
+          drawPixel(word(x + (_x shl 1) + 1), word(y + _y), _fgColor)
         else
-          if bgColor <> clTransparent then
-            if bgColor = clBackground then
-              drawPixel(word(x + (_x shl 1)+1),word(y + _y),backgroundColor)
-            else
-              drawPixel(word(x + (_x shl 1)+1),word(y + _y),bgColor);
+        if bgColor <> clTransparent then
+          if bgColor = clBackground then
+            drawPixel(word(x + (_x shl 1) + 1), word(y + _y), backgroundColor)
+          else
+            drawPixel(word(x + (_x shl 1) + 1), word(y + _y), bgColor);
       end;
     end;
   end
@@ -654,10 +708,12 @@ begin
   begin
     if FPhysicalScreenInfo.Depth = TDisplayBitDepth.SixteenBits then
     begin
-      if (x+ImageInfo.Width <= FPhysicalScreenInfo.Width) and (y+ImageInfo.Height <= FPhysicalScreenInfo.Height) then
+      if (x + ImageInfo.Width <= FPhysicalScreenInfo.Width) and
+        (y + ImageInfo.Height <= FPhysicalScreenInfo.Height) then
       begin
-        SetDrawArea(x,y,ImageInfo.Width,ImageInfo.Height);
-        WriteDataWords(pWordArray(ImageInfo.pImageData)^,ImageInfo.Width*ImageInfo.Height);
+        SetDrawArea(x, y, ImageInfo.Width, ImageInfo.Height);
+        WriteDataWords(pWordArray(ImageInfo.pImageData)^, ImageInfo.Width *
+          ImageInfo.Height);
       end
       else
       begin
@@ -671,10 +727,11 @@ begin
   end;
 end;
 
-procedure TCustomDisplay.drawLine(x0,y0,x1,y1 : word; const fgColor : TColor = clForeground);
+procedure TCustomDisplay.drawLine(x0, y0, x1, y1: word;
+  const fgColor: TColor = clForeground);
 var
-  steep : boolean;
-  dx,dy,err,ystep,xs,dlen : longInt;
+  steep: boolean;
+  dx, dy, err, ystep, xs, dlen: longint;
 begin
   steep := abs(y1 - y0) > abs(x1 - x0);
   if (steep) then
