@@ -33,7 +33,8 @@ type
       TheText The String to draw
       x,y Top left position of string to draw
     *)
-    procedure drawText(const TheText: string; const x, y: word; const fgColor: TColor = clForeground; const bgColor: TColor = clTransparent); virtual;
+    procedure drawText(const TheText: string; const x, y: word;
+      const fgColor: TColor = clForeground; const bgColor: TColor = clTransparent); virtual;
 
     (*
       Draws a vertical line on the display
@@ -42,7 +43,8 @@ type
       height: height of line in pixels
       fgColor: color to use for painting the line
     *)
-    procedure drawFastVLine(const x, y: word; Height: word; const fgColor: TColor = clForeground); virtual;
+    procedure drawFastVLine(const x, y: word; Height: word;
+      const fgColor: TColor = clForeground); virtual;
 
     (*
       Draws a horizontal line on the display
@@ -51,9 +53,11 @@ type
       width: width of line
       fgColor: color to use for painting the line
     *)
-    procedure drawFastHLine(const x, y: word; Width: word; const fgColor: TColor = clForeground); virtual;
+    procedure drawFastHLine(const x, y: word; Width: word;
+      const fgColor: TColor = clForeground); virtual;
 
-    procedure fillRect(const x, y, Width, Height: word; const fgColor: TColor = clForeground); virtual;
+    procedure fillRect(const x, y, Width, Height: word;
+      const fgColor: TColor = clForeground); virtual;
   end;
 
   TCustomDisplay16BitsSPI = object(TCustomDisplay16Bits)
@@ -62,15 +66,17 @@ type
     FPinDC: TPinIdentifier;
     FPinRST: TPinIdentifier;
     FPinSoftCS: TPinIdentifier;
-    FMotorolaMode : boolean;
+    FMotorolaMode: boolean;
   protected
     procedure WriteCommand(const command: byte); virtual;
-    procedure WriteCommandBytes(const command: byte; constref Data: array of byte; Count: longint = -1); virtual;
-    procedure WriteCommandWords(const command: byte; constref Data: array of word; Count: longint = -1); virtual;
+    procedure WriteCommandBytes(const command: byte; constref Data: array of byte;
+      Count: longint = -1); virtual;
+    procedure WriteCommandWords(const command: byte; constref Data: array of word;
+      Count: longint = -1); virtual;
     procedure WriteData(const Data: byte); virtual;
     procedure WriteDataBytes(constref Data: array of byte; Count: longint = -1); virtual;
     procedure WriteDataWords(constref Data: array of word; Count: longint = -1); virtual;
-    procedure InitSequenceEx(const aInitSequence : array of byte); virtual;
+    procedure InitSequenceEx(const aInitSequence: array of byte); virtual;
     procedure InitSequence; virtual; abstract;
   public
   (*
@@ -84,12 +90,15 @@ type
       The SPI interface needs to be pre-initialized to required Parameters
       The extra Pins do not need to be initialized
     *)
-    constructor Initialize(var SPI: TSpi_Registers; const aPinDC: TPinIdentifier; const aPinSoftCS: TPinIdentifier; const aPinRST: TPinIdentifier; aPhysicalScreenInfo: TPhysicalScreenInfo;aMotorolaMode : boolean = False);
+    constructor Initialize(var SPI: TSpi_Registers; const aPinDC: TPinIdentifier;
+      const aPinSoftCS: TPinIdentifier; const aPinRST: TPinIdentifier;
+      aPhysicalScreenInfo: TPhysicalScreenInfo; aMotorolaMode: boolean = False);
   end;
 
 implementation
 
-procedure TCustomDisplay16Bits.drawFastHLine(const x, y: word; Width: word; const fgColor: TColor = clForeground);
+procedure TCustomDisplay16Bits.drawFastHLine(const x, y: word; Width: word;
+  const fgColor: TColor = clForeground);
 var
   i: integer;
   _fgColor, _width, _height: word;
@@ -109,7 +118,8 @@ begin
   WriteDataWords(buffer, _width);
 end;
 
-procedure TCustomDisplay16Bits.drawFastVLine(const x, y: word; Height: word; const fgColor: TColor = clForeground);
+procedure TCustomDisplay16Bits.drawFastVLine(const x, y: word;
+  Height: word; const fgColor: TColor = clForeground);
 var
   i: integer;
   _fgColor, _width, _height: word;
@@ -129,7 +139,8 @@ begin
   WriteDataWords(buffer, _height);
 end;
 
-procedure TCustomDisplay16Bits.fillRect(const x, y, Width, Height: word; const fgColor: TColor = clForeground);
+procedure TCustomDisplay16Bits.fillRect(const x, y, Width, Height: word;
+  const fgColor: TColor = clForeground);
 var
   i: word;
   _fgColor, _width, _height: word;
@@ -182,7 +193,9 @@ begin
 end;
 
 
-procedure TCustomDisplay16Bits.drawText(const TheText: string; const x, y: word; const fgColor: TColor = clForeground; const bgColor: TColor = clTransparent);
+procedure TCustomDisplay16Bits.drawText(const TheText: string;
+  const x, y: word; const fgColor: TColor = clForeground;
+  const bgColor: TColor = clTransparent);
 var
   i: longword;
   charstart, pixelPos: longword;
@@ -205,7 +218,8 @@ begin
       begin
         for fy := 0 to FontInfo.Height - 1 do
         begin
-          pixelPos := charStart * fontInfo.BytesPerChar + fy * (fontInfo.BytesPerChar div fontInfo.Height);
+          pixelPos := charStart * fontInfo.BytesPerChar + fy *
+            (fontInfo.BytesPerChar div fontInfo.Height);
           for fx := 0 to FontInfo.Width - 1 do
           begin
             pixels := FontInfo.pFontData^[pixelPos + (fx div divFactor)];
@@ -264,12 +278,15 @@ begin
 end;
 *)
 
-constructor TCustomDisplay16BitsSPI.Initialize(var SPI: TSpi_Registers; const aPinDC: TPinIdentifier; const aPinSoftCS: TPinIdentifier; const aPinRST: TPinIdentifier;
-  aPhysicalScreenInfo: TPhysicalScreenInfo;aMotorolaMode : boolean = False);
+constructor TCustomDisplay16BitsSPI.Initialize(var SPI: TSpi_Registers;
+  const aPinDC: TPinIdentifier; const aPinSoftCS: TPinIdentifier;
+  const aPinRST: TPinIdentifier; aPhysicalScreenInfo: TPhysicalScreenInfo;
+  aMotorolaMode: boolean = False);
 begin
   FpSPI := @SPI;
   FPinDC := aPinDC;
   FPinRST := aPinRST;
+  FPinSoftCS := aPinSoftCS;
   FMotorolaMode := aMotorolaMode;
   PhysicalScreenInfo := aPhysicalScreenInfo;
   if APinDC > -1 then
@@ -290,15 +307,17 @@ begin
     gpio_set_dir(APinSoftCS, TGPIO_Direction.GPIO_OUT);
     gpio_put(APinSoftCS, True);
   end;
-    if FMotorolaMode = true then
-      spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_EIGHT,Tspi_cpol.SPI_CPOL_1,Tspi_cpha.SPI_CPHA_1,Tspi_order.SPI_MSB_FIRST)
-    else
-      spi_set_format(FpSPI^,TSPI_DataBits.SPI_DATABITS_EIGHT,Tspi_cpol.SPI_CPOL_0,Tspi_cpha.SPI_CPHA_0,Tspi_order.SPI_MSB_FIRST);
+  if FMotorolaMode = True then
+    spi_set_format(FpSPI^, TSPI_DataBits.SPI_DATABITS_EIGHT,
+      Tspi_cpol.SPI_CPOL_1, Tspi_cpha.SPI_CPHA_1, Tspi_order.SPI_MSB_FIRST)
+  else
+    spi_set_format(FpSPI^, TSPI_DataBits.SPI_DATABITS_EIGHT,
+      Tspi_cpol.SPI_CPOL_0, Tspi_cpha.SPI_CPHA_0, Tspi_order.SPI_MSB_FIRST);
 
   InitSequence;
 end;
 
-procedure TCustomDisplay16BitsSPI.InitSequenceEx(const aInitSequence : array of byte);
+procedure TCustomDisplay16BitsSPI.InitSequenceEx(const aInitSequence: array of byte);
 const
   DELAY = $80;
 var
@@ -358,7 +377,8 @@ begin
     gpio_put(FPinSoftCS, True);
 end;
 
-procedure TCustomDisplay16BitsSPI.WriteCommandBytes(const command: byte; constref Data: array of byte; Count: longint = -1);
+procedure TCustomDisplay16BitsSPI.WriteCommandBytes(const command: byte;
+  constref Data: array of byte; Count: longint = -1);
 var
   _data: array[0..0] of byte;
 begin
@@ -375,7 +395,8 @@ begin
     gpio_put(FPinSoftCS, True);
 end;
 
-procedure TCustomDisplay16BitsSPI.WriteCommandWords(const command: byte; constref Data: array of word; Count: longint = -1);
+procedure TCustomDisplay16BitsSPI.WriteCommandWords(const command: byte;
+  constref Data: array of word; Count: longint = -1);
 var
   _data: array[0..0] of byte;
 begin
@@ -405,7 +426,8 @@ begin
     gpio_put(FPinSoftCS, True);
 end;
 
-procedure TCustomDisplay16BitsSPI.WriteDataBytes(constref Data: array of byte; Count: longint = -1);
+procedure TCustomDisplay16BitsSPI.WriteDataBytes(constref Data: array of byte;
+  Count: longint = -1);
 begin
   if Count = -1 then
     Count := High(Data) + 1;
@@ -417,7 +439,8 @@ begin
     gpio_put(FPinSoftCS, True);
 end;
 
-procedure TCustomDisplay16BitsSPI.WriteDataWords(constref Data: array of word; Count: longint = -1);
+procedure TCustomDisplay16BitsSPI.WriteDataWords(constref Data: array of word;
+  Count: longint = -1);
 begin
   if Count = -1 then
     Count := High(Data) + 1;
