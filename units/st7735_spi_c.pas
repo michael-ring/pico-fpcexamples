@@ -24,7 +24,7 @@ type
     ScreenSize128x128x16: TPhysicalScreenInfo =
       (Width: 128; Height: 128; Depth: TDisplayBitDepth.SixteenBits; ColorOrder: TDisplayColorOrder.BGR; ColStart: (3, 2, 1, 2); RowStart: (2, 3, 2, 1));
     ScreenSize128x160x16RGB: TPhysicalScreenInfo =
-      (Width: 128; Height: 160; Depth: TDisplayBitDepth.SixteenBits; ColorOrder: TDisplayColorOrder.RGB; ColStart: (0, 0, 0, 0); RowStart: (0, 0, 0, 0));
+      (Width: 128; Height: 160; Depth: TDisplayBitDepth.SixteenBits; ColorOrder: TDisplayColorOrder.RGB; ColStart: (1, 2, 1, 2); RowStart: (2, 1, 2, 1));
 
     (*
       Sets the rotation of a display in steps of 90 Degrees.
@@ -194,8 +194,8 @@ const
     $13, 0 or DELAY, $0A, // _NORON
     $29, 0 or DELAY, $64, // _DISPON
     // $36, $01, $C0,  // _MADCTL Default rotation plus BGR encoding
-    $36, $01, $C8,      // _MADCTL Default rotation plus RGB encoding
-    $21, $00      // _INVON
+    $36, $01, $C8//,      // _MADCTL Default rotation plus RGB encoding
+//    $21, $00      // _INVON
     );
 
 procedure TST7735_SPI.setRotation(const displayRotation: TDisplayRotation);
