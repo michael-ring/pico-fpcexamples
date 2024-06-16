@@ -29,15 +29,15 @@ type
     UART_PARITY_ODD
   );
   TUARTStopBits = (
-    UART_STOPBITS_ONE,
-    UART_STOPBITS_TWO
+    UART_STOPBITS_ONE=1,
+    UART_STOPBITS_TWO=2
   );
 
   TUARTDataBits = (
-    UART_DATABITS_FIVE,
-    UART_DATABITS_SIX,
-    UART_DATABITS_SEVEN,
-    UART_DATABITS_EIGHT
+    UART_DATABITS_FIVE=0,
+    UART_DATABITS_SIX=1,
+    UART_DATABITS_SEVEN=2,
+    UART_DATABITS_EIGHT=3
   );
 
   (*! \brief Convert UART instance to hardware instance number
@@ -101,9 +101,9 @@ param
   data_bits Number of bits of data. 5..8
   stop_bits Number of stop bits 1..2
   parity Parity option.
+fixed for sdk 1.5.5 jp.mandon 2024
 *)
-procedure uart_set_format(var uart:TUART_Registers; data_bits:TUARTDataBits; stop_bits:TUARTStopBits; parity:TUARTParity); cdecl; external;
-
+procedure uart_set_format(var uart:TUART_Registers; data_bits:longword; stop_bits:longword; parity:TUARTParity);cdecl;external;
 (*
   Setup UART interrupts
   Enable the UART's interrupt output. An interrupt handler will need to be installed prior to calling
@@ -260,5 +260,13 @@ function uart_is_readable_within_us(var uart:TUART_Registers; us:longWord):boole
 function uart_get_dreq(uart : Tuart_inst; is_tx : boolean): longWord; cdecl; external name '__noinline__uart_get_dreq';
 
 implementation
+
+{
+procedure uart_set_format(var uart:TUART_Registers; data_bits:TUARTDataBits; stop_bits:TUARTStopBits; parity:TUARTParity);
+begin
+  case
+end;
+}
+
 begin
 end.
