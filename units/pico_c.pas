@@ -7,7 +7,6 @@ unit pico_c;
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_CORE)}
 {$L platform.c-debug.obj}
 {$L claim.c-debug.obj}
-{$L clocks.c-debug.obj}
 {$L xosc.c-debug.obj}
 {$L pll.c-debug.obj}
 {$L watchdog.c-debug.obj}
@@ -15,7 +14,6 @@ unit pico_c;
 {$ELSE}
 {$L platform.c.obj}
 {$L claim.c.obj}
-{$L clocks.c.obj}
 {$L xosc.c.obj}
 {$L pll.c.obj}
 {$L watchdog.c.obj}
@@ -38,25 +36,26 @@ unit pico_c;
 
 {$IF DEFINED(FPC_MCU_FEATHER_RP2040)}
   {$L boot2_adafruit_feather_rp2040.obj}
-{$ELSEIF DEFINED(FPC_MCU_ITSYBITSY_RP2040)}
-  {$L boot2_adafruit_itsybitsy_rp2040.obj}
-{$ELSEIF DEFINED(FPC_MCU_QTPY_RP2040)}
-  {$L boot2_adafruit_qtpy_rp2040.obj}
-{$ELSEIF DEFINED(FPC_MCU_TINY_2040)}
-  {$L boot2_pimoroni_tiny2040.obj}
 {$ELSE}
   {$L boot2_pico.obj}
 {$ENDIF}
 
 {$LinkLib gcc-armv6m,static}
-
 interface
 uses
   heapmgr,
   pico_sync_c;
 
 type 
-  TByteArray = array of Byte;
+  TByteArray = array[0..$7ffffffe] of Byte;
+  pByteArray = ^TByteArray;
+  TOpenByteArray = array of Byte;
+  pOpenByteArray = ^TOpenByteArray;
+  TWordArray = array[0..$3ffffffe] of Word;
+  pWordArray = ^TWordArray;
+  TOpenWordArray = array of Word;
+  pOpenWordArray = ^TOpenByteArray;
+  TIrq_Handler = procedure;
 
   TPicoError = record
   const
@@ -94,12 +93,12 @@ type
     _private_us_since_boot : int64;
   end;
 
-
-procedure clocks_init; cdecl; external;
 procedure runtime_init;
 procedure hard_assertion_failure; public name 'hard_assertion_failure';
 procedure __unhandled_user_irq; public name '__unhandled_user_irq';
 procedure __assert_func; public name '__assert_func';
+
+{$WARN 5024 off : Parameter "$1" not used}
 procedure panic(fmt: PAnsiChar; Args: Array of const); public name 'panic';
 (*
   convert an absolute_time_t into a number of microseconds since boot.
@@ -154,6 +153,8 @@ param:
 procedure hw_write_masked(var register : longWord; values : longWord; write_mask:longWord);
 
 implementation
+uses
+  pico_clocks_c;
 
 procedure hard_assertion_failure;
 begin

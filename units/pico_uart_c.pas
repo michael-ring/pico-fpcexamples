@@ -7,32 +7,50 @@ unit pico_uart_c;
 
 {$mode objfpc}{$H+}
 interface
+{$WARN 5023 off : Unit "$1" not used in $2}
 uses
+  pico_timer_c,
   pico_c;
 
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_UART)}
 {$L uart.c-debug.obj}
+{$L __noinline__uart.c-debug.obj}
 {$ELSE}
 {$L uart.c.obj}
+{$L __noinline__uart.c.obj}
 {$ENDIF}
 
 type
+  TUart_Inst = pointer;
+
   TUARTParity = (
     UART_PARITY_NONE,
     UART_PARITY_EVEN,
     UART_PARITY_ODD
   );
   TUARTStopBits = (
-    UART_STOPBITS_ONE,
-    UART_STOPBITS_TWO
+    UART_STOPBITS_ONE=1,
+    UART_STOPBITS_TWO=2
   );
 
   TUARTDataBits = (
-    UART_DATABITS_FIVE,
-    UART_DATABITS_SIX,
-    UART_DATABITS_SEVEN,
-    UART_DATABITS_EIGHT
+    UART_DATABITS_FIVE=0,
+    UART_DATABITS_SIX=1,
+    UART_DATABITS_SEVEN=2,
+    UART_DATABITS_EIGHT=3
   );
+
+  (*! \brief Convert UART instance to hardware instance number
+   *  \ingroup hardware_uart
+   *
+   * \param uart UART instance
+   * \return Number of UART, 0 or 1.
+   *)
+  function uart_get_index(uart : TUart_Inst) : longWord; cdecl; external name '__noinline__uart_get_index';
+
+  function uart_get_instance(instance : longWord) : Tuart_inst; cdecl; external name '__noinline__uart_get_instance';
+
+  function uart_get_hw(uart: Tuart_inst): TUART_Registers; cdecl; external name '__noinline__uart_get_hw';
 
 (*
   Initialise a UART
@@ -73,7 +91,7 @@ param
   cts If true enable flow control of TX  by clear-to-send input
   rts If true enable assertion of request-to-send output by RX flow control
 *)
-procedure uart_set_hw_flow(var uart:TUART_Registers; cts:boolean; rts:boolean);
+procedure uart_set_hw_flow(var uart:TUART_Registers; cts:boolean; rts:boolean); cdecl; external name '__noinline__uart_set_hw_flow';
 
 (*
   Set UART data format
@@ -83,9 +101,9 @@ param
   data_bits Number of bits of data. 5..8
   stop_bits Number of stop bits 1..2
   parity Parity option.
+fixed for sdk 1.5.5 jp.mandon 2024
 *)
-procedure uart_set_format(var uart:TUART_Registers; data_bits:TUARTDataBits; stop_bits:TUARTStopBits; parity:TUARTParity);
-
+procedure uart_set_format(var uart:TUART_Registers; data_bits:longword; stop_bits:longword; parity:TUARTParity);cdecl;external;
 (*
   Setup UART interrupts
   Enable the UART's interrupt output. An interrupt handler will need to be installed prior to calling
@@ -95,7 +113,7 @@ param
   rx_has_data If true an interrupt will be fired when the RX FIFO contain data.
   tx_needs_data If true an interrupt will be fired when the TX FIFO needs data.
 *)
-procedure uart_set_irq_enables(var uart:TUART_Registers; rx_has_data:boolean; tx_needs_data : boolean);
+procedure uart_set_irq_enables(var uart:TUART_Registers; rx_has_data:boolean; tx_needs_data : boolean); cdecl; external name '__noinline__uart_set_irq_enables';
 
 (*
   Test if specific UART is enabled
@@ -104,7 +122,7 @@ param
 return
   true if the UART is enabled
 *)
-function uart_is_enabled(var uart:TUART_Registers): boolean;
+function uart_is_enabled(var uart:TUART_Registers): boolean; cdecl; external name '__noinline__uart_is_enabled';
 
 (*
   Enable/Disable the FIFOs on specified UART
@@ -112,7 +130,7 @@ param
   uart UART instance. \ref uart0 or \ref uart1
   enabled true to enable FIFO (default), false to disable
 *)
-procedure uart_set_fifo_enabled(var uart:TUART_Registers; enabled:boolean);
+procedure uart_set_fifo_enabled(var uart:TUART_Registers; enabled:boolean); cdecl; external;
 
 (*
   Determine if space is available in the TX FIFO
@@ -121,14 +139,14 @@ param
 return
   false if no space available, true otherwise
 *)
-function uart_is_writable(var uart:TUART_Registers):boolean;
+function uart_is_writable(var uart:TUART_Registers):boolean; cdecl; external name '__noinline__uart_is_writable';
 
 (*
   Wait for the UART TX fifo to be drained
 param
   uart UART instance. \ref uart0 or \ref uart1
 *)
-procedure uart_tx_wait_blocking(var uart:TUART_Registers);
+procedure uart_tx_wait_blocking(var uart:TUART_Registers); cdecl; external name '__noinline__uart_tx_wait_blocking';
 
 (*
   Determine whether data is waiting in the RX FIFO
@@ -139,7 +157,7 @@ return
 note
   HW limitations mean this function will return either 0 or 1.
 *)
-function uart_is_readable(var uart:TUART_Registers):boolean;
+function uart_is_readable(var uart:TUART_Registers):boolean; cdecl; external name '__noinline__uart_is_readable';
 
 (*
   Write to the UART for transmission.
@@ -149,7 +167,7 @@ param
   src The bytes to send
   len The number of bytes to send
 *)
-procedure uart_write_blocking(var uart:TUART_Registers; var src:TByteArray;len:longWord);
+procedure uart_write_blocking(var uart:TUART_Registers; var src:TByteArray;len:longWord); cdecl; external name '__noinline__uart_write_blocking';
 
 (*
   Read from the UART
@@ -159,7 +177,7 @@ param
   dst Buffer to accept received bytes
   len The number of bytes to receive.
 *)
-procedure uart_read_blocking(var uart:TUART_Registers; var dst : TByteArray; len : longWord);
+procedure uart_read_blocking(var uart:TUART_Registers; var dst : TByteArray; len : longWord); cdecl; external name '__noinline__uart_read_blocking';
 
 (*
   Write single character to UART for transmission.
@@ -168,7 +186,7 @@ param
   uart UART instance. \ref uart0 or \ref uart1
   c The character  to send
 *)
-procedure uart_putc_raw(var uart:TUART_Registers; c : Char);
+procedure uart_putc_raw(var uart:TUART_Registers; c : Char); cdecl; external name '__noinline__uart_putc_raw';
 
 (*
   Write single character to UART for transmission, with optional CR/LF conversions
@@ -177,7 +195,7 @@ param
   uart UART instance. \ref uart0 or \ref uart1
   c The character  to send
 *)
-procedure uart_putc(var uart:TUART_Registers; c : Char);
+procedure uart_putc(var uart:TUART_Registers; c : Char); cdecl; external name '__noinline__uart_putc';
 
 (*
   Write string to UART for transmission, doing any CR/LF conversions
@@ -186,7 +204,7 @@ param
   uart UART instance. \ref uart0 or \ref uart1
   s The null terminated string to send
 *)
-procedure uart_puts(var uart:TUART_Registers; s : string);
+procedure uart_puts(var uart:TUART_Registers; s : string); cdecl; external name '__noinline__uart_puts';
 
 (*
   Read a single character to UART
@@ -196,7 +214,7 @@ param
 return
   The character read.
 *)
-function uart_getc(var uart:TUART_Registers):Char;
+function uart_getc(var uart:TUART_Registers):Char; cdecl; external name '__noinline__uart_getc';
 
 (*
   Assert a break condition on the UART transmission.
@@ -204,7 +222,7 @@ param
   uart UART instance. \ref uart0 or \ref uart1
   en Assert break condition (TX held low) if true. Clear break condition if false.
 *)
-procedure uart_set_break(var uart:TUART_Registers; en : boolean);
+procedure uart_set_break(var uart:TUART_Registers; en : boolean); cdecl; external name '__noinline__uart_set_break';
 
 (*
   Set CR/LF conversion on UART
@@ -219,6 +237,10 @@ procedure uart_set_translate_crlf(var uart:TUART_Registers; translate:boolean); 
  *)
 //procedure uart_default_tx_wait_blocking;
 
+(*! \brief Wait for the default UART's TX FIFO to be drained
+ *  \ingroup hardware_uart
+ *)
+procedure uart_default_tx_wait_blocking() ; cdecl; external name '__noinline__uart_default_tx_wait_blocking';
 (*
   Wait for up to a certain number of microseconds for the RX FIFO to be non empty
 param
@@ -229,138 +251,22 @@ return
 *)
 function uart_is_readable_within_us(var uart:TUART_Registers; us:longWord):boolean; cdecl; external;
 
+(*! \brief Return the DREQ to use for pacing transfers to/from a particular UART instance
+ *  \ingroup hardware_uart
+ *
+ * \param uart UART instance. \ref uart0 or \ref uart1
+ * \param is_tx true for sending data to the UART instance, false for receiving data from the UART instance
+ *)
+function uart_get_dreq(uart : Tuart_inst; is_tx : boolean): longWord; cdecl; external name '__noinline__uart_get_dreq';
+
 implementation
 
-var
-  uart_char_to_line_feed : array[0..1] of word; cvar;
-
-procedure uart_set_hw_flow(var uart:TUART_Registers; cts:boolean; rts:boolean);
-begin
-  hw_write_masked(uart.cr,
-                  (longWord(cts) shl 15) + (longWord(rts) shl 14),
-                  $00004000 + $00008000);
-end;
-
+{
 procedure uart_set_format(var uart:TUART_Registers; data_bits:TUARTDataBits; stop_bits:TUARTStopBits; parity:TUARTParity);
 begin
-  hw_write_masked(uart.lcr_h,(longWord(data_bits) shl 5)+(longWord(stop_bits) shl 3)+(longWord(parity) shl 1),
-                  $00000060 + $00000008 + $00000002 + $00000004);
+  case
 end;
-
-procedure uart_set_irq_enables(var uart:TUART_Registers; rx_has_data:boolean; tx_needs_data : boolean);
-begin
-  uart.imsc := (longWord(tx_needs_data) shl 5) or (longWord(rx_has_data) shl 4);
-  if rx_has_data=true then
-    hw_write_masked(uart.ifls, 0 << 3,$00000038);
-  if tx_needs_data=true then
-    hw_write_masked(uart.ifls, 0 << 0,$00000007);
-end;
-
-function uart_is_enabled(var uart:TUART_Registers): boolean;
-begin
-  result := (uart.cr and $00000001)=1;
-end;
-
-procedure uart_set_fifo_enabled(var uart:TUART_Registers; enabled:boolean);
-begin
-  hw_write_masked(uart.lcr_h,longWord(enabled) shl 4,$00000010);
-end;
-
-function uart_is_writable(var uart:TUART_Registers):boolean;
-begin
-  result := (uart.fr and $00000020)=0;
-end;
-
-procedure uart_tx_wait_blocking(var uart:TUART_Registers);
-begin
-  repeat
-  until uart.fr and $00000008 <> 0;
-end;
-
-function uart_is_readable(var uart:TUART_Registers):boolean;
-begin
-  result := (uart.fr and $00000010)=0;
-end;
-
-procedure uart_write_blocking(var uart:TUART_Registers; var src:TByteArray;len:longWord);
-var
-  i : word;
-begin
-  for i := 0 to len-1 do
-  begin
-    repeat
-    until uart_is_writable(uart);
-    uart.dr := src[i];
-  end;
-end;
-
-procedure uart_read_blocking(var uart:TUART_Registers; var dst : TByteArray; len : longWord);
-var
-  i : word;
-begin
-  for i := 0 to len-1 do
-  begin
-    repeat
-    until uart_is_readable(uart);
-    dst[i] := uart.dr;
-  end;
-end;
-
-procedure uart_putc_raw(var uart:TUART_Registers; c: Char);
-begin
-  repeat
-  until uart_is_writable(uart);
-  uart.dr := longWord(c);
-end;
-
-procedure uart_putc(var uart:TUART_Registers; c : Char);
-begin
-  if @uart = pointer(UART0_BASE) then
-    if char(uart_char_to_line_feed[0]) = c then
-      uart_putc_raw(uart,#10)
-  else
-    if char(uart_char_to_line_feed[1]) = c then
-      uart_putc_raw(uart,#10);
-  uart_putc_raw(uart, c);
-end;
-
-procedure uart_puts(var uart:TUART_Registers; s : string);
-var
-  last_was_cr : boolean;
-  i : longWord;
-begin
-  for i := 1 to length(s) do
-  begin
-    last_was_cr := false;
-    if (last_was_cr) then
-      uart_putc_raw(uart,s[i])
-    else
-      uart_putc(uart, s[i]);
-    last_was_cr := (s[i] = #10);
-  end;
-end;
-
-function uart_getc(var uart:TUART_Registers):Char;
-begin
-  repeat
-  until uart_is_readable(uart);
-  result := char(uart.dr);
-end;
-
-procedure uart_set_break(var uart:TUART_Registers; en : boolean);
-begin
-  if en=true then
-    hw_set_bits(uart.lcr_h,$00000001)
-  else
-    hw_clear_bits(uart.lcr_h,$00000001);
-end;
-
-//procedure uart_default_tx_wait_blocking;
-//begin
-//  uart_tx_wait_blocking(uart,0);
-//end;
+}
 
 begin
-  uart_char_to_line_feed[0] := $100;
-  uart_char_to_line_feed[1] := $100;
 end.

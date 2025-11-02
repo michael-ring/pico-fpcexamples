@@ -140,13 +140,16 @@ begin
     buffer[i] := _bgColor;
   SetDrawArea(0,0,ScreenWidth,ScreenHeight);
   for i := 1 to ScreenHeight do
+  begin
+    //SetDrawArea(0,i-1,ScreenWidth,1);
     WriteDataWords(buffer,ScreenWidth);
+  end;
 end;
 
 
 procedure TCustomDisplay16Bits.drawText(const TheText : String; const x,y : word; const fgColor : TColor = clForeground; const bgColor : TColor = clTransparent);
 var
-  i,j : longWord;
+  i : longWord;
   charstart,pixelPos : longWord;
   fx,fy : longWord;
   divFactor,pixel,pixels : byte;

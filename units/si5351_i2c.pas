@@ -18,7 +18,6 @@
 unit si5351_i2c;
 
 {$mode ObjFPC}{$H+}
-
 interface
 
 uses
@@ -235,12 +234,18 @@ var
         i       : byte = 0             ;
         temp    : byte                 ;
 begin
+  {$PUSH}
+  {$WARN 5091 off : Local variable "$1" of a managed type does not seem to be initialized}
   setlength(params,8);
+  {$POP}
   // Calculate parameters
+  {$PUSH}
+  {$WARN 4081 off : Converting the operands to "$1" before doing the multiply could prevent overflow errors.}
+  {$WARN 4079 off : Converting the operands to "$1" before doing the add could prevent overflow errors.}
   pll_reg.p1 := 128 * frac.a + ((128 * frac.b) div frac.c) - 512;
   pll_reg.p2 := 128 * frac.b - frac.c * ((128 * frac.b) div frac.c);
   pll_reg.p3 := frac.c;
-
+  {$POP}
   // Derive the register values to write
   // Prepare an array for parameters to be written to
 
@@ -358,7 +363,10 @@ var
         temp    : byte                      ;
         reg_val : byte                      ;
 begin
+  {$PUSH}
+  {$WARN 5091 off : Local variable "$1" of a managed type does not seem to be initialized}
         setlength(params,8);
+  {$POP}
 	// Calculate parameters
 	if (div_by_4 = 1) then
         begin
@@ -368,10 +376,14 @@ begin
 	end
 	else
 	begin
+        {$PUSH}
+        {$WARN 4081 off : Converting the operands to "$1" before doing the multiply could prevent overflow errors.}
+        {$WARN 4079 off : Converting the operands to "$1" before doing the add could prevent overflow errors.}
 		ms_reg.p1 := (128 * frac.a) + ((128 * frac.b) DIV frac.c) - 512;
 		ms_reg.p2 := (128 * frac.b) - (frac.c * ((128 * frac.b) DIV frac.c));
 		ms_reg.p3 := frac.c;
-	end;
+        {$POP}
+        end;
 
 	// Registers 42-43 for CLK0
 	temp := uint8((ms_reg.p3 >> 8) AND $FF);
@@ -560,9 +572,10 @@ var
         mask    : uint8 = $03;
 begin
         si5351_read(SI5351_CLK0_CTRL + uint8(clk), reg_val);
-        reg_val:=reg_val and not(mask);
+        reg_val := reg_val and not(mask);
 
 	case (drive) of
+
 	SI5351_DRIVE_2MA: reg_val := reg_val or $00;
         SI5351_DRIVE_4MA: reg_val := reg_val or $01;
         SI5351_DRIVE_6MA: reg_val := reg_val or $02;
@@ -655,7 +668,10 @@ var
   msg        : array of byte;
   ret_value  : byte         ;
 begin
+    {$PUSH}
+    {$WARN 5091 off : Local variable "$1" of a managed type does not seem to be initialized}
     setlength(msg,1);
+    {$POP}
     msg[0]:=addr;
     i2c_write_blocking(i2c0inst,SI5351_BUS_BASE_ADDR,msg,1,false);
     ret_value:=i2c_read_timeout_us(i2c0inst,SI5351_BUS_BASE_ADDR,msg,1,false,1000);

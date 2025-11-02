@@ -6,13 +6,15 @@ unit pico_sync_c;
  *)
 
 {$mode objfpc}{$H+}
+{$O-}
+
 interface
 
-{$IF DEFINED(DEBUG) or DEFINED(DEBUG_PIO)}
-{$L sync.c-debug.obj}
-{$ELSE}
+//{$IF DEFINED(DEBUG) or DEFINED(DEBUG_PIO)}
+//{$L sync.c-debug.obj}
+//{$ELSE}
 {$L sync.c.obj}
-{$ENDIF}
+//{$ENDIF}
 
 type
   Tspin_lock = longWord;
@@ -89,6 +91,7 @@ return
   true if claimed, false otherwise
 *)
 function spin_lock_is_claimed(lock_num : longWord):boolean; cdecl; external;
+
 
 implementation
 end.

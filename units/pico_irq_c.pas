@@ -7,6 +7,7 @@ unit pico_irq_c;
 
 {$mode objfpc}
 {$H+}
+{$L irq_handler_chain.S.obj}
 
 interface
 
@@ -17,9 +18,12 @@ interface
 {$ENDIF}
 
 procedure irq_set_enabled(irq_number:TIRQn_Enum);cdecl;external;
+procedure irq_set_enabled(irq_number:TIRQn_Enum;enable:boolean);cdecl;external;
 function irq_is_enabled(irq_number:TIRQn_Enum):boolean;cdecl;external;
 procedure irq_set_mask_enabled(mask:uint32;enable:boolean);cdecl;external;
 procedure irq_set_priority(irq_number:TIRQn_Enum;priotiry:uint8);cdecl;external;
+procedure irq_handler_chain_slots;cdecl;external;
+procedure irq_handler_chain_first_slot;cdecl;external;
 	
 implementation
 

@@ -34,7 +34,7 @@ type
     procedure WriteData(const data: byte); virtual;
     procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual;
     procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual;
-    procedure InitSequence;
+    procedure InitSequence; virtual;
     function setDrawArea(const X,Y,Width,Height : word):longWord; virtual;
   public
     (*
@@ -197,13 +197,13 @@ begin
   if APinDC > -1 then
   begin
     gpio_init(APinDC);
-    gpio_set_dir(APinDC,TGPIODirection.GPIO_OUT);
+    gpio_set_dir(APinDC,TGPIO_Direction.GPIO_OUT);
     gpio_put(APinDC,false);
   end;
   if APinRST > -1 then
   begin
     gpio_init(APinRST);
-    gpio_set_dir(APinRST,TGPIODirection.GPIO_OUT);
+    gpio_set_dir(APinRST,TGPIO_Direction.GPIO_OUT);
     gpio_put(APinRST,true);
     Reset;
   end;
@@ -257,7 +257,7 @@ begin
   _data[0]:= command;
   gpio_put(FPinDC,false);
   spi_write_blocking(FpSPI^,_data,1);
-  spi_write_blocking_hl(FpSPI^,data,count);
+  spi_write16_blocking(FpSPI^,data,count);
   gpio_put(FPinDC,true);
 end;
 
@@ -283,7 +283,7 @@ begin
   if count = -1 then
     count := High(data)+1;
   gpio_put(FPinDC,true);
-  spi_write_blocking_hl(FpSPI^,data,count);
+  spi_write16_blocking(FpSPI^,data,count);
 end;
 
 {$WARN 5028 OFF}

@@ -7,6 +7,7 @@ unit pico_i2c_c;
 
 {$mode objfpc}{$H+}
 {$WARN 3187 off : C arrays are passed by reference}
+{$WARN 5023 off : Unit "$1" not used in $2}
 interface
 uses
   pico_time_c,
@@ -14,8 +15,10 @@ uses
 
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_I2C)}
 {$L i2c.c-debug.obj}
+{$L __noinline__i2c.c-debug.obj}
 {$ELSE}
 {$L i2c.c.obj}
+{$L __noinline__i2c.c.obj}
 {$ENDIF}
 
 type Ti2c_inst = record
@@ -67,6 +70,18 @@ param
 *)
 procedure i2c_set_slave_mode(var i2c : TI2C_Inst; slave:boolean; addr:byte); cdecl ; external;
 
+(*! \brief Convert I2C instance to hardware instance number
+ *  \ingroup hardware_i2c
+ *
+ * \param i2c I2C instance
+ * \return Number of I2C, 0 or 1.
+ *)
+function i2c_hw_index(var i2c:Ti2c_inst ):longWord; cdecl ; external name '__noinline__i2c_hw_index';
+
+function i2c_get_hw(var i2c :Ti2c_inst) : Ti2c_registers;  cdecl ; external name '__noinline__i2c_get_hw';
+
+function i2c_get_instance(instance : longWord):Ti2c_inst;  cdecl ; external name '__noinline__i2c_get_instance';
+
 (*
   Attempt to write specified number of bytes to address, blocking until the specified absolute time is reached.
 param
@@ -114,7 +129,7 @@ param
 return
   Number of bytes written, or PICO_ERROR_GENERIC if address not acknowledged, no device present, or PICO_ERROR_TIMEOUT if a timeout occurred.
 *)
-function i2c_write_timeout_us(var i2c : TI2C_Inst; addr : byte; const src : array of byte; len : word; nostop : boolean; timeout_us:longWord):longInt;
+function i2c_write_timeout_us(var i2c : TI2C_Inst; addr : byte; const src : array of byte; len : word; nostop : boolean; timeout_us:longWord):longInt;  cdecl ; external name '__noinline__i2c_write_timeout_us';
 
 function i2c_write_timeout_per_char_us(var i2c : TI2C_Inst; addr : byte ;  src : array of byte; len : word; nostop : boolean; timeout_per_char_us : longWord):longInt; cdecl; external;
 
@@ -131,7 +146,7 @@ param
 return
   Number of bytes read, or PICO_ERROR_GENERIC if address not acknowledged, no device present, or PICO_ERROR_TIMEOUT if a timeout occurred.
 *)
-function i2c_read_timeout_us(var i2c : TI2C_Inst; addr : byte; out dst : array of byte; len : word; nostop : boolean; timeout_us : longWord):longInt;
+function i2c_read_timeout_us(var i2c : TI2C_Inst; addr : byte; out dst : array of byte; len : word; nostop : boolean; timeout_us : longWord):longInt;  cdecl ; external name '__noinline__i2c_read_timeout_us';
 
 function i2c_read_timeout_per_char_us(var i2c : TI2C_Inst; addr : byte; out dst : array of byte; len : word; nostop : boolean; timeout_per_char_us: longWord):longInt; cdecl; external;
 
@@ -171,7 +186,7 @@ return
   0 if no space is available in the I2C to write more data. If return is nonzero, at
   least that many bytes can be written without blocking.
 *)
-function i2c_get_write_available(var i2c : TI2C_Inst): longWord;
+function i2c_get_write_available(var i2c : TI2C_Inst): longWord;  cdecl ; external name '__noinline__i2c_get_write_available';
 
 (*
   Determine number of bytes received
@@ -181,7 +196,7 @@ return
   0 if no data available, if return is nonzero at
   least that many bytes can be read without blocking.
 *)
-function i2c_get_read_available(var i2c : TI2C_Inst):longWord;
+function i2c_get_read_available(var i2c : TI2C_Inst):longWord;  cdecl ; external name '__noinline__i2c_get_read_available';
 
 (*
   Write direct to TX FIFO
@@ -192,7 +207,7 @@ param
   Writes directly to the to I2C TX FIFO which us mainly useful for
   slave-mode operation.
 *)
-procedure i2c_write_raw_blocking(var i2c : TI2C_Inst; src : array of byte; len : word);
+procedure i2c_write_raw_blocking(var i2c : TI2C_Inst; src : array of byte; len : word);  cdecl ; external name '__noinline__i2c_write_raw_blocking';
 
 (*
   Write direct to TX FIFO
@@ -203,7 +218,37 @@ param
   Reads directly from the I2C RX FIFO which us mainly useful for
   slave-mode operation.
 *)
-procedure i2c_read_raw_blocking(var i2c : TI2C_Inst; out dst : array of byte; len:word);
+procedure i2c_read_raw_blocking(var i2c : TI2C_Inst; out dst : array of byte; len:word);  cdecl ; external name '__noinline__i2c_read_raw_blocking';
+
+(**
+ * \brief Pop a byte from I2C Rx FIFO.
+ * \ingroup hardware_i2c
+ *
+ * This function is non-blocking and assumes the Rx FIFO isn't empty.
+ *
+ * \param i2c I2C instance.
+ * \return uint8_t Byte value.
+ *)
+function i2c_read_byte_raw(var i2c : Ti2c_inst):byte;  cdecl ; external name '__noinline__i2c_read_byte_raw';
+
+(**
+ * \brief Push a byte into I2C Tx FIFO.
+ * \ingroup hardware_i2c
+ *
+ * This function is non-blocking and assumes the Tx FIFO isn't full.
+ *
+ * \param i2c I2C instance.
+ * \param value Byte value.
+ *)
+procedure i2c_write_byte_raw(var i2c : Ti2c_inst; value : byte);  cdecl ; external name '__noinline__i2c_write_byte_raw';
+
+(*! \brief Return the DREQ to use for pacing transfers to/from a particular I2C instance
+ *  \ingroup hardware_i2c
+ *
+ * \param i2c Either \ref i2c0 or \ref i2c1
+ * \param is_tx true for sending data to the I2C instance, false for receiving data from the I2C instance
+ *)
+function i2c_get_dreq(var i2c : Ti2c_inst; is_tx : boolean): longWord;  cdecl ; external name '__noinline__i2c_get_dreq';
 
 var
   I2CInst,
@@ -211,52 +256,6 @@ var
   I2C1Inst : TI2C_Inst;
 
 implementation
-
-function i2c_write_timeout_us(var i2c : TI2C_Inst; addr : byte; const src : array of byte; len : word; nostop : boolean; timeout_us:longWord):longInt;
-begin
-  result := i2c_write_blocking_until(i2c, addr, src, len, nostop, make_timeout_time_us(timeout_us));
-end;
-
-function i2c_read_timeout_us(var i2c : TI2C_Inst; addr : byte; out dst : array of byte; len : word; nostop : boolean; timeout_us : longWord):longInt;
-begin
-  result := i2c_read_blocking_until(i2c,addr,dst,len,nostop,make_timeout_time_us(timeout_us));
-end;
-
-function i2c_get_write_available(var i2c : TI2C_Inst): longWord;
-const
-  IC_TX_BUFFER_DEPTH = 32;
-begin
-  result := IC_TX_BUFFER_DEPTH - i2c.hw^.txflr;
-end;
-
-function i2c_get_read_available(var i2c : TI2C_Inst):longWord;
-begin
-  result := i2c.hw^.rxflr;
-end;
-
-procedure i2c_write_raw_blocking(var i2c : TI2C_Inst; src : array of byte; len : word);
-var
-  i : longWord;
-begin
-  for i := 0 to len-1 do
-  begin
-    repeat
-    until i2c_get_write_available(i2c) > 0;
-    i2c.hw^.data_cmd := src[i];
-  end;
-end;
-
-procedure i2c_read_raw_blocking(var i2c : TI2C_Inst; out dst : array of byte; len:word);
-var
-  i : longWord;
-begin
-  for i := 0 to len-1 do
-  begin
-    repeat
-    until i2c_get_read_available(i2c) > 0;
-    dst[i] := i2c.hw^.data_cmd;
-  end;
-end;
 
 begin
   I2C0Inst.hw := @I2C0;

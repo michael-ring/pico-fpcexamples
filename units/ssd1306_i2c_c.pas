@@ -34,7 +34,7 @@ type
       procedure WriteData(const data: byte); virtual;
       procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual;
       procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual;
-      procedure InitSequence;
+      procedure InitSequence; virtual;
       function setDrawArea(const X,Y,Width,Height : word):longWord; virtual;
   public
     constructor Initialize(var I2C : TI2C_Inst;const aDisplayAddress : byte;const aPinRST : TPinIdentifier;aScreenInfo : TPhysicalScreenInfo);
@@ -188,7 +188,7 @@ begin
   if aPinRST > -1 then
   begin
     gpio_init(aPinRST);
-    gpio_set_dir(aPinRST,TGPIODirection.GPIO_OUT);
+    gpio_set_dir(aPinRST,TGPIO_Direction.GPIO_OUT);
     gpio_put(aPinRST,true);
   end;
   initSequence;

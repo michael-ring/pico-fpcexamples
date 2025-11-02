@@ -16,9 +16,11 @@ uses
 {$IF DEFINED(DEBUG) or DEFINED(DEBUG_TIME)}
 {$L time.c-debug.obj}
 {$L timeout_helper.c-debug.obj}
+{$L pheap.c.obj}
 {$ELSE}
 {$L time.c.obj}
 {$L timeout_helper.c.obj}
+{$L pheap.c.obj}
 {$ENDIF}
 
 //extern const absolute_time_t at_the_end_of_time;

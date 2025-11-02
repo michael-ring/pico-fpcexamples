@@ -20,7 +20,6 @@ type
       FpSPI : ^TSPI_Registers;
       FPinDC : TPinIdentifier;
       FPinRST : TPinIdentifier;
-      FInTransaction : boolean;
     protected
       procedure WriteCommand(const command : byte); virtual;
       procedure WriteCommandBytes(const command : byte; constref data : array of byte; Count:longInt=-1); virtual;
@@ -28,7 +27,7 @@ type
       procedure WriteData(const data: byte); virtual;
       procedure WriteDataBytes(constref data : array of byte; Count:longInt=-1); virtual;
       procedure WriteDataWords(constref data : array of word; Count:longInt=-1); virtual;
-      procedure InitSequence;
+      procedure InitSequence; virtual;
     public
       const
         // Physical Width is up to 128 Pixel Physical Height goes up to 160 Pixel
@@ -146,13 +145,13 @@ begin
     if APinDC > -1 then
     begin
       gpio_init(APinDC);
-      gpio_set_dir(APinDC,TGPIODirection.GPIO_OUT);
+      gpio_set_dir(APinDC,TGPIO_Direction.GPIO_OUT);
       gpio_put(APinDC,false);
     end;
     if APinRST > -1 then
     begin
       gpio_init(APinRST);
-      gpio_set_dir(APinRST,TGPIODirection.GPIO_OUT);
+      gpio_set_dir(APinRST,TGPIO_Direction.GPIO_OUT);
       gpio_put(APinRST,true);
     end;
     InitSequence;
